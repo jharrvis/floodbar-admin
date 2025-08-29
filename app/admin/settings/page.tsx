@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Save, Eye, EyeOff } from 'lucide-react'
 
 interface SystemSettings {
@@ -17,9 +17,9 @@ interface SystemSettings {
 
 export default function SettingsPage() {
   const [settings, setSettings] = useState<SystemSettings>({
-    siteName: 'Floodbar Admin Panel',
-    siteDescription: 'Admin panel untuk mengelola halaman penjualan floodbar',
-    adminEmail: 'admin@floodbar.com',
+    siteName: '',
+    siteDescription: '',
+    adminEmail: '',
     maintenanceMode: false,
     allowRegistration: false,
     emailNotifications: true,
@@ -27,6 +27,8 @@ export default function SettingsPage() {
     timezone: 'Asia/Jakarta',
     language: 'id'
   })
+
+  const [loading, setLoading] = useState(true)
 
   const [passwordData, setPasswordData] = useState({
     currentPassword: '',
@@ -42,6 +44,36 @@ export default function SettingsPage() {
 
   const [saving, setSaving] = useState(false)
 
+  // Load settings on component mount
+  useEffect(() => {
+    loadSettings()
+  }, [])
+
+  const loadSettings = async () => {
+    try {
+      const response = await fetch('/api/settings')
+      const data = await response.json()
+      
+      if (response.ok) {
+        setSettings({
+          siteName: data.siteName || 'Floodbar Admin Panel',
+          siteDescription: data.siteDescription || 'Admin panel untuk mengelola halaman penjualan floodbar',
+          adminEmail: data.adminEmail || 'admin@floodbar.com',
+          maintenanceMode: data.maintenanceMode || false,
+          allowRegistration: data.allowRegistration || false,
+          emailNotifications: data.emailNotifications !== undefined ? data.emailNotifications : true,
+          backupFrequency: data.backupFrequency || 'daily',
+          timezone: data.timezone || 'Asia/Jakarta',
+          language: data.language || 'id'
+        })
+      }
+    } catch (error) {
+      console.error('Error loading settings:', error)
+    } finally {
+      setLoading(false)
+    }
+  }
+
   const handleSettingChange = (key: keyof SystemSettings, value: any) => {
     setSettings(prev => ({
       ...prev,
@@ -52,10 +84,24 @@ export default function SettingsPage() {
   const handleSaveSettings = async () => {
     setSaving(true)
     try {
-      await new Promise(resolve => setTimeout(resolve, 1000))
-      alert('Pengaturan berhasil disimpan!')
+      const response = await fetch('/api/settings', {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(settings)
+      })
+
+      const result = await response.json()
+      
+      if (response.ok && result.success) {
+        alert('Pengaturan berhasil disimpan!')
+      } else {
+        alert(result.error || 'Gagal menyimpan pengaturan')
+      }
     } catch (error) {
-      alert('Gagal menyimpan pengaturan')
+      console.error('Error saving settings:', error)
+      alert('Terjadi kesalahan saat menyimpan pengaturan')
     } finally {
       setSaving(false)
     }
@@ -83,6 +129,16 @@ export default function SettingsPage() {
     } catch (error) {
       alert('Gagal mengubah password')
     }
+  }
+
+  if (loading) {
+    return (
+      <div className="max-w-4xl mx-auto">
+        <div className="flex justify-center items-center h-64">
+          <div className="text-lg text-gray-600">Memuat pengaturan...</div>
+        </div>
+      </div>
+    )
   }
 
   return (
