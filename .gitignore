@@ -125,3 +125,5 @@ tmp/
 
 # Misc
 *.tsbuildinfo
+
+.vercel
