@@ -1,0 +1,19 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm install)",
+      "Bash(npm run dev:*)",
+      "Bash(npm install mysql2 @prisma/client prisma)",
+      "Bash(npx prisma:*)",
+      "Bash(npx ts-node:*)",
+      "Bash(node:*)",
+      "Read(C:\\Users\\ThinkPad\\Downloads/**)",
+      "Bash(npm install:*)",
+      "Read(C:\\Users\\ThinkPad\\Downloads/**)",
+      "Bash(git init:*)",
+      "Bash(git add:*)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}

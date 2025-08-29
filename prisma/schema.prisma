@@ -1,0 +1,115 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String   @id @default(cuid())
+  name      String
+  email     String   @unique
+  password  String
+  role      String   @default("viewer") // admin, editor, viewer
+  status    String   @default("active") // active, inactive
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  lastLogin DateTime?
+
+  @@map("users")
+}
+
+model LandingPage {
+  id        String   @id @default(cuid())
+  heroTitle String   @db.Text
+  heroSubtitle String @db.Text
+  heroBackgroundImage String?
+  featuresJson String @db.Text // JSON string for features array
+  productsJson String @db.Text // JSON string for products array
+  contactPhone String
+  contactEmail String
+  contactAddress String @db.Text
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("landing_pages")
+}
+
+model Settings {
+  id        String   @id @default(cuid())
+  siteName  String
+  siteDescription String @db.Text
+  adminEmail String
+  maintenanceMode Boolean @default(false)
+  allowRegistration Boolean @default(false)
+  emailNotifications Boolean @default(true)
+  backupFrequency String @default("daily")
+  timezone String @default("Asia/Jakarta")
+  language String @default("id")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("settings")
+}
+
+model ProductConfig {
+  id        String   @id @default(cuid())
+  // Pricing factors
+  priceUnder60cm Decimal @default(170.00) @db.Decimal(10,2) // Price for width < 60cm
+  priceOver60cm  Decimal @default(120.00) @db.Decimal(10,2) // Price for width >= 60cm
+  
+  // Shipping configuration
+  packingThickness Decimal @default(10.00) @db.Decimal(5,2) // Packing thickness in cm (L)
+  weightConstant   Decimal @default(0.0002) @db.Decimal(10,6) // Weight calculation constant
+  minShippingWeight Decimal @default(10.00) @db.Decimal(5,2) // Minimum shipping weight in kg
+  
+  // Additional costs
+  pickupCost     Decimal @default(0.00) @db.Decimal(10,2) // Pickup service cost
+  insuranceCost  Decimal @default(0.00) @db.Decimal(10,2) // Insurance cost
+  
+  // Warehouse address
+  warehouseName    String @default("Gudang Utama")
+  warehouseAddress String @default("") @db.Text
+  warehouseCity    String @default("")
+  warehouseProvince String @default("")
+  warehousePostalCode String @default("")
+  warehousePhone   String @default("")
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("product_config")
+}
+
+model ShippingRate {
+  id            String   @id @default(cuid())
+  idHarga       String?  // ID_HARGA from CSV
+  kodeJasa      String?  // KODE_JASA
+  cakupan       String?  // CAKUPAN
+  via           String?  // VIA (DARAT/LAUT)
+  tipe          String?  // TIPE (BL)
+  hargaOnline   Decimal? @db.Decimal(10,2) // HARGA INDAH ONLINE
+  hargaPks      Decimal? @db.Decimal(10,2) // HARGA PKS
+  asal          String?  // ASAL
+  tujuan        String   // TUJUAN (key field for updates)
+  wilayah       String?  @db.Text // WILAYAH
+  updateDate    String?  // UPDATE
+  jenis         String?  // JENIS
+  varian        String?  // VARIAN
+  leadTime      String?  // LEAD_TIME
+  kodeNegara    String?  // KODE_NEGARA
+  simbol        String?  // SIMBOL
+  nilaiTukar    Decimal? @db.Decimal(10,6) // NILAI_TUKAR
+  diskon        String?  // DISKON
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  @@unique([asal, tujuan, via]) // Unique combination for updates
+  @@map("shipping_rates")
+}
