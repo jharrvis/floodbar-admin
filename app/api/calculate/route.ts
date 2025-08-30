@@ -1,9 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { PrismaClient } from '@prisma/client'
 
-const prisma = new PrismaClient({
-  datasourceUrl: "mysql://generator_floodbar:3%28%3B8I%29ZA9bYy%25NP%3F@167.172.88.142:3306/generator_floodbar"
-})
+export const runtime = 'nodejs'
+export const dynamic = 'force-dynamic'
+
+const prisma = new PrismaClient()
 
 interface CalculationRequest {
   width: number  // cm
@@ -37,12 +38,13 @@ export async function POST(request: NextRequest) {
 
     const config = configResult[0]
     
-    // Calculate base price based on width
-    const pricePerCm = width < 60 
+    // Calculate base price based on height
+    const pricePerCm = height < 60 
       ? Number(config.priceUnder60cm) 
       : Number(config.priceOver60cm)
     
-    const basePrice = pricePerCm * width
+    // New formula: width x height x pricePerCm
+    const basePrice = width * height * pricePerCm
 
     // Calculate weight (W x H x L x weight constant)
     const packingThickness = Number(config.packingThickness) // L (cm)
