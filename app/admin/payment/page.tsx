@@ -17,6 +17,11 @@ interface PaymentSettings {
   successRedirectUrl: string
   failureRedirectUrl: string
   environment: 'sandbox' | 'production'
+  // Email SMTP Settings
+  gmailUser: string
+  gmailAppPassword: string
+  isEmailEnabled: boolean
+  emailFrom: string
 }
 
 export default function PaymentSettingsPage() {
@@ -33,13 +38,19 @@ export default function PaymentSettingsPage() {
     adminFeeType: 'fixed',
     successRedirectUrl: '/payment/success',
     failureRedirectUrl: '/payment/failure',
-    environment: 'sandbox'
+    environment: 'sandbox',
+    // Email SMTP Settings defaults
+    gmailUser: '',
+    gmailAppPassword: '',
+    isEmailEnabled: false,
+    emailFrom: 'FloodBar'
   })
 
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
   const [showApiKey, setShowApiKey] = useState(false)
   const [showWebhookToken, setShowWebhookToken] = useState(false)
+  const [showGmailPassword, setShowGmailPassword] = useState(false)
 
   useEffect(() => {
     loadSettings()
@@ -231,6 +242,82 @@ export default function PaymentSettingsPage() {
                 placeholder="xnd_public_..."
                 className="w-full px-3 py-2 border border-gray-300 rounded-md"
               />
+            </div>
+          </div>
+        </div>
+
+        {/* Gmail SMTP Configuration */}
+        <div className="bg-white p-6 rounded-lg shadow">
+          <div className="flex items-center gap-3 mb-4">
+            <Settings className="text-green-600" size={24} />
+            <h2 className="text-lg font-semibold">Konfigurasi Email SMTP</h2>
+          </div>
+          
+          <div className="space-y-4">
+            <div className="flex items-center">
+              <input
+                type="checkbox"
+                id="email-enabled"
+                checked={settings.isEmailEnabled}
+                onChange={(e) => setSettings({ ...settings, isEmailEnabled: e.target.checked })}
+                className="mr-2"
+              />
+              <label htmlFor="email-enabled" className="text-sm font-medium text-gray-700">
+                Aktifkan Email Notification
+              </label>
+            </div>
+
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Gmail Email Address
+                </label>
+                <input
+                  type="email"
+                  value={settings.gmailUser}
+                  onChange={(e) => setSettings({ ...settings, gmailUser: e.target.value })}
+                  placeholder="your-business-email@gmail.com"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md"
+                />
+              </div>
+              
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Sender Name
+                </label>
+                <input
+                  type="text"
+                  value={settings.emailFrom}
+                  onChange={(e) => setSettings({ ...settings, emailFrom: e.target.value })}
+                  placeholder="FloodBar"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md"
+                />
+              </div>
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Gmail App Password
+              </label>
+              <div className="relative">
+                <input
+                  type={showGmailPassword ? "text" : "password"}
+                  value={settings.gmailAppPassword}
+                  onChange={(e) => setSettings({ ...settings, gmailAppPassword: e.target.value })}
+                  placeholder="16-character app password dari Google"
+                  className="w-full px-3 py-2 pr-10 border border-gray-300 rounded-md"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowGmailPassword(!showGmailPassword)}
+                  className="absolute right-2 top-2 text-gray-400 hover:text-gray-600"
+                >
+                  {showGmailPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+                </button>
+              </div>
+              <p className="text-xs text-gray-500 mt-1">
+                Cara mendapatkan App Password: Google Account > Security > 2-Step Verification > App passwords
+              </p>
             </div>
           </div>
         </div>

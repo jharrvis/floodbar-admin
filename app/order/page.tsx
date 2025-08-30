@@ -249,6 +249,7 @@ export default function OrderPage() {
       })
 
       const result = await response.json()
+      
       if (result.success) {
         if (result.paymentUrl && selectedPaymentMethod === 'xendit') {
           // Redirect to Xendit payment page

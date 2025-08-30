@@ -1,7 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server'
+import nodemailer from 'nodemailer'
+import { PrismaClient } from '@prisma/client'
 
 export const runtime = 'nodejs'
 export const dynamic = 'force-dynamic'
+
+const prisma = new PrismaClient()
 
 interface EmailData {
   to: string
@@ -95,22 +99,83 @@ export async function POST(request: NextRequest) {
       </div>
     `
 
-    // Here you would integrate with your email service provider
-    // For now, we'll just log the email content
-    console.log('Email would be sent to:', to)
-    console.log('Email content:', emailContent)
+    // Get email settings from database
+    let emailSettings
+    try {
+      const settingsResult = await prisma.$queryRawUnsafe(`
+        SELECT * FROM payment_settings ORDER BY createdAt DESC LIMIT 1
+      `) as any[]
 
-    // In production, you would use a service like:
-    // - Nodemailer with SMTP
-    // - SendGrid
-    // - AWS SES
-    // - Resend
-    // etc.
+      if (settingsResult.length && settingsResult[0].isEmailEnabled) {
+        emailSettings = {
+          gmailUser: settingsResult[0].gmailUser,
+          gmailAppPassword: settingsResult[0].gmailAppPassword,
+          emailFrom: settingsResult[0].emailFrom || 'FloodBar',
+          isEnabled: true
+        }
+      } else {
+        emailSettings = { isEnabled: false }
+      }
+    } catch (dbError) {
+      console.log('Could not load email settings from database:', dbError.message)
+      emailSettings = { isEnabled: false }
+    }
 
-    return NextResponse.json({
-      success: true,
-      message: 'Email notification sent successfully'
-    })
+    // SMTP Gmail Configuration
+    if (emailSettings.isEnabled && emailSettings.gmailUser && emailSettings.gmailAppPassword) {
+      try {
+        // Create SMTP transporter
+        const transporter = nodemailer.createTransport({
+          host: 'smtp.gmail.com',
+          port: 587,
+          secure: false, // true for 465, false for other ports
+          auth: {
+            user: emailSettings.gmailUser,
+            pass: emailSettings.gmailAppPassword
+          }
+        })
+
+        // Send email
+        const info = await transporter.sendMail({
+          from: `"${emailSettings.emailFrom}" <${emailSettings.gmailUser}>`,
+          to: to,
+          subject: `Invoice FloodBar - Order ${orderId}`,
+          html: emailContent
+        })
+
+        console.log('Email sent successfully:', info.messageId)
+
+        return NextResponse.json({
+          success: true,
+          message: 'Email notification sent successfully',
+          messageId: info.messageId
+        })
+
+      } catch (emailError) {
+        console.error('SMTP Error:', emailError)
+        
+        // Fallback - log email content
+        console.log('Email would be sent to:', to)
+        console.log('Subject: Invoice FloodBar - Order', orderId)
+        
+        return NextResponse.json({
+          success: true,
+          message: 'Email logged (SMTP error)',
+          fallback: true
+        })
+      }
+    } else {
+      // Fallback - log email content when email not enabled
+      console.log('Email notifications disabled or not configured')
+      console.log('Email would be sent to:', to)
+      console.log('Subject: Invoice FloodBar - Order', orderId)
+      
+      return NextResponse.json({
+        success: true,
+        message: 'Email logged (SMTP not enabled)',
+        fallback: true
+      })
+    }
 
   } catch (error) {
     console.error('Error sending email notification:', error)

@@ -17,7 +17,12 @@
       "Bash(git push:*)",
       "Bash(vercel:*)",
       "Bash(npm run build:*)",
-      "Bash(curl:*)"
+      "Bash(curl:*)",
+      "WebSearch",
+      "WebFetch(domain:docs.xendit.co)",
+      "WebFetch(domain:developers.xendit.co)",
+      "Bash(taskkill:*)",
+      "Bash(npx kill-port:*)"
     ],
     "deny": [],
     "ask": []

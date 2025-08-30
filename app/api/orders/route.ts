@@ -94,60 +94,120 @@ export async function POST(request: NextRequest) {
 
     // Create Xendit payment invoice if payment method is xendit
     let paymentUrl = null
+    console.log('Payment method:', orderData.payment.method)
     if (orderData.payment.method === 'xendit' || orderData.payment.method === 'online') {
+      console.log('Creating Xendit invoice via API...')
+      
+      // Call Xendit create-invoice API directly (no more mocking)
       try {
-        const invoiceResponse = await fetch(`${process.env.NEXTAUTH_URL || 'http://localhost:3000'}/api/xendit/create-invoice`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
+        // Import the create-invoice logic directly instead of HTTP call to avoid ECONNREFUSED
+        const { PrismaClient } = require('@prisma/client')
+        const prismaLocal = new PrismaClient()
+        
+        // Get payment settings
+        const settingsResult = await prismaLocal.$queryRawUnsafe(`
+          SELECT * FROM payment_settings ORDER BY createdAt DESC LIMIT 1
+        `) as any[]
+        
+        if (settingsResult.length && settingsResult[0].isXenditEnabled && settingsResult[0].xenditApiKey) {
+          const settings = settingsResult[0]
+          const xenditUrl = settings.environment === 'sandbox' 
+            ? 'https://api.xendit.co/v2/invoices' 
+            : 'https://api.xendit.co/v2/invoices'
+
+          // Prepare invoice data for Xendit
+          const xenditInvoiceData = {
+            external_id: `floodbar-${orderId}`,
             amount: orderData.orderSummary.grandTotal,
             description: `FloodBar Order ${orderId}`,
-            orderId,
-            customerName: orderData.customer.name,
-            customerEmail: orderData.customer.email,
-            customerPhone: orderData.customer.phone
-          })
-        })
+            invoice_duration: 86400, // 24 hours
+            customer: {
+              given_names: orderData.customer.name,
+              email: orderData.customer.email,
+              mobile_number: orderData.customer.phone
+            },
+            customer_notification_preference: {
+              invoice_created: ['email'],
+              invoice_reminder: ['email'],
+              invoice_paid: ['email']
+            },
+            success_redirect_url: `${process.env.NEXTAUTH_URL || 'http://localhost:3000'}${settings.successRedirectUrl}`,
+            failure_redirect_url: `${process.env.NEXTAUTH_URL || 'http://localhost:3000'}${settings.failureRedirectUrl}`,
+            currency: 'IDR',
+            items: [
+              {
+                name: 'FloodBar Custom Product',
+                quantity: 1,
+                price: orderData.orderSummary.grandTotal,
+                category: 'Building Materials'
+              }
+            ]
+          }
 
-        const invoiceResult = await invoiceResponse.json()
-        if (invoiceResult.success) {
-          paymentUrl = invoiceResult.invoiceUrl
+          // Create invoice with Xendit API
+          console.log('Calling Xendit API with key:', settings.xenditApiKey?.substring(0, 20) + '...')
+          const xenditResponse = await fetch(xenditUrl, {
+            method: 'POST',
+            headers: {
+              'Authorization': `Basic ${Buffer.from(settings.xenditApiKey + ':').toString('base64')}`,
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(xenditInvoiceData)
+          })
+
+          const xenditResult = await xenditResponse.json()
+          console.log('Xendit response:', xenditResponse.status, xenditResult)
+
+          if (xenditResponse.ok && xenditResult.invoice_url) {
+            paymentUrl = xenditResult.invoice_url
+            console.log('Payment URL from Xendit:', paymentUrl)
+          } else {
+            console.error('Failed to create Xendit invoice:', xenditResult)
+          }
         } else {
-          console.error('Failed to create Xendit invoice:', invoiceResult.error)
+          console.log('Xendit not enabled or API key not configured')
         }
+        
+        await prismaLocal.$disconnect()
       } catch (invoiceError) {
         console.error('Error creating Xendit invoice:', invoiceError)
       }
     }
 
-    // Send email notification
-    try {
-      await fetch(`${process.env.NEXTAUTH_URL || 'http://localhost:3000'}/api/notifications/email`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          to: orderData.customer.email,
-          orderId,
-          orderData
+    // Send email notification (skip for development to avoid ECONNREFUSED)
+    if (process.env.NODE_ENV === 'production') {
+      try {
+        await fetch(`${process.env.NEXTAUTH_URL}/api/notifications/email`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            to: orderData.customer.email,
+            orderId,
+            orderData
+          })
         })
-      })
-    } catch (emailError) {
-      console.error('Email notification failed:', emailError)
-    }
+      } catch (emailError) {
+        console.error('Email notification failed:', emailError)
+      }
 
-    // Send WhatsApp notification  
-    try {
-      await fetch(`${process.env.NEXTAUTH_URL || 'http://localhost:3000'}/api/notifications/whatsapp`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          to: orderData.customer.phone,
-          orderId,
-          orderData
+      // Send WhatsApp notification  
+      try {
+        await fetch(`${process.env.NEXTAUTH_URL}/api/notifications/whatsapp`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            to: orderData.customer.phone,
+            orderId,
+            orderData
+          })
         })
-      })
-    } catch (whatsappError) {
-      console.error('WhatsApp notification failed:', whatsappError)
+      } catch (whatsappError) {
+        console.error('WhatsApp notification failed:', whatsappError)
+      }
+    } else {
+      console.log('Development mode: Email and WhatsApp notifications skipped')
+      console.log(`Email would be sent to: ${orderData.customer.email}`)
+      console.log(`WhatsApp would be sent to: ${orderData.customer.phone}`)
     }
 
     return NextResponse.json({

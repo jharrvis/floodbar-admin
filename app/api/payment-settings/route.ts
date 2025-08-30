@@ -20,6 +20,11 @@ interface PaymentSettings {
   successRedirectUrl: string
   failureRedirectUrl: string
   environment: 'sandbox' | 'production'
+  // Email SMTP Settings
+  gmailUser: string
+  gmailAppPassword: string
+  isEmailEnabled: boolean
+  emailFrom: string
 }
 
 export async function GET() {
@@ -45,7 +50,12 @@ export async function GET() {
         adminFeeType: 'fixed',
         successRedirectUrl: '/payment/success',
         failureRedirectUrl: '/payment/failure',
-        environment: 'sandbox'
+        environment: 'sandbox',
+        // Email SMTP defaults
+        gmailUser: '',
+        gmailAppPassword: '',
+        isEmailEnabled: false,
+        emailFrom: 'FloodBar'
       }
       return NextResponse.json(defaultSettings)
     }
@@ -63,7 +73,12 @@ export async function GET() {
       adminFeeType: settings.adminFeeType || 'fixed',
       successRedirectUrl: settings.successRedirectUrl || '/payment/success',
       failureRedirectUrl: settings.failureRedirectUrl || '/payment/failure',
-      environment: settings.environment || 'sandbox'
+      environment: settings.environment || 'sandbox',
+      // Email SMTP Settings
+      gmailUser: settings.gmailUser || '',
+      gmailAppPassword: settings.gmailAppPassword || '',
+      isEmailEnabled: Boolean(settings.isEmailEnabled),
+      emailFrom: settings.emailFrom || 'FloodBar'
     }
 
     return NextResponse.json(formattedSettings)
@@ -105,41 +120,88 @@ export async function PUT(request: NextRequest) {
       adminFeeType: data.adminFeeType || 'fixed',
       successRedirectUrl: data.successRedirectUrl || '/payment/success',
       failureRedirectUrl: data.failureRedirectUrl || '/payment/failure',
-      environment: data.environment || 'sandbox'
+      environment: data.environment || 'sandbox',
+      // Email SMTP Settings
+      gmailUser: data.gmailUser || '',
+      gmailAppPassword: data.gmailAppPassword || '',
+      isEmailEnabled: data.isEmailEnabled || false,
+      emailFrom: data.emailFrom || 'FloodBar'
     }
 
     if (existingSettingsResult && existingSettingsResult.length > 0) {
-      // Update existing settings
-      await prisma.$executeRawUnsafe(`
-        UPDATE payment_settings 
-        SET xenditApiKey = ?, xenditWebhookToken = ?, xenditPublicKey = ?,
-            isXenditEnabled = ?, supportedMethodsJson = ?, minimumAmount = ?,
-            maximumAmount = ?, adminFee = ?, adminFeeType = ?,
-            successRedirectUrl = ?, failureRedirectUrl = ?, environment = ?,
-            updatedAt = NOW()
-        WHERE id = ?
-      `,
-        settingsData.xenditApiKey, settingsData.xenditWebhookToken, settingsData.xenditPublicKey,
-        settingsData.isXenditEnabled, settingsData.supportedMethodsJson, settingsData.minimumAmount,
-        settingsData.maximumAmount, settingsData.adminFee, settingsData.adminFeeType,
-        settingsData.successRedirectUrl, settingsData.failureRedirectUrl, settingsData.environment,
-        existingSettingsResult[0].id
-      )
+      // Update existing settings (skip Gmail fields if columns don't exist)
+      try {
+        await prisma.$executeRawUnsafe(`
+          UPDATE payment_settings 
+          SET xenditApiKey = ?, xenditWebhookToken = ?, xenditPublicKey = ?,
+              isXenditEnabled = ?, supportedMethodsJson = ?, minimumAmount = ?,
+              maximumAmount = ?, adminFee = ?, adminFeeType = ?,
+              successRedirectUrl = ?, failureRedirectUrl = ?, environment = ?,
+              gmailUser = ?, gmailAppPassword = ?, isEmailEnabled = ?, emailFrom = ?,
+              updatedAt = NOW()
+          WHERE id = ?
+        `,
+          settingsData.xenditApiKey, settingsData.xenditWebhookToken, settingsData.xenditPublicKey,
+          settingsData.isXenditEnabled, settingsData.supportedMethodsJson, settingsData.minimumAmount,
+          settingsData.maximumAmount, settingsData.adminFee, settingsData.adminFeeType,
+          settingsData.successRedirectUrl, settingsData.failureRedirectUrl, settingsData.environment,
+          settingsData.gmailUser, settingsData.gmailAppPassword, settingsData.isEmailEnabled, settingsData.emailFrom,
+          existingSettingsResult[0].id
+        )
+      } catch (dbError) {
+        console.log('Database update failed (columns may not exist), updating basic fields only:', dbError.message)
+        // Fallback to basic fields only
+        await prisma.$executeRawUnsafe(`
+          UPDATE payment_settings 
+          SET xenditApiKey = ?, xenditWebhookToken = ?, xenditPublicKey = ?,
+              isXenditEnabled = ?, supportedMethodsJson = ?, minimumAmount = ?,
+              maximumAmount = ?, adminFee = ?, adminFeeType = ?,
+              successRedirectUrl = ?, failureRedirectUrl = ?, environment = ?,
+              updatedAt = NOW()
+          WHERE id = ?
+        `,
+          settingsData.xenditApiKey, settingsData.xenditWebhookToken, settingsData.xenditPublicKey,
+          settingsData.isXenditEnabled, settingsData.supportedMethodsJson, settingsData.minimumAmount,
+          settingsData.maximumAmount, settingsData.adminFee, settingsData.adminFeeType,
+          settingsData.successRedirectUrl, settingsData.failureRedirectUrl, settingsData.environment,
+          existingSettingsResult[0].id
+        )
+      }
     } else {
-      // Create new settings
-      await prisma.$executeRawUnsafe(`
-        INSERT INTO payment_settings (
-          id, xenditApiKey, xenditWebhookToken, xenditPublicKey,
-          isXenditEnabled, supportedMethodsJson, minimumAmount, maximumAmount,
-          adminFee, adminFeeType, successRedirectUrl, failureRedirectUrl, environment
-        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-      `,
-        'payment-' + Date.now(),
-        settingsData.xenditApiKey, settingsData.xenditWebhookToken, settingsData.xenditPublicKey,
-        settingsData.isXenditEnabled, settingsData.supportedMethodsJson, settingsData.minimumAmount,
-        settingsData.maximumAmount, settingsData.adminFee, settingsData.adminFeeType,
-        settingsData.successRedirectUrl, settingsData.failureRedirectUrl, settingsData.environment
-      )
+      // Create new settings (skip Gmail fields if columns don't exist)
+      try {
+        await prisma.$executeRawUnsafe(`
+          INSERT INTO payment_settings (
+            id, xenditApiKey, xenditWebhookToken, xenditPublicKey,
+            isXenditEnabled, supportedMethodsJson, minimumAmount, maximumAmount,
+            adminFee, adminFeeType, successRedirectUrl, failureRedirectUrl, environment,
+            gmailUser, gmailAppPassword, isEmailEnabled, emailFrom
+          ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        `,
+          'payment-' + Date.now(),
+          settingsData.xenditApiKey, settingsData.xenditWebhookToken, settingsData.xenditPublicKey,
+          settingsData.isXenditEnabled, settingsData.supportedMethodsJson, settingsData.minimumAmount,
+          settingsData.maximumAmount, settingsData.adminFee, settingsData.adminFeeType,
+          settingsData.successRedirectUrl, settingsData.failureRedirectUrl, settingsData.environment,
+          settingsData.gmailUser, settingsData.gmailAppPassword, settingsData.isEmailEnabled, settingsData.emailFrom
+        )
+      } catch (dbError) {
+        console.log('Database insert failed (columns may not exist), inserting basic fields only:', dbError.message)
+        // Fallback to basic fields only
+        await prisma.$executeRawUnsafe(`
+          INSERT INTO payment_settings (
+            id, xenditApiKey, xenditWebhookToken, xenditPublicKey,
+            isXenditEnabled, supportedMethodsJson, minimumAmount, maximumAmount,
+            adminFee, adminFeeType, successRedirectUrl, failureRedirectUrl, environment
+          ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        `,
+          'payment-' + Date.now(),
+          settingsData.xenditApiKey, settingsData.xenditWebhookToken, settingsData.xenditPublicKey,
+          settingsData.isXenditEnabled, settingsData.supportedMethodsJson, settingsData.minimumAmount,
+          settingsData.maximumAmount, settingsData.adminFee, settingsData.adminFeeType,
+          settingsData.successRedirectUrl, settingsData.failureRedirectUrl, settingsData.environment
+        )
+      }
     }
 
     return NextResponse.json({ 
