@@ -11,6 +11,8 @@ export async function GET(request: NextRequest) {
     const { searchParams } = new URL(request.url)
     const query = searchParams.get('q')
 
+    console.log('Shipping search query:', query)
+
     if (!query || query.length < 3) {
       return NextResponse.json({
         success: false,
@@ -18,14 +20,27 @@ export async function GET(request: NextRequest) {
       })
     }
 
+    // First check if table exists
+    try {
+      await prisma.$queryRawUnsafe(`SELECT 1 FROM shipping_rates LIMIT 1`)
+    } catch (tableError) {
+      console.error('Shipping rates table does not exist:', tableError)
+      return NextResponse.json({
+        success: false,
+        error: 'Shipping rates table not found'
+      }, { status: 404 })
+    }
+
     // Search cities in shipping_rates table
     const cities = await prisma.$queryRawUnsafe(`
-      SELECT DISTINCT tujuan as city, harga_per_kg as price_per_kg
+      SELECT tujuan as city, harga_per_kg as price_per_kg, estimasi_hari
       FROM shipping_rates 
-      WHERE tujuan LIKE ? 
+      WHERE tujuan LIKE CONCAT('%', ?, '%') AND aktif = 1
       ORDER BY tujuan ASC
       LIMIT 10
-    `, `%${query}%`)
+    `, query)
+
+    console.log('Found cities:', cities)
 
     return NextResponse.json({
       success: true,
@@ -35,7 +50,7 @@ export async function GET(request: NextRequest) {
   } catch (error) {
     console.error('Error searching cities:', error)
     return NextResponse.json(
-      { success: false, error: 'Terjadi kesalahan server' },
+      { success: false, error: `Database error: ${error.message}` },
       { status: 500 }
     )
   }
