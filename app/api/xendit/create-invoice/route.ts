@@ -123,7 +123,7 @@ export async function POST(request: NextRequest) {
         WHERE id = ?
       `, xenditResult.id, xenditResult.invoice_url, invoiceData.orderId)
     } catch (dbError) {
-      console.log('Database update skipped (columns may not exist yet):', dbError.message)
+      console.log('Database update skipped (columns may not exist yet):', dbError instanceof Error ? dbError.message : dbError)
       // Continue without failing - this is not critical for testing
     }
 

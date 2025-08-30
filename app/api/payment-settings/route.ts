@@ -149,7 +149,7 @@ export async function PUT(request: NextRequest) {
           existingSettingsResult[0].id
         )
       } catch (dbError) {
-        console.log('Database update failed (columns may not exist), updating basic fields only:', dbError.message)
+        console.log('Database update failed (columns may not exist), updating basic fields only:', dbError instanceof Error ? dbError.message : dbError)
         // Fallback to basic fields only
         await prisma.$executeRawUnsafe(`
           UPDATE payment_settings 
@@ -186,7 +186,7 @@ export async function PUT(request: NextRequest) {
           settingsData.gmailUser, settingsData.gmailAppPassword, settingsData.isEmailEnabled, settingsData.emailFrom
         )
       } catch (dbError) {
-        console.log('Database insert failed (columns may not exist), inserting basic fields only:', dbError.message)
+        console.log('Database insert failed (columns may not exist), inserting basic fields only:', dbError instanceof Error ? dbError.message : dbError)
         // Fallback to basic fields only
         await prisma.$executeRawUnsafe(`
           INSERT INTO payment_settings (
