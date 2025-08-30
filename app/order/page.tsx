@@ -61,7 +61,9 @@ export default function OrderPage() {
   const [productForm, setProductForm] = useState({
     width: '',
     height: '',
-    quantity: 1
+    thickness: '5',
+    quantity: 1,
+    finish: 'Standard'
   })
   const [calculating, setCalculating] = useState(false)
 
@@ -158,12 +160,28 @@ export default function OrderPage() {
   const submitOrder = async () => {
     setSubmitting(true)
     try {
+      // Transform data to match API expectations
+      const firstItem = orderItems[0] // Assuming single product for now
       const orderData = {
-        items: orderItems,
+        productConfig: {
+          width: firstItem?.width || 0,
+          height: firstItem?.height || 0,
+          thickness: parseFloat(productForm.thickness) || 5,
+          quantity: firstItem?.quantity || 1,
+          finish: productForm.finish || 'Standard'
+        },
+        shipping: {
+          origin: 'Jakarta', // Default origin
+          destination: customerData.city,
+          weight: shippingData?.weight || 1,
+          service: 'REG',
+          cost: shippingData?.cost || 0
+        },
         customer: customerData,
-        shipping: shippingData,
-        paymentMethod: selectedPaymentMethod,
-        summary: orderSummary
+        payment: {
+          method: selectedPaymentMethod
+        },
+        orderSummary: orderSummary
       }
 
       const response = await fetch('/api/orders', {
@@ -303,6 +321,38 @@ export default function OrderPage() {
                       className="w-full px-3 py-2 border border-gray-300 rounded-md"
                       placeholder="Masukkan tinggi"
                     />
+                  </div>
+                </div>
+                <div className="grid grid-cols-2 gap-4 mb-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Ketebalan (mm)
+                    </label>
+                    <select
+                      value={productForm.thickness}
+                      onChange={(e) => setProductForm({ ...productForm, thickness: e.target.value })}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md"
+                    >
+                      <option value="3">3mm</option>
+                      <option value="5">5mm</option>
+                      <option value="8">8mm</option>
+                      <option value="10">10mm</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Finishing
+                    </label>
+                    <select
+                      value={productForm.finish}
+                      onChange={(e) => setProductForm({ ...productForm, finish: e.target.value })}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md"
+                    >
+                      <option value="Standard">Standard</option>
+                      <option value="Glossy">Glossy</option>
+                      <option value="Matte">Matte</option>
+                      <option value="Anti-UV">Anti-UV</option>
+                    </select>
                   </div>
                 </div>
                 <div className="mb-4">
