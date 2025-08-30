@@ -117,7 +117,7 @@ export async function POST(request: NextRequest) {
         emailSettings = { isEnabled: false }
       }
     } catch (dbError) {
-      console.log('Could not load email settings from database:', dbError.message)
+      console.log('Could not load email settings from database:', dbError instanceof Error ? dbError.message : dbError)
       emailSettings = { isEnabled: false }
     }
 
