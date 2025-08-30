@@ -316,7 +316,7 @@ export default function PaymentSettingsPage() {
                 </button>
               </div>
               <p className="text-xs text-gray-500 mt-1">
-                Cara mendapatkan App Password: Google Account > Security > 2-Step Verification > App passwords
+                Cara mendapatkan App Password: Google Account {'>'}  Security {'>'}  2-Step Verification {'>'}  App passwords
               </p>
             </div>
           </div>
