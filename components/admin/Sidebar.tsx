@@ -11,6 +11,7 @@ import {
   Package,
   Truck,
   CreditCard,
+  ShoppingBag,
   LogOut 
 } from 'lucide-react'
 
@@ -39,6 +40,11 @@ const menuItems = [
     label: 'User Management',
     href: '/admin/users',
     icon: Users
+  },
+  {
+    label: 'Kelola Pesanan',
+    href: '/admin/orders',
+    icon: ShoppingBag
   },
   {
     label: 'Pengaturan Pembayaran',
