@@ -1,0 +1,159 @@
+import { NextRequest, NextResponse } from 'next/server'
+import { PrismaClient } from '@prisma/client'
+
+export const runtime = 'nodejs'
+export const dynamic = 'force-dynamic'
+
+const prisma = new PrismaClient()
+
+interface PaymentSettings {
+  id: string | null
+  xenditApiKey: string
+  xenditWebhookToken: string
+  xenditPublicKey: string
+  isXenditEnabled: boolean
+  supportedMethods: string[]
+  minimumAmount: number
+  maximumAmount: number
+  adminFee: number
+  adminFeeType: 'fixed' | 'percentage'
+  successRedirectUrl: string
+  failureRedirectUrl: string
+  environment: 'sandbox' | 'production'
+}
+
+export async function GET() {
+  try {
+    const settingsResult = await prisma.$queryRawUnsafe(`
+      SELECT * FROM payment_settings ORDER BY createdAt DESC LIMIT 1
+    `) as any[]
+
+    const settings = settingsResult.length > 0 ? settingsResult[0] : null
+
+    if (!settings) {
+      // Return default settings if none exists
+      const defaultSettings: PaymentSettings = {
+        id: null,
+        xenditApiKey: '',
+        xenditWebhookToken: '',
+        xenditPublicKey: '',
+        isXenditEnabled: false,
+        supportedMethods: ['credit_card', 'bank_transfer', 'ewallet', 'qris'],
+        minimumAmount: 10000,
+        maximumAmount: 50000000,
+        adminFee: 5000,
+        adminFeeType: 'fixed',
+        successRedirectUrl: '/payment/success',
+        failureRedirectUrl: '/payment/failure',
+        environment: 'sandbox'
+      }
+      return NextResponse.json(defaultSettings)
+    }
+
+    const formattedSettings: PaymentSettings = {
+      id: settings.id,
+      xenditApiKey: settings.xenditApiKey || '',
+      xenditWebhookToken: settings.xenditWebhookToken || '',
+      xenditPublicKey: settings.xenditPublicKey || '',
+      isXenditEnabled: Boolean(settings.isXenditEnabled),
+      supportedMethods: JSON.parse(settings.supportedMethodsJson || '["credit_card","bank_transfer","ewallet","qris"]'),
+      minimumAmount: Number(settings.minimumAmount) || 10000,
+      maximumAmount: Number(settings.maximumAmount) || 50000000,
+      adminFee: Number(settings.adminFee) || 5000,
+      adminFeeType: settings.adminFeeType || 'fixed',
+      successRedirectUrl: settings.successRedirectUrl || '/payment/success',
+      failureRedirectUrl: settings.failureRedirectUrl || '/payment/failure',
+      environment: settings.environment || 'sandbox'
+    }
+
+    return NextResponse.json(formattedSettings)
+  } catch (error) {
+    console.error('Error fetching payment settings:', error)
+    return NextResponse.json(
+      { success: false, error: 'Terjadi kesalahan server' },
+      { status: 500 }
+    )
+  }
+}
+
+export async function PUT(request: NextRequest) {
+  try {
+    const data: PaymentSettings = await request.json()
+
+    // Validate required fields
+    if (data.isXenditEnabled && (!data.xenditApiKey || !data.xenditWebhookToken)) {
+      return NextResponse.json(
+        { success: false, error: 'API Key dan Webhook Token wajib diisi jika Xendit diaktifkan' },
+        { status: 400 }
+      )
+    }
+
+    // Check if settings exists
+    const existingSettingsResult = await prisma.$queryRawUnsafe(`
+      SELECT id FROM payment_settings LIMIT 1
+    `) as any[]
+
+    const settingsData = {
+      xenditApiKey: data.xenditApiKey || '',
+      xenditWebhookToken: data.xenditWebhookToken || '',
+      xenditPublicKey: data.xenditPublicKey || '',
+      isXenditEnabled: data.isXenditEnabled,
+      supportedMethodsJson: JSON.stringify(data.supportedMethods),
+      minimumAmount: data.minimumAmount || 10000,
+      maximumAmount: data.maximumAmount || 50000000,
+      adminFee: data.adminFee || 5000,
+      adminFeeType: data.adminFeeType || 'fixed',
+      successRedirectUrl: data.successRedirectUrl || '/payment/success',
+      failureRedirectUrl: data.failureRedirectUrl || '/payment/failure',
+      environment: data.environment || 'sandbox'
+    }
+
+    if (existingSettingsResult && existingSettingsResult.length > 0) {
+      // Update existing settings
+      await prisma.$executeRawUnsafe(`
+        UPDATE payment_settings 
+        SET xenditApiKey = ?, xenditWebhookToken = ?, xenditPublicKey = ?,
+            isXenditEnabled = ?, supportedMethodsJson = ?, minimumAmount = ?,
+            maximumAmount = ?, adminFee = ?, adminFeeType = ?,
+            successRedirectUrl = ?, failureRedirectUrl = ?, environment = ?,
+            updatedAt = NOW()
+        WHERE id = ?
+      `,
+        settingsData.xenditApiKey, settingsData.xenditWebhookToken, settingsData.xenditPublicKey,
+        settingsData.isXenditEnabled, settingsData.supportedMethodsJson, settingsData.minimumAmount,
+        settingsData.maximumAmount, settingsData.adminFee, settingsData.adminFeeType,
+        settingsData.successRedirectUrl, settingsData.failureRedirectUrl, settingsData.environment,
+        existingSettingsResult[0].id
+      )
+    } else {
+      // Create new settings
+      await prisma.$executeRawUnsafe(`
+        INSERT INTO payment_settings (
+          id, xenditApiKey, xenditWebhookToken, xenditPublicKey,
+          isXenditEnabled, supportedMethodsJson, minimumAmount, maximumAmount,
+          adminFee, adminFeeType, successRedirectUrl, failureRedirectUrl, environment
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+      `,
+        'payment-' + Date.now(),
+        settingsData.xenditApiKey, settingsData.xenditWebhookToken, settingsData.xenditPublicKey,
+        settingsData.isXenditEnabled, settingsData.supportedMethodsJson, settingsData.minimumAmount,
+        settingsData.maximumAmount, settingsData.adminFee, settingsData.adminFeeType,
+        settingsData.successRedirectUrl, settingsData.failureRedirectUrl, settingsData.environment
+      )
+    }
+
+    return NextResponse.json({ 
+      success: true, 
+      data: {
+        ...data,
+        ...settingsData
+      }
+    })
+  } catch (error) {
+    console.error('Error updating payment settings:', error)
+    return NextResponse.json(
+      { success: false, error: 'Terjadi kesalahan server' },
+      { status: 500 }
+    )
+  }
+}

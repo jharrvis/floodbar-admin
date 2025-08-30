@@ -10,6 +10,7 @@ import {
   FileText, 
   Package,
   Truck,
+  CreditCard,
   LogOut 
 } from 'lucide-react'
 
@@ -38,6 +39,11 @@ const menuItems = [
     label: 'User Management',
     href: '/admin/users',
     icon: Users
+  },
+  {
+    label: 'Pengaturan Pembayaran',
+    href: '/admin/payment',
+    icon: CreditCard
   },
   {
     label: 'Settings',
