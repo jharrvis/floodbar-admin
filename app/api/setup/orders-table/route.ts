@@ -35,6 +35,9 @@ export async function POST() {
         grandTotal DECIMAL(15,2) NOT NULL,
         status ENUM('pending', 'paid', 'processing', 'shipped', 'delivered', 'cancelled') DEFAULT 'pending',
         paymentStatus ENUM('pending', 'paid', 'failed', 'refunded') DEFAULT 'pending',
+        xenditInvoiceId VARCHAR(255),
+        xenditInvoiceUrl TEXT,
+        paidAt TIMESTAMP NULL,
         notes TEXT,
         createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         updatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP

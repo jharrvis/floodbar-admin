@@ -92,6 +92,34 @@ export async function POST(request: NextRequest) {
       'pending'
     )
 
+    // Create Xendit payment invoice if payment method is xendit
+    let paymentUrl = null
+    if (orderData.payment.method === 'xendit' || orderData.payment.method === 'online') {
+      try {
+        const invoiceResponse = await fetch(`${process.env.NEXTAUTH_URL || 'http://localhost:3000'}/api/xendit/create-invoice`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            amount: orderData.orderSummary.grandTotal,
+            description: `FloodBar Order ${orderId}`,
+            orderId,
+            customerName: orderData.customer.name,
+            customerEmail: orderData.customer.email,
+            customerPhone: orderData.customer.phone
+          })
+        })
+
+        const invoiceResult = await invoiceResponse.json()
+        if (invoiceResult.success) {
+          paymentUrl = invoiceResult.invoiceUrl
+        } else {
+          console.error('Failed to create Xendit invoice:', invoiceResult.error)
+        }
+      } catch (invoiceError) {
+        console.error('Error creating Xendit invoice:', invoiceError)
+      }
+    }
+
     // Send email notification
     try {
       await fetch(`${process.env.NEXTAUTH_URL || 'http://localhost:3000'}/api/notifications/email`, {
@@ -125,6 +153,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({
       success: true,
       orderId,
+      paymentUrl,
       message: 'Order berhasil dibuat'
     })
 

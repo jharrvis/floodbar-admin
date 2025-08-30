@@ -17,6 +17,8 @@ interface ShippingCalculation {
   cost: number
   estimatedDays: string
   weight: number
+  insuranceCost?: number
+  pickupCost?: number
 }
 
 interface CustomerData {
@@ -49,7 +51,8 @@ export default function OrderPage() {
     province: '',
     postalCode: ''
   })
-  const [selectedPaymentMethod, setSelectedPaymentMethod] = useState('')
+  const [selectedPaymentMethod, setSelectedPaymentMethod] = useState('xendit')
+  const [processingPayment, setProcessingPayment] = useState(false)
   const [orderSummary, setOrderSummary] = useState<OrderSummary>({
     subtotal: 0,
     shippingCost: 0,
@@ -61,18 +64,21 @@ export default function OrderPage() {
   const [productForm, setProductForm] = useState({
     width: '',
     height: '',
-    thickness: '5',
-    quantity: 1,
-    finish: 'Standard'
+    quantity: 1
   })
   const [calculating, setCalculating] = useState(false)
 
   // Shipping form
   const [shippingForm, setShippingForm] = useState({
     destinationCity: '',
-    destinationProvince: '',
+    selectedCity: null as any,
     weight: 0
   })
+  const [citySearchResults, setCitySearchResults] = useState([])
+  const [searchingCities, setSearchingCities] = useState(false)
+  const [showCityDropdown, setShowCityDropdown] = useState(false)
+  const [insuranceSelected, setInsuranceSelected] = useState(false)
+  const [pickupSelected, setPickupSelected] = useState(false)
   const [shippingCalculating, setShippingCalculating] = useState(false)
 
   const [submitting, setSubmitting] = useState(false)
@@ -121,19 +127,71 @@ export default function OrderPage() {
   }
 
   // Calculate shipping cost
-  const calculateShipping = async () => {
-    if (!shippingForm.destinationCity || !shippingForm.weight) return
+  const searchCities = async (query: string) => {
+    if (query.length < 3) {
+      setCitySearchResults([])
+      setShowCityDropdown(false)
+      return
+    }
+
+    setSearchingCities(true)
+    try {
+      const response = await fetch(`/api/shipping-search?q=${encodeURIComponent(query)}`)
+      const result = await response.json()
+      
+      if (result.success) {
+        setCitySearchResults(result.cities)
+        setShowCityDropdown(true)
+      }
+    } catch (error) {
+      console.error('Error searching cities:', error)
+    } finally {
+      setSearchingCities(false)
+    }
+  }
+
+  const handleCityInputChange = (value: string) => {
+    setShippingForm({ ...shippingForm, destinationCity: value, selectedCity: null })
+    searchCities(value)
+  }
+
+  const selectCity = (city: any) => {
+    setShippingForm({ 
+      ...shippingForm, 
+      destinationCity: city.city, 
+      selectedCity: city 
+    })
+    setShowCityDropdown(false)
+    setCitySearchResults([])
+    calculateShipping(city)
+  }
+
+  const calculateShipping = async (selectedCity?: any) => {
+    const city = selectedCity || shippingForm.selectedCity
+    if (!city || !shippingForm.weight) return
 
     setShippingCalculating(true)
     try {
-      // Mock shipping calculation - replace with real API
-      const estimatedCost = shippingForm.weight * 15000 // Rp 15,000 per kg
-      const estimatedDays = '3-5 hari kerja'
+      // Calculate minimum weight (10kg minimum)
+      const actualWeight = Math.max(shippingForm.weight, 10)
+      
+      // Calculate shipping cost based on selected city price
+      const shippingCost = actualWeight * parseFloat(city.price_per_kg || '15000')
+      
+      // Insurance (optional - 1% of product value)
+      const insuranceCost = insuranceSelected ? Math.max(orderSummary.subtotal * 0.01, 5000) : 0
+      
+      // Pickup fee (optional - fixed rate)
+      const pickupCost = pickupSelected ? 25000 : 0
+      
+      const totalShippingCost = shippingCost + insuranceCost + pickupCost
 
       setShippingData({
-        cost: estimatedCost,
-        estimatedDays,
-        weight: shippingForm.weight
+        cost: totalShippingCost,
+        estimatedDays: '3-5 hari kerja',
+        weight: actualWeight,
+        insuranceCost,
+        pickupCost
       })
     } catch (error) {
       console.error('Error calculating shipping:', error)
@@ -166,9 +224,9 @@ export default function OrderPage() {
         productConfig: {
           width: firstItem?.width || 0,
           height: firstItem?.height || 0,
-          thickness: parseFloat(productForm.thickness) || 5,
+          thickness: 5,
           quantity: firstItem?.quantity || 1,
-          finish: productForm.finish || 'Standard'
+          finish: 'Standard'
         },
         shipping: {
           origin: 'Jakarta', // Default origin
@@ -192,7 +250,12 @@ export default function OrderPage() {
 
       const result = await response.json()
       if (result.success) {
-        setStep(5) // Go to confirmation
+        if (result.paymentUrl && selectedPaymentMethod === 'xendit') {
+          // Redirect to Xendit payment page
+          window.location.href = result.paymentUrl
+        } else {
+          setStep(5) // Go to confirmation for other payment methods
+        }
       } else {
         alert('Gagal membuat order: ' + result.error)
       }
@@ -323,38 +386,6 @@ export default function OrderPage() {
                     />
                   </div>
                 </div>
-                <div className="grid grid-cols-2 gap-4 mb-4">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Ketebalan (mm)
-                    </label>
-                    <select
-                      value={productForm.thickness}
-                      onChange={(e) => setProductForm({ ...productForm, thickness: e.target.value })}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md"
-                    >
-                      <option value="3">3mm</option>
-                      <option value="5">5mm</option>
-                      <option value="8">8mm</option>
-                      <option value="10">10mm</option>
-                    </select>
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Finishing
-                    </label>
-                    <select
-                      value={productForm.finish}
-                      onChange={(e) => setProductForm({ ...productForm, finish: e.target.value })}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md"
-                    >
-                      <option value="Standard">Standard</option>
-                      <option value="Glossy">Glossy</option>
-                      <option value="Matte">Matte</option>
-                      <option value="Anti-UV">Anti-UV</option>
-                    </select>
-                  </div>
-                </div>
                 <div className="mb-4">
                   <label className="block text-sm font-medium text-gray-700 mb-2">
                     Jumlah Unit
@@ -395,30 +426,77 @@ export default function OrderPage() {
                   <Truck size={24} />
                   Pengiriman
                 </h2>
-                <div className="grid grid-cols-2 gap-4 mb-4">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Kota Tujuan
-                    </label>
+                <div className="mb-4">
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Kota Tujuan
+                  </label>
+                  <div className="relative">
                     <input
                       type="text"
                       value={shippingForm.destinationCity}
-                      onChange={(e) => setShippingForm({ ...shippingForm, destinationCity: e.target.value })}
+                      onChange={(e) => handleCityInputChange(e.target.value)}
                       className="w-full px-3 py-2 border border-gray-300 rounded-md"
-                      placeholder="Contoh: Jakarta"
+                      placeholder="Ketik minimal 3 karakter untuk mencari kota..."
                     />
+                    {searchingCities && (
+                      <div className="absolute right-3 top-3">
+                        <div className="animate-spin w-4 h-4 border-2 border-blue-500 border-t-transparent rounded-full"></div>
+                      </div>
+                    )}
+                    {showCityDropdown && citySearchResults.length > 0 && (
+                      <div className="absolute z-50 w-full mt-1 bg-white border border-gray-300 rounded-md shadow-lg max-h-60 overflow-y-auto">
+                        {citySearchResults.map((city: any, index: number) => (
+                          <button
+                            key={index}
+                            onClick={() => selectCity(city)}
+                            className="w-full px-3 py-2 text-left hover:bg-gray-100 border-b border-gray-100 last:border-b-0"
+                          >
+                            <div className="font-medium">{city.city}</div>
+                            <div className="text-sm text-gray-500">
+                              Rp {parseInt(city.price_per_kg).toLocaleString()}/kg
+                            </div>
+                          </button>
+                        ))}
+                      </div>
+                    )}
                   </div>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Provinsi
-                    </label>
+                </div>
+
+                {/* Insurance and Pickup Options */}
+                <div className="grid grid-cols-2 gap-4 mb-4">
+                  <div className="flex items-center">
                     <input
-                      type="text"
-                      value={shippingForm.destinationProvince}
-                      onChange={(e) => setShippingForm({ ...shippingForm, destinationProvince: e.target.value })}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md"
-                      placeholder="Contoh: DKI Jakarta"
+                      type="checkbox"
+                      id="insurance"
+                      checked={insuranceSelected}
+                      onChange={(e) => {
+                        setInsuranceSelected(e.target.checked)
+                        if (shippingForm.selectedCity) {
+                          calculateShipping()
+                        }
+                      }}
+                      className="mr-2"
                     />
+                    <label htmlFor="insurance" className="text-sm text-gray-700">
+                      Asuransi Pengiriman (1% dari nilai barang, min Rp 5.000)
+                    </label>
+                  </div>
+                  <div className="flex items-center">
+                    <input
+                      type="checkbox"
+                      id="pickup"
+                      checked={pickupSelected}
+                      onChange={(e) => {
+                        setPickupSelected(e.target.checked)
+                        if (shippingForm.selectedCity) {
+                          calculateShipping()
+                        }
+                      }}
+                      className="mr-2"
+                    />
+                    <label htmlFor="pickup" className="text-sm text-gray-700">
+                      Layanan Pickup (Rp 25.000)
+                    </label>
                   </div>
                 </div>
                 <div className="mb-4">
@@ -433,13 +511,6 @@ export default function OrderPage() {
                   >
                     Kembali
                   </button>
-                  <button
-                    onClick={calculateShipping}
-                    disabled={shippingCalculating || !shippingForm.destinationCity}
-                    className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md disabled:opacity-50"
-                  >
-                    {shippingCalculating ? 'Menghitung...' : 'Hitung Ongkir'}
-                  </button>
                   {shippingData && (
                     <button
                       onClick={() => setStep(3)}
@@ -448,11 +519,24 @@ export default function OrderPage() {
                       Lanjut ke Data Diri
                     </button>
                   )}
+                  {!shippingForm.selectedCity && (
+                    <div className="text-sm text-gray-500 flex items-center">
+                      Silakan pilih kota tujuan dari hasil pencarian
+                    </div>
+                  )}
                 </div>
                 {shippingData && (
                   <div className="mt-4 p-4 bg-green-50 rounded-md">
-                    <p className="font-medium">Ongkos Kirim: Rp {shippingData.cost.toLocaleString()}</p>
+                    <p className="font-medium">Ongkos Kirim: Rp {(shippingData.cost - (shippingData.insuranceCost || 0) - (shippingData.pickupCost || 0)).toLocaleString()}</p>
+                    {shippingData.insuranceCost && shippingData.insuranceCost > 0 && (
+                      <p className="text-sm text-gray-600">Asuransi: Rp {shippingData.insuranceCost.toLocaleString()}</p>
+                    )}
+                    {shippingData.pickupCost && shippingData.pickupCost > 0 && (
+                      <p className="text-sm text-gray-600">Pickup: Rp {shippingData.pickupCost.toLocaleString()}</p>
+                    )}
+                    <p className="text-sm text-gray-600">Total: Rp {shippingData.cost.toLocaleString()}</p>
                     <p className="text-sm text-gray-600">Estimasi: {shippingData.estimatedDays}</p>
+                    <p className="text-sm text-gray-600">Berat: {shippingData.weight} kg (minimum 10kg)</p>
                   </div>
                 )}
               </div>
@@ -578,10 +662,9 @@ export default function OrderPage() {
                 </h2>
                 <div className="space-y-3 mb-6">
                   {[
-                    { id: 'bank_transfer', name: 'Transfer Bank', desc: 'Transfer ke rekening bank' },
-                    { id: 'virtual_account', name: 'Virtual Account', desc: 'BCA, Mandiri, BRI, BNI' },
-                    { id: 'ewallet', name: 'E-Wallet', desc: 'OVO, GoPay, Dana, ShopeePay' },
-                    { id: 'qris', name: 'QRIS', desc: 'Scan QR untuk pembayaran' }
+                    { id: 'xendit', name: 'Pembayaran Online', desc: 'Kartu Kredit, Virtual Account, E-Wallet, QRIS via Xendit' },
+                    { id: 'bank_transfer', name: 'Transfer Bank Manual', desc: 'Transfer ke rekening bank (konfirmasi manual)' },
+                    { id: 'cod', name: 'Bayar di Tempat (COD)', desc: 'Pembayaran saat barang diterima' }
                   ].map((method) => (
                     <label key={method.id} className="flex items-start space-x-3 cursor-pointer p-3 border rounded-lg hover:bg-gray-50">
                       <input
@@ -611,7 +694,7 @@ export default function OrderPage() {
                     disabled={!selectedPaymentMethod || submitting}
                     className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-md disabled:opacity-50"
                   >
-                    {submitting ? 'Memproses...' : 'Buat Pesanan'}
+                    {submitting ? 'Memproses...' : (selectedPaymentMethod === 'xendit' ? 'Lanjut ke Pembayaran' : 'Buat Pesanan')}
                   </button>
                 </div>
               </div>
