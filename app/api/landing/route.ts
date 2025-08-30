@@ -1,9 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { PrismaClient } from '@prisma/client'
 
-const prisma = new PrismaClient({
-  datasourceUrl: "mysql://generator_floodbar:3%28%3B8I%29ZA9bYy%25NP%3F@167.172.88.142:3306/generator_floodbar"
-})
+export const runtime = 'nodejs'
+export const dynamic = 'force-dynamic'
+
+const prisma = new PrismaClient()
 
 interface LandingPageData {
   hero: {
@@ -32,9 +33,11 @@ interface LandingPageData {
 
 export async function GET() {
   try {
-    const landingPage = await prisma.landingPage.findFirst({
-      orderBy: { createdAt: 'desc' }
-    })
+    const landingPageResult = await prisma.$queryRawUnsafe(`
+      SELECT * FROM landing_pages ORDER BY createdAt DESC LIMIT 1
+    `) as any[]
+
+    const landingPage = landingPageResult.length > 0 ? landingPageResult[0] : null
 
     if (!landingPage) {
       // Return default data if no landing page found
@@ -102,8 +105,8 @@ export async function GET() {
         subtitle: landingPage.heroSubtitle,
         backgroundImage: landingPage.heroBackgroundImage || '/hero-bg.jpg'
       },
-      features: JSON.parse(landingPage.featuresJson),
-      products: JSON.parse(landingPage.productsJson),
+      features: JSON.parse(landingPage.featuresJson || '[]'),
+      products: JSON.parse(landingPage.productsJson || '[]'),
       contact: {
         phone: landingPage.contactPhone,
         email: landingPage.contactEmail,
@@ -126,7 +129,9 @@ export async function PUT(request: NextRequest) {
     const data: LandingPageData = await request.json()
 
     // Check if landing page exists
-    const existingLandingPage = await prisma.landingPage.findFirst()
+    const existingLandingPageResult = await prisma.$queryRawUnsafe(`
+      SELECT id FROM landing_pages LIMIT 1
+    `) as any[]
 
     const landingPageData = {
       heroTitle: data.hero.title,
@@ -139,35 +144,48 @@ export async function PUT(request: NextRequest) {
       contactAddress: data.contact.address
     }
 
-    let updatedLandingPage
-
-    if (existingLandingPage) {
+    if (existingLandingPageResult && existingLandingPageResult.length > 0) {
       // Update existing landing page
-      updatedLandingPage = await prisma.landingPage.update({
-        where: { id: existingLandingPage.id },
-        data: landingPageData
-      })
+      await prisma.$executeRawUnsafe(`
+        UPDATE landing_pages 
+        SET heroTitle = ?, heroSubtitle = ?, heroBackgroundImage = ?,
+            featuresJson = ?, productsJson = ?, contactPhone = ?,
+            contactEmail = ?, contactAddress = ?, updatedAt = NOW()
+        WHERE id = ?
+      `,
+        landingPageData.heroTitle, landingPageData.heroSubtitle, landingPageData.heroBackgroundImage,
+        landingPageData.featuresJson, landingPageData.productsJson, landingPageData.contactPhone,
+        landingPageData.contactEmail, landingPageData.contactAddress, existingLandingPageResult[0].id
+      )
     } else {
       // Create new landing page
-      updatedLandingPage = await prisma.landingPage.create({
-        data: landingPageData
-      })
+      await prisma.$executeRawUnsafe(`
+        INSERT INTO landing_pages (
+          id, heroTitle, heroSubtitle, heroBackgroundImage,
+          featuresJson, productsJson, contactPhone, contactEmail, contactAddress
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+      `,
+        'landing-' + Date.now(),
+        landingPageData.heroTitle, landingPageData.heroSubtitle, landingPageData.heroBackgroundImage,
+        landingPageData.featuresJson, landingPageData.productsJson, landingPageData.contactPhone,
+        landingPageData.contactEmail, landingPageData.contactAddress
+      )
     }
 
     return NextResponse.json({ 
       success: true, 
       data: {
         hero: {
-          title: updatedLandingPage.heroTitle,
-          subtitle: updatedLandingPage.heroSubtitle,
-          backgroundImage: updatedLandingPage.heroBackgroundImage
+          title: landingPageData.heroTitle,
+          subtitle: landingPageData.heroSubtitle,
+          backgroundImage: landingPageData.heroBackgroundImage
         },
-        features: JSON.parse(updatedLandingPage.featuresJson),
-        products: JSON.parse(updatedLandingPage.productsJson),
+        features: JSON.parse(landingPageData.featuresJson),
+        products: JSON.parse(landingPageData.productsJson),
         contact: {
-          phone: updatedLandingPage.contactPhone,
-          email: updatedLandingPage.contactEmail,
-          address: updatedLandingPage.contactAddress
+          phone: landingPageData.contactPhone,
+          email: landingPageData.contactEmail,
+          address: landingPageData.contactAddress
         }
       }
     })
