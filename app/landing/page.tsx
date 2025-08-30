@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { Phone, Mail, MapPin, Star, Shield, Wrench, Droplets, CheckCircle } from 'lucide-react'
+import Link from 'next/link'
 
 interface LandingPageData {
   hero: {
@@ -79,9 +80,11 @@ export default function LandingPage() {
             {data.hero.subtitle}
           </p>
           <div className="space-x-4">
-            <button className="bg-white text-primary-600 px-8 py-3 rounded-lg font-semibold hover:bg-gray-100 transition-colors">
-              Hubungi Sekarang
-            </button>
+            <Link href="/order">
+              <button className="bg-white text-primary-600 px-8 py-3 rounded-lg font-semibold hover:bg-gray-100 transition-colors">
+                Pesan Sekarang
+              </button>
+            </Link>
             <button className="border-2 border-white text-white px-8 py-3 rounded-lg font-semibold hover:bg-white hover:text-primary-600 transition-colors">
               Lihat Produk
             </button>
@@ -151,9 +154,11 @@ export default function LandingPage() {
                     ))}
                   </ul>
                   
-                  <button className="w-full bg-primary-600 text-white py-3 rounded-lg font-semibold hover:bg-primary-700 transition-colors">
-                    Pesan Sekarang
-                  </button>
+                  <Link href="/order">
+                    <button className="w-full bg-primary-600 text-white py-3 rounded-lg font-semibold hover:bg-primary-700 transition-colors">
+                      Pesan Sekarang
+                    </button>
+                  </Link>
                 </div>
               </div>
             ))}
@@ -233,9 +238,11 @@ export default function LandingPage() {
           </div>
           
           <div className="text-center mt-12">
-            <button className="bg-white text-primary-600 px-8 py-3 rounded-lg font-semibold hover:bg-gray-100 transition-colors">
-              Hubungi Sekarang
-            </button>
+            <Link href="/order">
+              <button className="bg-white text-primary-600 px-8 py-3 rounded-lg font-semibold hover:bg-gray-100 transition-colors">
+                Pesan Sekarang
+              </button>
+            </Link>
           </div>
         </div>
       </section>
