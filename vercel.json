@@ -4,10 +4,5 @@
       "maxDuration": 30
     }
   },
-  "regions": ["sin1"],
-  "env": {
-    "DATABASE_URL": "@database_url",
-    "NEXTAUTH_SECRET": "@nextauth_secret", 
-    "NEXTAUTH_URL": "@nextauth_url"
-  }
+  "regions": ["sin1"]
 }
