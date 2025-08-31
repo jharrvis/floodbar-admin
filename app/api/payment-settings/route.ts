@@ -19,11 +19,11 @@ async function ensureGmailColumns() {
       await prisma.$executeRawUnsafe(query)
     } catch (error) {
       // Ignore duplicate column errors
-      if (!error.message.includes('Duplicate column name') && 
-          !error.message.includes('already exists') &&
-          !error.message.includes('column "') && 
-          !error.message.includes('already exists')) {
-        console.log('Column addition error:', error.message)
+      const errorMessage = error instanceof Error ? error.message : String(error)
+      if (!errorMessage.includes('Duplicate column name') && 
+          !errorMessage.includes('already exists') &&
+          !errorMessage.includes('column "')) {
+        console.log('Column addition error:', errorMessage)
       }
     }
   }
