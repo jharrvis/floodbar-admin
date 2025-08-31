@@ -6,7 +6,7 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
+  provider = "mysql"
   url      = env("DATABASE_URL")
 }
 
@@ -116,23 +116,23 @@ model ShippingRate {
 
 model PaymentSettings {
   id                    String   @id
-  xenditApiKey         String   @default("")
-  xenditWebhookToken   String   @default("")
-  xenditPublicKey      String   @default("")
+  xenditApiKey         String   @default("") @db.VarChar(255)
+  xenditWebhookToken   String   @default("") @db.VarChar(255)
+  xenditPublicKey      String   @default("") @db.VarChar(255)
   isXenditEnabled      Boolean  @default(true)
-  supportedMethodsJson String   @default("[\"credit_card\",\"bank_transfer\",\"ewallet\",\"qris\"]")
-  minimumAmount        Decimal  @default(10000)
-  maximumAmount        Decimal  @default(50000000)
-  adminFee             Decimal  @default(5000)
+  supportedMethodsJson String   @default("[\"credit_card\",\"bank_transfer\",\"ewallet\",\"qris\"]") @db.Text
+  minimumAmount        Decimal  @default(10000) @db.Decimal(10,2)
+  maximumAmount        Decimal  @default(50000000) @db.Decimal(12,2)
+  adminFee             Decimal  @default(5000) @db.Decimal(10,2)
   adminFeeType         String   @default("fixed") // 'fixed' or 'percentage'
-  successRedirectUrl   String   @default("/payment/success")
-  failureRedirectUrl   String   @default("/payment/failure")
+  successRedirectUrl   String   @default("/payment/success") @db.VarChar(255)
+  failureRedirectUrl   String   @default("/payment/failure") @db.VarChar(255)
   environment          String   @default("sandbox") // 'sandbox' or 'production'
-  // Gmail SMTP Settings
-  gmailUser           String   @default("")
-  gmailAppPassword    String   @default("")
-  isEmailEnabled      Boolean  @default(false)
-  emailFrom           String   @default("FloodBar")
+  // Gmail SMTP Settings - NOTE: These columns may not exist in production
+  gmailUser           String?   @db.VarChar(255)
+  gmailAppPassword    String?   @db.VarChar(255)
+  isEmailEnabled      Boolean?  @default(false)
+  emailFrom           String?   @default("FloodBar") @db.VarChar(255)
   
   createdAt           DateTime @default(now())
   updatedAt           DateTime @updatedAt
@@ -142,31 +142,31 @@ model PaymentSettings {
 
 model Order {
   id                   String   @id
-  customerName         String
-  customerEmail        String
-  customerPhone        String
-  customerAddress      String
-  customerCity         String
-  customerPostalCode   String
-  productWidth         Decimal
-  productHeight        Decimal
-  productThickness     Decimal?
+  customerName         String   @db.VarChar(255)
+  customerEmail        String   @db.VarChar(255)
+  customerPhone        String   @db.VarChar(255)
+  customerAddress      String   @db.Text
+  customerCity         String   @db.VarChar(255)
+  customerPostalCode   String   @db.VarChar(10)
+  productWidth         Decimal  @db.Decimal(8,2)
+  productHeight        Decimal  @db.Decimal(8,2)
+  productThickness     Decimal? @db.Decimal(8,2)
   productQuantity      Int
-  productFinish        String?
-  shippingOrigin       String
-  shippingDestination  String
-  shippingWeight       Decimal
-  shippingService      String
-  shippingCost         Decimal
-  paymentMethod        String
-  paymentProvider      String?
-  subtotal             Decimal
-  adminFee             Decimal
-  grandTotal           Decimal
-  status               String   @default("pending")
-  xenditInvoiceId      String?
-  xenditInvoiceUrl     String?
-  paymentStatus        String?
+  productFinish        String?  @db.VarChar(255)
+  shippingOrigin       String   @db.VarChar(255)
+  shippingDestination  String   @db.VarChar(255)
+  shippingWeight       Decimal  @db.Decimal(8,2)
+  shippingService      String   @db.VarChar(255)
+  shippingCost         Decimal  @db.Decimal(10,2)
+  paymentMethod        String   @db.VarChar(255)
+  paymentProvider      String?  @db.VarChar(255)
+  subtotal             Decimal  @db.Decimal(12,2)
+  adminFee             Decimal  @db.Decimal(10,2)
+  grandTotal           Decimal  @db.Decimal(12,2)
+  status               String   @default("pending") @db.VarChar(50)
+  xenditInvoiceId      String?  @db.VarChar(255)
+  xenditInvoiceUrl     String?  @db.VarChar(500)
+  paymentStatus        String?  @db.VarChar(50)
   
   createdAt            DateTime @default(now())
   updatedAt            DateTime @updatedAt
