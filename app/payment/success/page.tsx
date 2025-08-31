@@ -4,11 +4,32 @@ import { useState, useEffect } from 'react'
 import { CheckCircle, Package, Mail, MessageCircle, ArrowLeft } from 'lucide-react'
 import Link from 'next/link'
 
+interface PageContent {
+  title: string
+  subtitle: string
+  content_sections: {
+    steps: Array<{
+      icon: string
+      title: string
+      description: string
+    }>
+    estimasi_produksi: string
+  }
+  contact_info: {
+    customer_service_email: string
+    whatsapp: string
+  }
+}
+
 export default function PaymentSuccessPage() {
   const [orderData, setOrderData] = useState<any>(null)
+  const [pageContent, setPageContent] = useState<PageContent | null>(null)
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
+    // Load page content and order data
+    loadPageContent()
+    
     // Get order ID from URL parameters
     const urlParams = new URLSearchParams(window.location.search)
     const externalId = urlParams.get('external_id')
@@ -20,6 +41,48 @@ export default function PaymentSuccessPage() {
       setLoading(false)
     }
   }, [])
+
+  const loadPageContent = async () => {
+    try {
+      const response = await fetch('/api/page-content?type=payment_success')
+      const result = await response.json()
+      
+      if (result.success) {
+        setPageContent(result.content)
+      }
+    } catch (error) {
+      console.error('Error loading page content:', error)
+      // Use default content if API fails
+      setPageContent({
+        title: 'Pembayaran Berhasil!',
+        subtitle: 'Terima kasih! Pembayaran Anda telah berhasil diproses dan pesanan sedang dipersiapkan.',
+        content_sections: {
+          steps: [
+            {
+              icon: 'mail',
+              title: 'Konfirmasi Email',
+              description: 'Invoice dan detail pesanan telah dikirim ke email Anda.'
+            },
+            {
+              icon: 'message',
+              title: 'Notifikasi WhatsApp', 
+              description: 'Tim kami akan menghubungi Anda via WhatsApp untuk konfirmasi produksi.'
+            },
+            {
+              icon: 'package',
+              title: 'Proses Produksi',
+              description: 'Pesanan Anda akan segera diproses dan dikirim sesuai estimasi yang diberikan.'
+            }
+          ],
+          estimasi_produksi: '5-7 hari kerja'
+        },
+        contact_info: {
+          customer_service_email: 'customer@floodbar.com',
+          whatsapp: '+62-xxx-xxxx-xxxx'
+        }
+      })
+    }
+  }
 
   const fetchOrderData = async (orderId: string) => {
     try {
@@ -65,11 +128,11 @@ export default function PaymentSuccessPage() {
           </div>
           
           <h1 className="text-3xl font-bold text-green-600 mb-2">
-            Pembayaran Berhasil!
+            {pageContent?.title || 'Pembayaran Berhasil!'}
           </h1>
           
           <p className="text-gray-600 mb-6">
-            Terima kasih! Pembayaran Anda telah berhasil diproses dan pesanan sedang dipersiapkan.
+            {pageContent?.subtitle || 'Terima kasih! Pembayaran Anda telah berhasil diproses dan pesanan sedang dipersiapkan.'}
           </p>
 
           {orderData && (
@@ -155,29 +218,24 @@ export default function PaymentSuccessPage() {
           <h2 className="text-xl font-semibold mb-4">Langkah Selanjutnya</h2>
           
           <div className="space-y-4">
-            <div className="flex items-start gap-3">
-              <Mail size={20} className="text-blue-600 mt-1" />
-              <div>
-                <h3 className="font-medium">Konfirmasi Email</h3>
-                <p className="text-sm text-gray-600">Invoice dan detail pesanan telah dikirim ke email Anda.</p>
-              </div>
-            </div>
-
-            <div className="flex items-start gap-3">
-              <MessageCircle size={20} className="text-green-600 mt-1" />
-              <div>
-                <h3 className="font-medium">Notifikasi WhatsApp</h3>
-                <p className="text-sm text-gray-600">Tim kami akan menghubungi Anda via WhatsApp untuk konfirmasi produksi.</p>
-              </div>
-            </div>
-
-            <div className="flex items-start gap-3">
-              <Package size={20} className="text-purple-600 mt-1" />
-              <div>
-                <h3 className="font-medium">Proses Produksi</h3>
-                <p className="text-sm text-gray-600">Pesanan Anda akan segera diproses dan dikirim sesuai estimasi yang diberikan.</p>
-              </div>
-            </div>
+            {pageContent?.content_sections?.steps?.map((step, index) => {
+              const IconComponent = step.icon === 'mail' ? Mail : 
+                                   step.icon === 'message' ? MessageCircle : 
+                                   step.icon === 'package' ? Package : Mail
+              const iconColor = step.icon === 'mail' ? 'text-blue-600' : 
+                               step.icon === 'message' ? 'text-green-600' : 
+                               step.icon === 'package' ? 'text-purple-600' : 'text-blue-600'
+              
+              return (
+                <div key={index} className="flex items-start gap-3">
+                  <IconComponent size={20} className={`${iconColor} mt-1`} />
+                  <div>
+                    <h3 className="font-medium">{step.title}</h3>
+                    <p className="text-sm text-gray-600">{step.description}</p>
+                  </div>
+                </div>
+              )
+            })}
           </div>
         </div>
 
@@ -202,7 +260,10 @@ export default function PaymentSuccessPage() {
         {/* Contact Info */}
         <div className="mt-8 text-center text-sm text-gray-500">
           <p>Ada pertanyaan? Hubungi customer service kami</p>
-          <p className="font-medium mt-1">customer@floodbar.com</p>
+          <p className="font-medium mt-1">{pageContent?.contact_info?.customer_service_email || 'customer@floodbar.com'}</p>
+          {pageContent?.contact_info?.whatsapp && (
+            <p className="font-medium mt-1">WhatsApp: {pageContent.contact_info.whatsapp}</p>
+          )}
         </div>
       </div>
     </div>
