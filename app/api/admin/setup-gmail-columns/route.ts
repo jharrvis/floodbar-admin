@@ -17,7 +17,7 @@ export async function POST() {
       return NextResponse.json({
         success: false,
         error: 'Could not access payment_settings table',
-        details: error.message
+        details: error instanceof Error ? error.message : String(error)
       }, { status: 500 })
     }
     
