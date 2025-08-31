@@ -62,10 +62,7 @@ export default function PaymentSettingsPage() {
       const data = await response.json()
       
       if (response.ok) {
-        setSettings({
-          ...settings,
-          ...data
-        })
+        setSettings(data)
       }
     } catch (error) {
       console.error('Error loading payment settings:', error)

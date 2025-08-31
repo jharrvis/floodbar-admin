@@ -31,13 +31,26 @@ interface PaymentSettings {
 
 export async function GET() {
   try {
-    // Get basic settings first, then try to add Gmail fields if they exist
-    const settingsResult = await prisma.$queryRawUnsafe(`
-      SELECT id, xenditApiKey, xenditWebhookToken, xenditPublicKey, isXenditEnabled, 
-             supportedMethodsJson, minimumAmount, maximumAmount, adminFee, adminFeeType,
-             successRedirectUrl, failureRedirectUrl, environment, createdAt, updatedAt
-      FROM payment_settings ORDER BY createdAt DESC LIMIT 1
-    `) as any[]
+    // Try to get all settings including Gmail fields, fallback to basic if Gmail columns don't exist
+    let settingsResult
+    try {
+      settingsResult = await prisma.$queryRawUnsafe(`
+        SELECT id, xenditApiKey, xenditWebhookToken, xenditPublicKey, isXenditEnabled, 
+               supportedMethodsJson, minimumAmount, maximumAmount, adminFee, adminFeeType,
+               successRedirectUrl, failureRedirectUrl, environment, createdAt, updatedAt,
+               gmailUser, gmailAppPassword, isEmailEnabled, emailFrom
+        FROM payment_settings ORDER BY createdAt DESC LIMIT 1
+      `) as any[]
+    } catch (error) {
+      // Fallback to basic fields if Gmail columns don't exist
+      console.log('Gmail columns not available, using basic query:', error instanceof Error ? error.message : error)
+      settingsResult = await prisma.$queryRawUnsafe(`
+        SELECT id, xenditApiKey, xenditWebhookToken, xenditPublicKey, isXenditEnabled, 
+               supportedMethodsJson, minimumAmount, maximumAmount, adminFee, adminFeeType,
+               successRedirectUrl, failureRedirectUrl, environment, createdAt, updatedAt
+        FROM payment_settings ORDER BY createdAt DESC LIMIT 1
+      `) as any[]
+    }
 
     const settings = settingsResult.length > 0 ? settingsResult[0] : null
 
