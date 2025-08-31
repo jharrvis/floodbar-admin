@@ -160,9 +160,18 @@ export async function POST(request: NextRequest) {
 
           if (xenditResponse.ok && xenditResult.invoice_url) {
             paymentUrl = xenditResult.invoice_url
-            console.log('Payment URL from Xendit:', paymentUrl)
+            console.log('✅ Payment URL from Xendit:', paymentUrl)
           } else {
-            console.error('Failed to create Xendit invoice:', xenditResult)
+            console.error('❌ Failed to create Xendit invoice:', {
+              status: xenditResponse.status,
+              response: xenditResult
+            })
+            
+            // Check if it's an IP allowlist error
+            if (xenditResult.error_code === 'UNAUTHORIZED_SENDER_IP') {
+              console.error('🚨 IP ALLOWLIST ERROR: Server IP needs to be added to Xendit dashboard')
+              console.error('📖 Instructions: Visit https://dashboard.xendit.co/settings/developers#ip-allowlist')
+            }
           }
         } else {
           console.log('Xendit not enabled or API key not configured')
@@ -214,7 +223,8 @@ export async function POST(request: NextRequest) {
       success: true,
       orderId,
       paymentUrl,
-      message: 'Order berhasil dibuat'
+      message: 'Order berhasil dibuat',
+      paymentStatus: paymentUrl ? 'payment_url_created' : 'payment_url_failed'
     })
 
   } catch (error) {

@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { Save, CreditCard, Settings, Eye, EyeOff } from 'lucide-react'
+import { Save, CreditCard, Settings, Eye, EyeOff, Send } from 'lucide-react'
 
 interface PaymentSettings {
   id: string | null
@@ -51,6 +51,7 @@ export default function PaymentSettingsPage() {
   const [showApiKey, setShowApiKey] = useState(false)
   const [showWebhookToken, setShowWebhookToken] = useState(false)
   const [showGmailPassword, setShowGmailPassword] = useState(false)
+  const [testingEmail, setTestingEmail] = useState(false)
 
   useEffect(() => {
     loadSettings()
@@ -94,6 +95,67 @@ export default function PaymentSettingsPage() {
       alert('Terjadi kesalahan saat menyimpan pengaturan')
     } finally {
       setSaving(false)
+    }
+  }
+
+  const sendTestEmail = async () => {
+    setTestingEmail(true)
+    try {
+      const response = await fetch('/api/notifications/email', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          to: settings.gmailUser,
+          orderId: 'TEST-' + Date.now(),
+          orderData: {
+            customer: {
+              name: 'Test Customer',
+              email: settings.gmailUser,
+              phone: '+6281234567890',
+              address: 'Test Address 123',
+              city: 'Jakarta',
+              postalCode: '12345'
+            },
+            productConfig: {
+              width: 100,
+              height: 200,
+              thickness: 5,
+              quantity: 1,
+              finish: 'Matt'
+            },
+            shipping: {
+              origin: 'Jakarta',
+              destination: 'Bandung',
+              service: 'REG',
+              weight: 2.5,
+              cost: 15000
+            },
+            payment: {
+              method: 'xendit',
+              provider: 'Test Gateway'
+            },
+            orderSummary: {
+              subtotal: 500000,
+              shippingCost: 15000,
+              adminFee: 5000,
+              grandTotal: 520000
+            }
+          }
+        })
+      })
+
+      const result = await response.json()
+      
+      if (result.success) {
+        alert('Test email berhasil dikirim! Silakan periksa inbox email Anda.')
+      } else {
+        alert('Gagal mengirim test email: ' + (result.error || 'Unknown error'))
+      }
+    } catch (error) {
+      console.error('Error sending test email:', error)
+      alert('Terjadi kesalahan saat mengirim test email')
+    } finally {
+      setTestingEmail(false)
     }
   }
 
@@ -316,6 +378,23 @@ export default function PaymentSettingsPage() {
                 Cara mendapatkan App Password: Google Account {'>'}  Security {'>'}  2-Step Verification {'>'}  App passwords
               </p>
             </div>
+
+            {/* Test Email Button */}
+            {settings.isEmailEnabled && settings.gmailUser && settings.gmailAppPassword && (
+              <div className="border-t pt-4">
+                <button
+                  onClick={sendTestEmail}
+                  disabled={testingEmail}
+                  className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-md flex items-center gap-2 disabled:opacity-50"
+                >
+                  <Send size={16} />
+                  {testingEmail ? 'Mengirim Test Email...' : 'Kirim Test Email'}
+                </button>
+                <p className="text-xs text-gray-500 mt-2">
+                  Test email akan dikirim ke alamat Gmail yang dikonfigurasi untuk memastikan SMTP berfungsi dengan baik.
+                </p>
+              </div>
+            )}
           </div>
         </div>
 

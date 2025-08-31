@@ -254,6 +254,10 @@ export default function OrderPage() {
         if (result.paymentUrl && selectedPaymentMethod === 'xendit') {
           // Redirect to Xendit payment page
           window.location.href = result.paymentUrl
+        } else if (selectedPaymentMethod === 'xendit' && !result.paymentUrl) {
+          // Order created but payment URL failed (likely Xendit IP allowlist issue)
+          alert('Order berhasil dibuat tetapi link pembayaran tidak dapat dibuat. Silakan hubungi customer service untuk melanjutkan pembayaran.')
+          setStep(5) // Go to confirmation
         } else {
           setStep(5) // Go to confirmation for other payment methods
         }
