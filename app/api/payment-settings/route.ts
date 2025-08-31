@@ -7,6 +7,11 @@ export const dynamic = 'force-dynamic'
 const prisma = new PrismaClient()
 
 async function ensureGmailColumns() {
+  // Only try to add columns in development or if explicitly needed
+  if (process.env.NODE_ENV === 'production') {
+    return // Skip column creation in production
+  }
+  
   const alterQueries = [
     `ALTER TABLE payment_settings ADD COLUMN gmailUser VARCHAR(255) DEFAULT ''`,
     `ALTER TABLE payment_settings ADD COLUMN gmailAppPassword VARCHAR(255) DEFAULT ''`, 
@@ -18,13 +23,7 @@ async function ensureGmailColumns() {
     try {
       await prisma.$executeRawUnsafe(query)
     } catch (error) {
-      // Ignore duplicate column errors
-      const errorMessage = error instanceof Error ? error.message : String(error)
-      if (!errorMessage.includes('Duplicate column name') && 
-          !errorMessage.includes('already exists') &&
-          !errorMessage.includes('column "')) {
-        console.log('Column addition error:', errorMessage)
-      }
+      // Ignore all errors in column creation - this is just a helper function
     }
   }
 }
@@ -52,12 +51,24 @@ interface PaymentSettings {
 
 export async function GET() {
   try {
-    // Ensure Gmail columns exist first
+    // Try to ensure Gmail columns exist (only in development)
     await ensureGmailColumns()
     
-    const settingsResult = await prisma.$queryRawUnsafe(`
-      SELECT * FROM payment_settings ORDER BY createdAt DESC LIMIT 1
-    `) as any[]
+    // Try to get all settings first, fall back to basic settings if Gmail columns don't exist
+    let settingsResult
+    try {
+      settingsResult = await prisma.$queryRawUnsafe(`
+        SELECT * FROM payment_settings ORDER BY createdAt DESC LIMIT 1
+      `) as any[]
+    } catch (error) {
+      // Fall back to basic fields only if Gmail columns don't exist
+      settingsResult = await prisma.$queryRawUnsafe(`
+        SELECT id, xenditApiKey, xenditWebhookToken, xenditPublicKey, isXenditEnabled, 
+               supportedMethodsJson, minimumAmount, maximumAmount, adminFee, adminFeeType,
+               successRedirectUrl, failureRedirectUrl, environment, createdAt, updatedAt
+        FROM payment_settings ORDER BY createdAt DESC LIMIT 1
+      `) as any[]
+    }
 
     const settings = settingsResult.length > 0 ? settingsResult[0] : null
 
@@ -119,7 +130,7 @@ export async function GET() {
 
 export async function PUT(request: NextRequest) {
   try {
-    // Ensure Gmail columns exist first
+    // Try to ensure Gmail columns exist (only in development)
     await ensureGmailColumns()
     
     const data: PaymentSettings = await request.json()
