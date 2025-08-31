@@ -480,11 +480,15 @@ export default function PaymentSettingsPage() {
 
         {/* Redirect URLs */}
         <div className="bg-white p-6 rounded-lg shadow">
-          <h2 className="text-lg font-semibold mb-4">URL Redirect</h2>
-          <div className="space-y-4">
+          <h2 className="text-lg font-semibold mb-4">URL Redirect Pembayaran</h2>
+          <p className="text-sm text-gray-600 mb-6">
+            Konfigurasi halaman tujuan setelah customer menyelesaikan pembayaran di Xendit.
+          </p>
+          
+          <div className="space-y-6">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                Success URL (Setelah pembayaran berhasil)
+                Success URL (Halaman pembayaran berhasil)
               </label>
               <input
                 type="text"
@@ -493,10 +497,17 @@ export default function PaymentSettingsPage() {
                 placeholder="/payment/success"
                 className="w-full px-3 py-2 border border-gray-300 rounded-md"
               />
+              <p className="text-xs text-gray-500 mt-1">
+                Customer akan diarahkan ke halaman ini setelah pembayaran berhasil.
+              </p>
+              <div className="mt-2 p-2 bg-green-50 border border-green-200 rounded text-xs text-green-700">
+                <strong>Preview URL:</strong> {process.env.NODE_ENV === 'production' ? 'https://floodbar.vercel.app' : 'http://localhost:3000'}{settings.successRedirectUrl}
+              </div>
             </div>
+            
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                Failure URL (Setelah pembayaran gagal)
+                Failure URL (Halaman pembayaran gagal)
               </label>
               <input
                 type="text"
@@ -505,6 +516,22 @@ export default function PaymentSettingsPage() {
                 placeholder="/payment/failure"
                 className="w-full px-3 py-2 border border-gray-300 rounded-md"
               />
+              <p className="text-xs text-gray-500 mt-1">
+                Customer akan diarahkan ke halaman ini jika pembayaran gagal atau dibatalkan.
+              </p>
+              <div className="mt-2 p-2 bg-red-50 border border-red-200 rounded text-xs text-red-700">
+                <strong>Preview URL:</strong> {process.env.NODE_ENV === 'production' ? 'https://floodbar.vercel.app' : 'http://localhost:3000'}{settings.failureRedirectUrl}
+              </div>
+            </div>
+
+            <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+              <h3 className="font-medium text-blue-800 mb-2">📝 Catatan Penting:</h3>
+              <ul className="text-sm text-blue-700 space-y-1">
+                <li>• Halaman success dan failure sudah tersedia di sistem</li>
+                <li>• URL akan otomatis menampilkan detail pesanan berdasarkan parameter</li>
+                <li>• Pastikan URL dimulai dengan "/" (forward slash)</li>
+                <li>• Jangan mengubah URL kecuali Anda membuat halaman custom</li>
+              </ul>
             </div>
           </div>
         </div>

@@ -30,7 +30,8 @@
       "WebFetch(domain:floodbar-hxhkjuqik-jharrvis-projects.vercel.app)",
       "WebFetch(domain:floodbar.vercel.app)",
       "WebFetch(domain:floodbar-frvs72f9z-jharrvis-projects.vercel.app)",
-      "WebFetch(domain:vercel.com)"
+      "WebFetch(domain:vercel.com)",
+      "Bash(git reset:*)"
     ],
     "deny": [],
     "ask": []

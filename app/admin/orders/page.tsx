@@ -17,7 +17,8 @@ import {
   User,
   MapPin,
   Phone,
-  Mail
+  Mail,
+  RefreshCw
 } from 'lucide-react'
 
 interface Order {
@@ -82,6 +83,7 @@ export default function OrdersPage() {
   const [paymentFilter, setPaymentFilter] = useState('')
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null)
   const [showDetailModal, setShowDetailModal] = useState(false)
+  const [syncingOrders, setSyncingOrders] = useState<Set<string>>(new Set())
 
   useEffect(() => {
     loadOrders()
@@ -118,6 +120,42 @@ export default function OrdersPage() {
     } catch (error) {
       console.error('Error updating order status:', error)
       alert('Gagal mengupdate status pesanan')
+    }
+  }
+
+  const syncOrderStatus = async (orderId: string) => {
+    // Add to syncing set
+    setSyncingOrders(prev => new Set(prev).add(orderId))
+    
+    try {
+      const response = await fetch('/api/admin/orders/sync-status', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ orderId })
+      })
+
+      const result = await response.json()
+      
+      if (result.success) {
+        if (result.synced) {
+          alert(`Status berhasil disinkronkan: ${result.previousStatus} → ${result.currentStatus}`)
+          loadOrders() // Reload to show updated status
+        } else {
+          alert(result.message || 'Status sudah up to date')
+        }
+      } else {
+        alert('Gagal sinkronisasi status: ' + result.error)
+      }
+    } catch (error) {
+      console.error('Error syncing order status:', error)
+      alert('Terjadi kesalahan saat sinkronisasi status')
+    } finally {
+      // Remove from syncing set
+      setSyncingOrders(prev => {
+        const newSet = new Set(prev)
+        newSet.delete(orderId)
+        return newSet
+      })
     }
   }
 
@@ -296,15 +334,29 @@ export default function OrdersPage() {
                     {formatDate(order.createdAt)}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                    <button
-                      onClick={() => {
-                        setSelectedOrder(order)
-                        setShowDetailModal(true)
-                      }}
-                      className="text-blue-600 hover:text-blue-900 mr-3"
-                    >
-                      <Eye size={16} />
-                    </button>
+                    <div className="flex items-center gap-2">
+                      <button
+                        onClick={() => {
+                          setSelectedOrder(order)
+                          setShowDetailModal(true)
+                        }}
+                        className="text-blue-600 hover:text-blue-900"
+                        title="Lihat Detail"
+                      >
+                        <Eye size={16} />
+                      </button>
+                      
+                      {order.paymentMethod === 'xendit' && order.status === 'pending' && (
+                        <button
+                          onClick={() => syncOrderStatus(order.id)}
+                          disabled={syncingOrders.has(order.id)}
+                          className="text-green-600 hover:text-green-900 disabled:opacity-50 disabled:cursor-not-allowed"
+                          title="Sinkronisasi Status Pembayaran"
+                        >
+                          <RefreshCw size={16} className={syncingOrders.has(order.id) ? 'animate-spin' : ''} />
+                        </button>
+                      )}
+                    </div>
                   </td>
                 </tr>
               ))}
