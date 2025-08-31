@@ -6,6 +6,29 @@ export const dynamic = 'force-dynamic'
 
 const prisma = new PrismaClient()
 
+async function ensureGmailColumns() {
+  const alterQueries = [
+    `ALTER TABLE payment_settings ADD COLUMN gmailUser VARCHAR(255) DEFAULT ''`,
+    `ALTER TABLE payment_settings ADD COLUMN gmailAppPassword VARCHAR(255) DEFAULT ''`, 
+    `ALTER TABLE payment_settings ADD COLUMN isEmailEnabled BOOLEAN DEFAULT false`,
+    `ALTER TABLE payment_settings ADD COLUMN emailFrom VARCHAR(255) DEFAULT 'FloodBar'`
+  ]
+  
+  for (const query of alterQueries) {
+    try {
+      await prisma.$executeRawUnsafe(query)
+    } catch (error) {
+      // Ignore duplicate column errors
+      if (!error.message.includes('Duplicate column name') && 
+          !error.message.includes('already exists') &&
+          !error.message.includes('column "') && 
+          !error.message.includes('already exists')) {
+        console.log('Column addition error:', error.message)
+      }
+    }
+  }
+}
+
 interface PaymentSettings {
   id: string | null
   xenditApiKey: string
@@ -29,6 +52,9 @@ interface PaymentSettings {
 
 export async function GET() {
   try {
+    // Ensure Gmail columns exist first
+    await ensureGmailColumns()
+    
     const settingsResult = await prisma.$queryRawUnsafe(`
       SELECT * FROM payment_settings ORDER BY createdAt DESC LIMIT 1
     `) as any[]
@@ -93,6 +119,9 @@ export async function GET() {
 
 export async function PUT(request: NextRequest) {
   try {
+    // Ensure Gmail columns exist first
+    await ensureGmailColumns()
+    
     const data: PaymentSettings = await request.json()
 
     // Validate required fields

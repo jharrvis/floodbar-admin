@@ -6,7 +6,7 @@ generator client {
 }
 
 datasource db {
-  provider = "mysql"
+  provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 
@@ -112,4 +112,64 @@ model ShippingRate {
   
   @@unique([asal, tujuan, via]) // Unique combination for updates
   @@map("shipping_rates")
+}
+
+model PaymentSettings {
+  id                    String   @id
+  xenditApiKey         String   @default("")
+  xenditWebhookToken   String   @default("")
+  xenditPublicKey      String   @default("")
+  isXenditEnabled      Boolean  @default(true)
+  supportedMethodsJson String   @default("[\"credit_card\",\"bank_transfer\",\"ewallet\",\"qris\"]")
+  minimumAmount        Decimal  @default(10000)
+  maximumAmount        Decimal  @default(50000000)
+  adminFee             Decimal  @default(5000)
+  adminFeeType         String   @default("fixed") // 'fixed' or 'percentage'
+  successRedirectUrl   String   @default("/payment/success")
+  failureRedirectUrl   String   @default("/payment/failure")
+  environment          String   @default("sandbox") // 'sandbox' or 'production'
+  // Gmail SMTP Settings
+  gmailUser           String   @default("")
+  gmailAppPassword    String   @default("")
+  isEmailEnabled      Boolean  @default(false)
+  emailFrom           String   @default("FloodBar")
+  
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+
+  @@map("payment_settings")
+}
+
+model Order {
+  id                   String   @id
+  customerName         String
+  customerEmail        String
+  customerPhone        String
+  customerAddress      String
+  customerCity         String
+  customerPostalCode   String
+  productWidth         Decimal
+  productHeight        Decimal
+  productThickness     Decimal?
+  productQuantity      Int
+  productFinish        String?
+  shippingOrigin       String
+  shippingDestination  String
+  shippingWeight       Decimal
+  shippingService      String
+  shippingCost         Decimal
+  paymentMethod        String
+  paymentProvider      String?
+  subtotal             Decimal
+  adminFee             Decimal
+  grandTotal           Decimal
+  status               String   @default("pending")
+  xenditInvoiceId      String?
+  xenditInvoiceUrl     String?
+  paymentStatus        String?
+  
+  createdAt            DateTime @default(now())
+  updatedAt            DateTime @updatedAt
+
+  @@map("orders")
 }
