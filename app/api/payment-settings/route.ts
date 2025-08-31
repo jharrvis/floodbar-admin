@@ -6,27 +6,7 @@ export const dynamic = 'force-dynamic'
 
 const prisma = new PrismaClient()
 
-async function ensureGmailColumns() {
-  // Only try to add columns in development or if explicitly needed
-  if (process.env.NODE_ENV === 'production') {
-    return // Skip column creation in production
-  }
-  
-  const alterQueries = [
-    `ALTER TABLE payment_settings ADD COLUMN gmailUser VARCHAR(255) DEFAULT ''`,
-    `ALTER TABLE payment_settings ADD COLUMN gmailAppPassword VARCHAR(255) DEFAULT ''`, 
-    `ALTER TABLE payment_settings ADD COLUMN isEmailEnabled BOOLEAN DEFAULT false`,
-    `ALTER TABLE payment_settings ADD COLUMN emailFrom VARCHAR(255) DEFAULT 'FloodBar'`
-  ]
-  
-  for (const query of alterQueries) {
-    try {
-      await prisma.$executeRawUnsafe(query)
-    } catch (error) {
-      // Ignore all errors in column creation - this is just a helper function
-    }
-  }
-}
+// Removed ensureGmailColumns function - just use defaults for Gmail fields
 
 interface PaymentSettings {
   id: string | null
@@ -51,24 +31,13 @@ interface PaymentSettings {
 
 export async function GET() {
   try {
-    // Try to ensure Gmail columns exist (only in development)
-    await ensureGmailColumns()
-    
-    // Try to get all settings first, fall back to basic settings if Gmail columns don't exist
-    let settingsResult
-    try {
-      settingsResult = await prisma.$queryRawUnsafe(`
-        SELECT * FROM payment_settings ORDER BY createdAt DESC LIMIT 1
-      `) as any[]
-    } catch (error) {
-      // Fall back to basic fields only if Gmail columns don't exist
-      settingsResult = await prisma.$queryRawUnsafe(`
-        SELECT id, xenditApiKey, xenditWebhookToken, xenditPublicKey, isXenditEnabled, 
-               supportedMethodsJson, minimumAmount, maximumAmount, adminFee, adminFeeType,
-               successRedirectUrl, failureRedirectUrl, environment, createdAt, updatedAt
-        FROM payment_settings ORDER BY createdAt DESC LIMIT 1
-      `) as any[]
-    }
+    // Get basic settings first, then try to add Gmail fields if they exist
+    const settingsResult = await prisma.$queryRawUnsafe(`
+      SELECT id, xenditApiKey, xenditWebhookToken, xenditPublicKey, isXenditEnabled, 
+             supportedMethodsJson, minimumAmount, maximumAmount, adminFee, adminFeeType,
+             successRedirectUrl, failureRedirectUrl, environment, createdAt, updatedAt
+      FROM payment_settings ORDER BY createdAt DESC LIMIT 1
+    `) as any[]
 
     const settings = settingsResult.length > 0 ? settingsResult[0] : null
 
@@ -111,10 +80,10 @@ export async function GET() {
       successRedirectUrl: settings.successRedirectUrl || '/payment/success',
       failureRedirectUrl: settings.failureRedirectUrl || '/payment/failure',
       environment: settings.environment || 'sandbox',
-      // Email SMTP Settings
+      // Email SMTP Settings - Use defaults if columns don't exist
       gmailUser: settings.gmailUser || '',
       gmailAppPassword: settings.gmailAppPassword || '',
-      isEmailEnabled: Boolean(settings.isEmailEnabled),
+      isEmailEnabled: Boolean(settings.isEmailEnabled || false),
       emailFrom: settings.emailFrom || 'FloodBar'
     }
 
@@ -130,9 +99,6 @@ export async function GET() {
 
 export async function PUT(request: NextRequest) {
   try {
-    // Try to ensure Gmail columns exist (only in development)
-    await ensureGmailColumns()
-    
     const data: PaymentSettings = await request.json()
 
     // Validate required fields

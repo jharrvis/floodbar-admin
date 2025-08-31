@@ -23,7 +23,8 @@
       "WebFetch(domain:developers.xendit.co)",
       "Bash(taskkill:*)",
       "Bash(npx kill-port:*)",
-      "WebFetch(domain:floodbar-r2bm2gyy6-jharrvis-projects.vercel.app)"
+      "WebFetch(domain:floodbar-r2bm2gyy6-jharrvis-projects.vercel.app)",
+      "WebFetch(domain:floodbar-7jel6ubck-jharrvis-projects.vercel.app)"
     ],
     "deny": [],
     "ask": []
