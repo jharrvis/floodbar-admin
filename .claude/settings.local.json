@@ -32,7 +32,9 @@
       "WebFetch(domain:floodbar-frvs72f9z-jharrvis-projects.vercel.app)",
       "WebFetch(domain:vercel.com)",
       "Bash(git reset:*)",
-      "Bash(git pull:*)"
+      "Bash(git pull:*)",
+      "Bash(npm run lint)",
+      "Bash(npx next build:*)"
     ],
     "deny": [],
     "ask": []
