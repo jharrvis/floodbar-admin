@@ -4,6 +4,9 @@ import { useState, useEffect } from 'react'
 import { XCircle, RefreshCw, ArrowLeft, MessageCircle, Mail } from 'lucide-react'
 import Link from 'next/link'
 
+// Force dynamic rendering
+export const dynamic = 'force-dynamic'
+
 export default function PaymentFailurePage() {
   const [orderData, setOrderData] = useState<any>(null)
   const [loading, setLoading] = useState(true)

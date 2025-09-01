@@ -21,6 +21,9 @@ interface PageContent {
   }
 }
 
+// Force dynamic rendering
+export const dynamic = 'force-dynamic'
+
 export default function PaymentSuccessPage() {
   const [orderData, setOrderData] = useState<any>(null)
   const [pageContent, setPageContent] = useState<PageContent | null>(null)
