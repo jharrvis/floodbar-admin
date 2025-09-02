@@ -36,7 +36,6 @@ interface OrderData {
   orderSummary: {
     subtotal: number
     shippingCost: number
-    adminFee: number
     grandTotal: number
   }
 }
@@ -65,7 +64,7 @@ export async function POST(request: NextRequest) {
         shippingDestination, shippingWeight, shippingService, shippingCost,
         paymentMethod, paymentProvider, subtotal, adminFee, grandTotal,
         status, createdAt, updatedAt
-      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW(), NOW())
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 0, ?, NOW(), NOW())
     `,
       orderId,
       orderData.customer.name,
@@ -87,7 +86,6 @@ export async function POST(request: NextRequest) {
       orderData.payment.method,
       orderData.payment.provider || '',
       orderData.orderSummary.subtotal,
-      orderData.orderSummary.adminFee,
       orderData.orderSummary.grandTotal,
       'pending'
     )
@@ -131,8 +129,8 @@ export async function POST(request: NextRequest) {
               invoice_reminder: ['email'],
               invoice_paid: ['email']
             },
-            success_redirect_url: `${process.env.NEXTAUTH_URL || 'http://localhost:3000'}${settings.successRedirectUrl}`,
-            failure_redirect_url: `${process.env.NEXTAUTH_URL || 'http://localhost:3000'}${settings.failureRedirectUrl}`,
+            success_redirect_url: `${process.env.NEXTAUTH_URL || 'https://floodbar.id'}${settings.successRedirectUrl}`,
+            failure_redirect_url: `${process.env.NEXTAUTH_URL || 'https://floodbar.id'}${settings.failureRedirectUrl}`,
             currency: 'IDR',
             items: [
               {

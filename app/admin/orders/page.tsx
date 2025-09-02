@@ -18,7 +18,11 @@ import {
   MapPin,
   Phone,
   Mail,
-  RefreshCw
+  RefreshCw,
+  CreditCard,
+  Smartphone,
+  Building2,
+  QrCode
 } from 'lucide-react'
 
 interface Order {
@@ -48,6 +52,8 @@ interface Order {
   paymentStatus: 'pending' | 'paid' | 'failed' | 'refunded'
   xenditInvoiceId?: string
   xenditInvoiceUrl?: string
+  trackingNumber?: string
+  shippedAt?: string
   paidAt?: string
   createdAt: string
   updatedAt: string
@@ -83,7 +89,10 @@ export default function OrdersPage() {
   const [paymentFilter, setPaymentFilter] = useState('')
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null)
   const [showDetailModal, setShowDetailModal] = useState(false)
+  const [showShippingModal, setShowShippingModal] = useState(false)
+  const [trackingNumber, setTrackingNumber] = useState('')
   const [syncingOrders, setSyncingOrders] = useState<Set<string>>(new Set())
+  const [shippingOrders, setShippingOrders] = useState<Set<string>>(new Set())
 
   useEffect(() => {
     loadOrders()
@@ -138,7 +147,14 @@ export default function OrdersPage() {
       
       if (result.success) {
         if (result.synced) {
-          alert(`Status berhasil disinkronkan: ${result.previousStatus} → ${result.currentStatus}`)
+          let message = 'Status berhasil disinkronkan:'
+          if (result.previousStatus !== result.currentStatus) {
+            message += `\nStatus pesanan: ${result.previousStatus} → ${result.currentStatus}`
+          }
+          if (result.previousPaymentStatus !== result.currentPaymentStatus) {
+            message += `\nStatus pembayaran: ${result.previousPaymentStatus} → ${result.currentPaymentStatus}`
+          }
+          alert(message)
           loadOrders() // Reload to show updated status
         } else {
           alert(result.message || 'Status sudah up to date')
@@ -157,6 +173,47 @@ export default function OrdersPage() {
         return newSet
       })
     }
+  }
+
+  const markAsShipped = async (orderId: string, trackingNumber: string) => {
+    // Add to shipping set
+    setShippingOrders(prev => new Set(prev).add(orderId))
+    
+    try {
+      const response = await fetch('/api/admin/orders/ship', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ orderId, trackingNumber })
+      })
+
+      const result = await response.json()
+      
+      if (result.success) {
+        alert(`Pesanan berhasil ditandai sebagai dikirim! Notifikasi email telah dikirim ke pelanggan.`)
+        loadOrders() // Reload to show updated status
+        setShowShippingModal(false)
+        setTrackingNumber('')
+        setSelectedOrder(null)
+      } else {
+        alert('Gagal menandai pesanan sebagai dikirim: ' + result.error)
+      }
+    } catch (error) {
+      console.error('Error marking order as shipped:', error)
+      alert('Terjadi kesalahan saat menandai pesanan sebagai dikirim')
+    } finally {
+      // Remove from shipping set
+      setShippingOrders(prev => {
+        const newSet = new Set(prev)
+        newSet.delete(orderId)
+        return newSet
+      })
+    }
+  }
+
+  const openShippingModal = (order: Order) => {
+    setSelectedOrder(order)
+    setTrackingNumber('')
+    setShowShippingModal(true)
   }
 
   const filteredOrders = orders.filter(order => {
@@ -186,6 +243,40 @@ export default function OrdersPage() {
       hour: '2-digit',
       minute: '2-digit'
     })
+  }
+
+  const getPaymentMethodIcon = (method: string) => {
+    const methodLower = method.toLowerCase()
+    
+    if (methodLower.includes('credit') || methodLower.includes('debit') || methodLower.includes('card')) {
+      return <CreditCard size={16} className="text-blue-600" />
+    }
+    if (methodLower.includes('bank') || methodLower.includes('transfer') || methodLower.includes('virtual_account')) {
+      return <Building2 size={16} className="text-green-600" />
+    }
+    if (methodLower.includes('ewallet') || methodLower.includes('ovo') || methodLower.includes('dana') || methodLower.includes('gopay') || methodLower.includes('linkaja')) {
+      return <Smartphone size={16} className="text-purple-600" />
+    }
+    if (methodLower.includes('qris') || methodLower.includes('qr')) {
+      return <QrCode size={16} className="text-orange-600" />
+    }
+    return <DollarSign size={16} className="text-gray-600" />
+  }
+
+  const getPaymentMethodLabel = (method: string) => {
+    const methodLower = method.toLowerCase()
+    
+    if (methodLower.includes('credit')) return 'Credit Card'
+    if (methodLower.includes('debit')) return 'Debit Card' 
+    if (methodLower.includes('bank_transfer')) return 'Bank Transfer'
+    if (methodLower.includes('virtual_account')) return 'Virtual Account'
+    if (methodLower.includes('ovo')) return 'OVO'
+    if (methodLower.includes('dana')) return 'DANA'
+    if (methodLower.includes('gopay')) return 'GoPay'
+    if (methodLower.includes('linkaja')) return 'LinkAja'
+    if (methodLower.includes('ewallet')) return 'E-Wallet'
+    if (methodLower.includes('qris')) return 'QRIS'
+    return method
   }
 
   if (loading) {
@@ -303,14 +394,21 @@ export default function OrdersPage() {
                     <div className="text-sm font-medium text-gray-900">
                       {formatCurrency(order.grandTotal)}
                     </div>
-                    <div className="text-sm text-gray-500">
-                      {order.paymentMethod}
+                    <div className="text-sm text-gray-500 flex items-center gap-1">
+                      {getPaymentMethodIcon(order.paymentMethod)}
+                      {getPaymentMethodLabel(order.paymentMethod)}
                     </div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
                     <select
                       value={order.status}
-                      onChange={(e) => updateOrderStatus(order.id, e.target.value)}
+                      onChange={(e) => {
+                        if (e.target.value === 'shipped') {
+                          openShippingModal(order)
+                        } else {
+                          updateOrderStatus(order.id, e.target.value)
+                        }
+                      }}
                       className={`px-2 py-1 text-xs font-medium rounded-full border-0 ${statusColors[order.status]}`}
                     >
                       <option value="pending">Menunggu</option>
@@ -319,6 +417,11 @@ export default function OrdersPage() {
                       <option value="delivered">Diterima</option>
                       <option value="cancelled">Dibatalkan</option>
                     </select>
+                    {order.trackingNumber && (
+                      <div className="text-xs text-gray-500 mt-1">
+                        Resi: {order.trackingNumber}
+                      </div>
+                    )}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
                     <span className={`px-2 py-1 text-xs font-medium rounded-full ${statusColors[order.paymentStatus]}`}>
@@ -346,7 +449,7 @@ export default function OrdersPage() {
                         <Eye size={16} />
                       </button>
                       
-                      {order.paymentMethod === 'xendit' && order.status === 'pending' && (
+                      {order.paymentProvider === 'xendit' && order.paymentStatus === 'pending' && (
                         <button
                           onClick={() => syncOrderStatus(order.id)}
                           disabled={syncingOrders.has(order.id)}
@@ -456,6 +559,17 @@ export default function OrdersPage() {
                   <div className="col-span-2">
                     <span className="font-medium">Ongkir:</span> {formatCurrency(selectedOrder.shippingCost)}
                   </div>
+                  {selectedOrder.trackingNumber && (
+                    <div className="col-span-2 border-t pt-2">
+                      <span className="font-medium">Nomor Resi:</span> 
+                      <span className="ml-2 bg-blue-50 px-2 py-1 rounded font-mono text-sm">{selectedOrder.trackingNumber}</span>
+                    </div>
+                  )}
+                  {selectedOrder.shippedAt && (
+                    <div className="col-span-2">
+                      <span className="font-medium">Tanggal Kirim:</span> {formatDate(selectedOrder.shippedAt)}
+                    </div>
+                  )}
                 </div>
               </div>
 
@@ -471,8 +585,10 @@ export default function OrdersPage() {
                   <div>
                     <span className="font-medium">Biaya Admin:</span> {formatCurrency(selectedOrder.adminFee)}
                   </div>
-                  <div>
-                    <span className="font-medium">Metode:</span> {selectedOrder.paymentMethod}
+                  <div className="flex items-center gap-2">
+                    <span className="font-medium">Metode:</span> 
+                    {getPaymentMethodIcon(selectedOrder.paymentMethod)}
+                    {getPaymentMethodLabel(selectedOrder.paymentMethod)}
                   </div>
                   <div>
                     <span className="font-medium">Status:</span> 
@@ -505,6 +621,95 @@ export default function OrdersPage() {
                 className="px-4 py-2 bg-gray-300 text-gray-700 rounded-md hover:bg-gray-400"
               >
                 Tutup
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Shipping Modal */}
+      {showShippingModal && selectedOrder && (
+        <div className="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
+          <div className="relative top-20 mx-auto p-5 border w-11/12 md:w-1/2 lg:w-1/3 shadow-lg rounded-md bg-white">
+            <div className="flex justify-between items-center mb-4">
+              <h3 className="text-lg font-medium flex items-center gap-2">
+                <Truck size={20} className="text-blue-600" />
+                Tandai Sebagai Dikirim
+              </h3>
+              <button
+                onClick={() => {
+                  setShowShippingModal(false)
+                  setTrackingNumber('')
+                  setSelectedOrder(null)
+                }}
+                className="text-gray-400 hover:text-gray-600"
+              >
+                <XCircle size={24} />
+              </button>
+            </div>
+            
+            <div className="space-y-4">
+              <div className="bg-gray-50 p-4 rounded-lg">
+                <h4 className="font-medium text-gray-900 mb-2">Detail Pesanan</h4>
+                <div className="text-sm text-gray-600">
+                  <p><strong>Order ID:</strong> {selectedOrder.id}</p>
+                  <p><strong>Pelanggan:</strong> {selectedOrder.customerName}</p>
+                  <p><strong>Tujuan:</strong> {selectedOrder.customerCity}</p>
+                  <p><strong>Layanan:</strong> {selectedOrder.shippingService}</p>
+                </div>
+              </div>
+
+              <div>
+                <label htmlFor="trackingNumber" className="block text-sm font-medium text-gray-700 mb-2">
+                  Nomor Resi Pengiriman *
+                </label>
+                <input
+                  id="trackingNumber"
+                  type="text"
+                  value={trackingNumber}
+                  onChange={(e) => setTrackingNumber(e.target.value)}
+                  placeholder="Masukkan nomor resi pengiriman"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                />
+                <p className="text-xs text-gray-500 mt-1">
+                  Nomor resi akan dikirimkan ke email pelanggan secara otomatis
+                </p>
+              </div>
+            </div>
+
+            <div className="flex justify-end mt-6 space-x-3">
+              <button
+                onClick={() => {
+                  setShowShippingModal(false)
+                  setTrackingNumber('')
+                  setSelectedOrder(null)
+                }}
+                className="px-4 py-2 bg-gray-300 text-gray-700 rounded-md hover:bg-gray-400"
+              >
+                Batal
+              </button>
+              <button
+                onClick={() => {
+                  if (!trackingNumber.trim()) {
+                    alert('Mohon masukkan nomor resi pengiriman')
+                    return
+                  }
+                  markAsShipped(selectedOrder.id, trackingNumber.trim())
+                }}
+                disabled={shippingOrders.has(selectedOrder.id) || !trackingNumber.trim()}
+                className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+              >
+                {shippingOrders.has(selectedOrder.id) ? (
+                  <>
+                    <RefreshCw size={16} className="animate-spin" />
+                    Memproses...
+                  </>
+                ) : (
+                  <>
+                    <Truck size={16} />
+                    Tandai Dikirim & Kirim Email
+                  </>
+                )}
               </button>
             </div>
           </div>

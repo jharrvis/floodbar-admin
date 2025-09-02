@@ -34,7 +34,6 @@ interface CustomerData {
 interface OrderSummary {
   subtotal: number
   shippingCost: number
-  adminFee: number
   grandTotal: number
 }
 
@@ -56,7 +55,6 @@ export default function OrderPage() {
   const [orderSummary, setOrderSummary] = useState<OrderSummary>({
     subtotal: 0,
     shippingCost: 0,
-    adminFee: 5000,
     grandTotal: 0
   })
 
@@ -204,13 +202,11 @@ export default function OrderPage() {
   useEffect(() => {
     const subtotal = orderItems.reduce((sum, item) => sum + item.totalPrice, 0)
     const shippingCost = shippingData?.cost || 0
-    const adminFee = 5000
-    const grandTotal = subtotal + shippingCost + adminFee
+    const grandTotal = subtotal + shippingCost
 
     setOrderSummary({
       subtotal,
       shippingCost,
-      adminFee,
       grandTotal
     })
   }, [orderItems, shippingData])
@@ -301,10 +297,6 @@ export default function OrderPage() {
             <div className="flex justify-between">
               <span>Ongkir:</span>
               <span>Rp {orderSummary.shippingCost.toLocaleString()}</span>
-            </div>
-            <div className="flex justify-between">
-              <span>Biaya Admin:</span>
-              <span>Rp {orderSummary.adminFee.toLocaleString()}</span>
             </div>
             <div className="flex justify-between font-bold text-lg border-t pt-2">
               <span>Grand Total:</span>
@@ -724,7 +716,7 @@ export default function OrderPage() {
                   <p className="font-mono font-bold text-lg">#ORD-{Date.now()}</p>
                 </div>
                 <button
-                  onClick={() => window.location.href = '/landing'}
+                  onClick={() => window.location.href = '/'}
                   className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-md"
                 >
                   Kembali ke Beranda

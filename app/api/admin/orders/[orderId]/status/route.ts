@@ -55,7 +55,7 @@ export async function PUT(
     if (status === 'shipped') {
       try {
         // Send email notification
-        await fetch(`${process.env.NEXTAUTH_URL || 'http://localhost:3000'}/api/notifications/email`, {
+        await fetch(`${process.env.NEXTAUTH_URL || 'https://floodbar.id'}/api/notifications/email`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
@@ -100,7 +100,7 @@ export async function PUT(
         })
 
         // Send WhatsApp notification
-        await fetch(`${process.env.NEXTAUTH_URL || 'http://localhost:3000'}/api/notifications/whatsapp`, {
+        await fetch(`${process.env.NEXTAUTH_URL || 'https://floodbar.id'}/api/notifications/whatsapp`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({

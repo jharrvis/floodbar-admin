@@ -72,8 +72,8 @@ export async function POST(request: NextRequest) {
         invoice_reminder: ['email'],
         invoice_paid: ['email']
       },
-      success_redirect_url: `${process.env.NEXTAUTH_URL || 'http://localhost:3000'}${settings.successRedirectUrl}`,
-      failure_redirect_url: `${process.env.NEXTAUTH_URL || 'http://localhost:3000'}${settings.failureRedirectUrl}`,
+      success_redirect_url: `${process.env.NEXTAUTH_URL || 'https://floodbar.id'}${settings.successRedirectUrl}`,
+      failure_redirect_url: `${process.env.NEXTAUTH_URL || 'https://floodbar.id'}${settings.failureRedirectUrl}`,
       currency: 'IDR',
       items: [
         {

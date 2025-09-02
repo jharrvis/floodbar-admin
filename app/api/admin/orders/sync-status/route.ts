@@ -95,38 +95,51 @@ export async function POST(request: NextRequest) {
 
     // Map Xendit status to our order status
     let newStatus = order.status
+    let newPaymentStatus = order.paymentStatus
     let shouldUpdate = false
 
     switch (xenditInvoice.status) {
       case 'PAID':
+        if (order.paymentStatus !== 'paid') {
+          newPaymentStatus = 'paid'
+          shouldUpdate = true
+        }
         if (order.status === 'pending') {
-          newStatus = 'paid'
+          newStatus = 'processing' // Move to processing when paid
           shouldUpdate = true
         }
         break
       case 'SETTLED':
-        if (order.status === 'paid') {
+        if (order.paymentStatus !== 'paid') {
+          newPaymentStatus = 'paid'
+          shouldUpdate = true
+        }
+        if (order.status === 'pending') {
           newStatus = 'processing'
           shouldUpdate = true
         }
         break
       case 'EXPIRED':
+        if (order.paymentStatus === 'pending') {
+          newPaymentStatus = 'failed'
+          shouldUpdate = true
+        }
         if (order.status === 'pending') {
-          newStatus = 'expired'
+          newStatus = 'cancelled'
           shouldUpdate = true
         }
         break
     }
 
     if (shouldUpdate) {
-      // Update order status
+      // Update order status and payment status
       await prisma.$executeRawUnsafe(`
         UPDATE orders 
-        SET status = ?, updatedAt = NOW()
+        SET status = ?, paymentStatus = ?, updatedAt = NOW()
         WHERE id = ?
-      `, newStatus, orderId)
+      `, newStatus, newPaymentStatus, orderId)
 
-      console.log(`✅ Order ${orderId} status synced: ${order.status} -> ${newStatus}`)
+      console.log(`✅ Order ${orderId} status synced: ${order.status} -> ${newStatus}, payment: ${order.paymentStatus} -> ${newPaymentStatus}`)
 
       // Log sync event
       await prisma.$executeRawUnsafe(`
@@ -143,7 +156,9 @@ export async function POST(request: NextRequest) {
           invoice_id: xenditInvoice.id,
           invoice_status: xenditInvoice.status,
           amount: xenditInvoice.amount,
-          external_id: xenditInvoice.external_id
+          external_id: xenditInvoice.external_id,
+          previous_payment_status: order.paymentStatus,
+          new_payment_status: newPaymentStatus
         })
       )
 
@@ -152,6 +167,8 @@ export async function POST(request: NextRequest) {
         message: 'Order status synced successfully',
         previousStatus: order.status,
         currentStatus: newStatus,
+        previousPaymentStatus: order.paymentStatus,
+        currentPaymentStatus: newPaymentStatus,
         xenditStatus: xenditInvoice.status,
         synced: true
       })

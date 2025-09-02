@@ -80,7 +80,7 @@ export async function POST(request: NextRequest) {
             const order = orderResult[0]
 
             // Send confirmation email
-            await fetch(`${process.env.NEXTAUTH_URL || 'http://localhost:3000'}/api/notifications/email`, {
+            await fetch(`${process.env.NEXTAUTH_URL || 'https://floodbar.id'}/api/notifications/email`, {
               method: 'POST',
               headers: { 'Content-Type': 'application/json' },
               body: JSON.stringify({
@@ -125,7 +125,7 @@ export async function POST(request: NextRequest) {
             })
 
             // Send WhatsApp notification
-            await fetch(`${process.env.NEXTAUTH_URL || 'http://localhost:3000'}/api/notifications/whatsapp`, {
+            await fetch(`${process.env.NEXTAUTH_URL || 'https://floodbar.id'}/api/notifications/whatsapp`, {
               method: 'POST',
               headers: { 'Content-Type': 'application/json' },
               body: JSON.stringify({

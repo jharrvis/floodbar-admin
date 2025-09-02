@@ -85,32 +85,45 @@ export async function POST(request: NextRequest) {
 
     const order = orderResult[0]
     let newStatus = order.status
+    let newPaymentStatus = order.paymentStatus || 'pending'
     let shouldUpdateStatus = false
 
     // Map Xendit invoice status to our order status
     switch (webhookData.status) {
       case 'PAID':
-        if (order.status === 'pending') {
-          newStatus = 'paid'
+        if (order.paymentStatus !== 'paid') {
+          newPaymentStatus = 'paid'
           shouldUpdateStatus = true
-          console.log('✅ Payment successful for order:', orderId)
         }
+        if (order.status === 'pending') {
+          newStatus = 'processing'
+          shouldUpdateStatus = true
+        }
+        console.log('✅ Payment successful for order:', orderId)
         break
       
       case 'SETTLED':
-        if (order.status === 'paid') {
+        if (order.paymentStatus !== 'paid') {
+          newPaymentStatus = 'paid'
+          shouldUpdateStatus = true
+        }
+        if (order.status === 'pending') {
           newStatus = 'processing'
           shouldUpdateStatus = true
-          console.log('📦 Payment settled, order processing:', orderId)
         }
+        console.log('📦 Payment settled, order processing:', orderId)
         break
       
       case 'EXPIRED':
-        if (order.status === 'pending') {
-          newStatus = 'expired'
+        if (order.paymentStatus === 'pending') {
+          newPaymentStatus = 'failed'
           shouldUpdateStatus = true
-          console.log('⏰ Payment expired for order:', orderId)
         }
+        if (order.status === 'pending') {
+          newStatus = 'cancelled'
+          shouldUpdateStatus = true
+        }
+        console.log('⏰ Payment expired for order:', orderId)
         break
       
       default:
@@ -122,11 +135,11 @@ export async function POST(request: NextRequest) {
     if (shouldUpdateStatus) {
       await prisma.$executeRawUnsafe(`
         UPDATE orders 
-        SET status = ?, updatedAt = NOW()
+        SET status = ?, paymentStatus = ?, updatedAt = NOW()
         WHERE id = ?
-      `, newStatus, orderId)
+      `, newStatus, newPaymentStatus, orderId)
 
-      console.log(`🔄 Order ${orderId} status updated: ${order.status} -> ${newStatus}`)
+      console.log(`🔄 Order ${orderId} status updated: ${order.status} -> ${newStatus}, payment: ${order.paymentStatus} -> ${newPaymentStatus}`)
 
       // Log webhook event for debugging
       await prisma.$executeRawUnsafe(`
@@ -143,7 +156,7 @@ export async function POST(request: NextRequest) {
       )
 
       // Send notification email for successful payment
-      if (newStatus === 'paid') {
+      if (newPaymentStatus === 'paid' && order.paymentStatus !== 'paid') {
         try {
           // Only send in production to avoid spam during development
           if (process.env.NODE_ENV === 'production') {

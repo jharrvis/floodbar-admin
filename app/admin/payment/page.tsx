@@ -12,8 +12,6 @@ interface PaymentSettings {
   supportedMethods: string[]
   minimumAmount: number
   maximumAmount: number
-  adminFee: number
-  adminFeeType: 'fixed' | 'percentage'
   successRedirectUrl: string
   failureRedirectUrl: string
   environment: 'sandbox' | 'production'
@@ -34,8 +32,6 @@ export default function PaymentSettingsPage() {
     supportedMethods: ['credit_card', 'bank_transfer', 'ewallet', 'qris'],
     minimumAmount: 10000,
     maximumAmount: 50000000,
-    adminFee: 5000,
-    adminFeeType: 'fixed',
     successRedirectUrl: '/payment/success',
     failureRedirectUrl: '/payment/failure',
     environment: 'sandbox',
@@ -137,8 +133,7 @@ export default function PaymentSettingsPage() {
             orderSummary: {
               subtotal: 500000,
               shippingCost: 15000,
-              adminFee: 5000,
-              grandTotal: 520000
+              grandTotal: 515000
             }
           }
         })
@@ -450,32 +445,6 @@ export default function PaymentSettingsPage() {
             </div>
           </div>
 
-          <div className="grid grid-cols-3 gap-4 mt-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Biaya Admin
-              </label>
-              <input
-                type="number"
-                value={settings.adminFee}
-                onChange={(e) => setSettings({ ...settings, adminFee: parseInt(e.target.value) || 0 })}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Tipe Biaya Admin
-              </label>
-              <select
-                value={settings.adminFeeType}
-                onChange={(e) => setSettings({ ...settings, adminFeeType: e.target.value as 'fixed' | 'percentage' })}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md"
-              >
-                <option value="fixed">Fixed (Rupiah)</option>
-                <option value="percentage">Percentage (%)</option>
-              </select>
-            </div>
-          </div>
         </div>
 
         {/* Redirect URLs */}
@@ -501,7 +470,7 @@ export default function PaymentSettingsPage() {
                 Customer akan diarahkan ke halaman ini setelah pembayaran berhasil.
               </p>
               <div className="mt-2 p-2 bg-green-50 border border-green-200 rounded text-xs text-green-700">
-                <strong>Preview URL:</strong> {process.env.NODE_ENV === 'production' ? 'https://floodbar.vercel.app' : 'http://localhost:3000'}{settings.successRedirectUrl}
+                <strong>Preview URL:</strong> {process.env.NODE_ENV === 'production' ? 'https://floodbar.id' : 'http://localhost:3000'}{settings.successRedirectUrl}
               </div>
             </div>
             
@@ -520,7 +489,7 @@ export default function PaymentSettingsPage() {
                 Customer akan diarahkan ke halaman ini jika pembayaran gagal atau dibatalkan.
               </p>
               <div className="mt-2 p-2 bg-red-50 border border-red-200 rounded text-xs text-red-700">
-                <strong>Preview URL:</strong> {process.env.NODE_ENV === 'production' ? 'https://floodbar.vercel.app' : 'http://localhost:3000'}{settings.failureRedirectUrl}
+                <strong>Preview URL:</strong> {process.env.NODE_ENV === 'production' ? 'https://floodbar.id' : 'http://localhost:3000'}{settings.failureRedirectUrl}
               </div>
             </div>
 

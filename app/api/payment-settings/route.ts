@@ -17,8 +17,6 @@ interface PaymentSettings {
   supportedMethods: string[]
   minimumAmount: number
   maximumAmount: number
-  adminFee: number
-  adminFeeType: 'fixed' | 'percentage'
   successRedirectUrl: string
   failureRedirectUrl: string
   environment: 'sandbox' | 'production'
@@ -36,7 +34,7 @@ export async function GET() {
     try {
       settingsResult = await prisma.$queryRawUnsafe(`
         SELECT id, xenditApiKey, xenditWebhookToken, xenditPublicKey, isXenditEnabled, 
-               supportedMethodsJson, minimumAmount, maximumAmount, adminFee, adminFeeType,
+               supportedMethodsJson, minimumAmount, maximumAmount,
                successRedirectUrl, failureRedirectUrl, environment, createdAt, updatedAt,
                gmailUser, gmailAppPassword, isEmailEnabled, emailFrom
         FROM payment_settings ORDER BY createdAt DESC LIMIT 1
@@ -46,7 +44,7 @@ export async function GET() {
       console.log('Gmail columns not available, using basic query:', error instanceof Error ? error.message : error)
       settingsResult = await prisma.$queryRawUnsafe(`
         SELECT id, xenditApiKey, xenditWebhookToken, xenditPublicKey, isXenditEnabled, 
-               supportedMethodsJson, minimumAmount, maximumAmount, adminFee, adminFeeType,
+               supportedMethodsJson, minimumAmount, maximumAmount,
                successRedirectUrl, failureRedirectUrl, environment, createdAt, updatedAt
         FROM payment_settings ORDER BY createdAt DESC LIMIT 1
       `) as any[]
@@ -65,8 +63,6 @@ export async function GET() {
         supportedMethods: ['credit_card', 'bank_transfer', 'ewallet', 'qris'],
         minimumAmount: 10000,
         maximumAmount: 50000000,
-        adminFee: 5000,
-        adminFeeType: 'fixed',
         successRedirectUrl: '/payment/success',
         failureRedirectUrl: '/payment/failure',
         environment: 'sandbox',
@@ -88,8 +84,6 @@ export async function GET() {
       supportedMethods: JSON.parse(settings.supportedMethodsJson || '["credit_card","bank_transfer","ewallet","qris"]'),
       minimumAmount: Number(settings.minimumAmount) || 10000,
       maximumAmount: Number(settings.maximumAmount) || 50000000,
-      adminFee: Number(settings.adminFee) || 5000,
-      adminFeeType: settings.adminFeeType || 'fixed',
       successRedirectUrl: settings.successRedirectUrl || '/payment/success',
       failureRedirectUrl: settings.failureRedirectUrl || '/payment/failure',
       environment: settings.environment || 'sandbox',
@@ -135,8 +129,6 @@ export async function PUT(request: NextRequest) {
       supportedMethodsJson: JSON.stringify(data.supportedMethods),
       minimumAmount: data.minimumAmount || 10000,
       maximumAmount: data.maximumAmount || 50000000,
-      adminFee: data.adminFee || 5000,
-      adminFeeType: data.adminFeeType || 'fixed',
       successRedirectUrl: data.successRedirectUrl || '/payment/success',
       failureRedirectUrl: data.failureRedirectUrl || '/payment/failure',
       environment: data.environment || 'sandbox',
@@ -154,7 +146,7 @@ export async function PUT(request: NextRequest) {
           UPDATE payment_settings 
           SET xenditApiKey = ?, xenditWebhookToken = ?, xenditPublicKey = ?,
               isXenditEnabled = ?, supportedMethodsJson = ?, minimumAmount = ?,
-              maximumAmount = ?, adminFee = ?, adminFeeType = ?,
+              maximumAmount = ?,
               successRedirectUrl = ?, failureRedirectUrl = ?, environment = ?,
               gmailUser = ?, gmailAppPassword = ?, isEmailEnabled = ?, emailFrom = ?,
               updatedAt = NOW()
@@ -162,7 +154,7 @@ export async function PUT(request: NextRequest) {
         `,
           settingsData.xenditApiKey, settingsData.xenditWebhookToken, settingsData.xenditPublicKey,
           settingsData.isXenditEnabled, settingsData.supportedMethodsJson, settingsData.minimumAmount,
-          settingsData.maximumAmount, settingsData.adminFee, settingsData.adminFeeType,
+          settingsData.maximumAmount,
           settingsData.successRedirectUrl, settingsData.failureRedirectUrl, settingsData.environment,
           settingsData.gmailUser, settingsData.gmailAppPassword, settingsData.isEmailEnabled, settingsData.emailFrom,
           existingSettingsResult[0].id
@@ -174,14 +166,14 @@ export async function PUT(request: NextRequest) {
           UPDATE payment_settings 
           SET xenditApiKey = ?, xenditWebhookToken = ?, xenditPublicKey = ?,
               isXenditEnabled = ?, supportedMethodsJson = ?, minimumAmount = ?,
-              maximumAmount = ?, adminFee = ?, adminFeeType = ?,
+              maximumAmount = ?,
               successRedirectUrl = ?, failureRedirectUrl = ?, environment = ?,
               updatedAt = NOW()
           WHERE id = ?
         `,
           settingsData.xenditApiKey, settingsData.xenditWebhookToken, settingsData.xenditPublicKey,
           settingsData.isXenditEnabled, settingsData.supportedMethodsJson, settingsData.minimumAmount,
-          settingsData.maximumAmount, settingsData.adminFee, settingsData.adminFeeType,
+          settingsData.maximumAmount,
           settingsData.successRedirectUrl, settingsData.failureRedirectUrl, settingsData.environment,
           existingSettingsResult[0].id
         )
@@ -193,14 +185,14 @@ export async function PUT(request: NextRequest) {
           INSERT INTO payment_settings (
             id, xenditApiKey, xenditWebhookToken, xenditPublicKey,
             isXenditEnabled, supportedMethodsJson, minimumAmount, maximumAmount,
-            adminFee, adminFeeType, successRedirectUrl, failureRedirectUrl, environment,
+            successRedirectUrl, failureRedirectUrl, environment,
             gmailUser, gmailAppPassword, isEmailEnabled, emailFrom
-          ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+          ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         `,
           'payment-' + Date.now(),
           settingsData.xenditApiKey, settingsData.xenditWebhookToken, settingsData.xenditPublicKey,
           settingsData.isXenditEnabled, settingsData.supportedMethodsJson, settingsData.minimumAmount,
-          settingsData.maximumAmount, settingsData.adminFee, settingsData.adminFeeType,
+          settingsData.maximumAmount,
           settingsData.successRedirectUrl, settingsData.failureRedirectUrl, settingsData.environment,
           settingsData.gmailUser, settingsData.gmailAppPassword, settingsData.isEmailEnabled, settingsData.emailFrom
         )
@@ -211,13 +203,13 @@ export async function PUT(request: NextRequest) {
           INSERT INTO payment_settings (
             id, xenditApiKey, xenditWebhookToken, xenditPublicKey,
             isXenditEnabled, supportedMethodsJson, minimumAmount, maximumAmount,
-            adminFee, adminFeeType, successRedirectUrl, failureRedirectUrl, environment
-          ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            successRedirectUrl, failureRedirectUrl, environment
+          ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         `,
           'payment-' + Date.now(),
           settingsData.xenditApiKey, settingsData.xenditWebhookToken, settingsData.xenditPublicKey,
           settingsData.isXenditEnabled, settingsData.supportedMethodsJson, settingsData.minimumAmount,
-          settingsData.maximumAmount, settingsData.adminFee, settingsData.adminFeeType,
+          settingsData.maximumAmount,
           settingsData.successRedirectUrl, settingsData.failureRedirectUrl, settingsData.environment
         )
       }
