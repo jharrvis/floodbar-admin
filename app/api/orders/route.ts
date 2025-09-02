@@ -64,7 +64,7 @@ export async function POST(request: NextRequest) {
         shippingDestination, shippingWeight, shippingService, shippingCost,
         paymentMethod, paymentProvider, subtotal, adminFee, grandTotal,
         status, createdAt, updatedAt
-      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 0, ?, NOW(), NOW())
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW(), NOW())
     `,
       orderId,
       orderData.customer.name,
@@ -86,6 +86,7 @@ export async function POST(request: NextRequest) {
       orderData.payment.method,
       orderData.payment.provider || '',
       orderData.orderSummary.subtotal,
+      0, // adminFee
       orderData.orderSummary.grandTotal,
       'pending'
     )

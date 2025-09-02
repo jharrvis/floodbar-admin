@@ -93,6 +93,8 @@ export default function OrdersPage() {
   const [trackingNumber, setTrackingNumber] = useState('')
   const [syncingOrders, setSyncingOrders] = useState<Set<string>>(new Set())
   const [shippingOrders, setShippingOrders] = useState<Set<string>>(new Set())
+  const [showWebhookDebug, setShowWebhookDebug] = useState(false)
+  const [webhookDebugData, setWebhookDebugData] = useState<any>(null)
 
   useEffect(() => {
     loadOrders()
@@ -172,6 +174,19 @@ export default function OrdersPage() {
         newSet.delete(orderId)
         return newSet
       })
+    }
+  }
+
+  const loadWebhookDebug = async () => {
+    try {
+      const response = await fetch('/api/admin/webhook-debug')
+      if (response.ok) {
+        const data = await response.json()
+        setWebhookDebugData(data)
+        setShowWebhookDebug(true)
+      }
+    } catch (error) {
+      console.error('Error loading webhook debug:', error)
     }
   }
 
@@ -295,6 +310,16 @@ export default function OrdersPage() {
         <div>
           <h1 className="text-2xl font-bold text-gray-900">Kelola Pesanan</h1>
           <p className="text-gray-600 mt-1">Pantau dan kelola semua pesanan pelanggan</p>
+        </div>
+        <div className="flex gap-2">
+          <button
+            onClick={loadWebhookDebug}
+            className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm flex items-center gap-2"
+            title="Debug Webhook"
+          >
+            <RefreshCw size={16} />
+            Debug Webhook
+          </button>
         </div>
       </div>
 
@@ -712,6 +737,83 @@ export default function OrdersPage() {
                 )}
               </button>
             </div>
+          </div>
+        </div>
+      )}
+
+      {/* Webhook Debug Modal */}
+      {showWebhookDebug && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg p-6 max-w-4xl w-full mx-4 max-h-[90vh] overflow-y-auto">
+            <div className="flex justify-between items-center mb-4">
+              <h3 className="text-lg font-semibold">Webhook Debug Info</h3>
+              <button
+                onClick={() => setShowWebhookDebug(false)}
+                className="text-gray-500 hover:text-gray-700"
+              >
+                ✕
+              </button>
+            </div>
+
+            {webhookDebugData && (
+              <div className="space-y-6">
+                {/* Configuration Info */}
+                <div>
+                  <h4 className="font-medium mb-2">Konfigurasi Webhook</h4>
+                  <div className="bg-gray-50 p-4 rounded-lg">
+                    <div className="grid grid-cols-2 gap-4 text-sm">
+                      <div>
+                        <span className="font-medium">Webhook Token:</span> 
+                        <span className={webhookDebugData.settings.webhookTokenConfigured ? 'text-green-600' : 'text-red-600'}>
+                          {webhookDebugData.settings.webhookTokenConfigured ? ' ✓ Terkonfigurasi' : ' ✗ Belum dikonfigurasi'}
+                        </span>
+                      </div>
+                      <div>
+                        <span className="font-medium">Xendit Enabled:</span> 
+                        <span className={webhookDebugData.settings.xenditEnabled ? 'text-green-600' : 'text-red-600'}>
+                          {webhookDebugData.settings.xenditEnabled ? ' ✓ Aktif' : ' ✗ Tidak aktif'}
+                        </span>
+                      </div>
+                      <div className="col-span-2">
+                        <span className="font-medium">Webhook URL:</span> 
+                        <span className="text-blue-600 break-all"> {webhookDebugData.settings.webhookUrl}</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Recent Webhooks */}
+                <div>
+                  <h4 className="font-medium mb-2">Log Webhook Terbaru ({webhookDebugData.webhookLogs.length})</h4>
+                  <div className="bg-gray-50 rounded-lg max-h-96 overflow-y-auto">
+                    {webhookDebugData.webhookLogs.length > 0 ? (
+                      <div className="divide-y">
+                        {webhookDebugData.webhookLogs.map((log: any, index: number) => (
+                          <div key={index} className="p-4">
+                            <div className="flex justify-between items-start mb-2">
+                              <div className="text-sm">
+                                <span className="font-medium">Order: {log.orderId}</span>
+                                <span className="text-gray-500 ml-2">({log.provider})</span>
+                              </div>
+                              <div className="text-xs text-gray-500">
+                                {new Date(log.processedAt).toLocaleString()}
+                              </div>
+                            </div>
+                            <div className="text-xs bg-white p-2 rounded border overflow-x-auto">
+                              <pre>{JSON.stringify(JSON.parse(log.webhookData), null, 2)}</pre>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    ) : (
+                      <div className="p-4 text-center text-gray-500">
+                        Belum ada log webhook ditemukan
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
         </div>
       )}

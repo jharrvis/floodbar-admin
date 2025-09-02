@@ -164,23 +164,29 @@ export default function OrderPage() {
     calculateShipping(city)
   }
 
-  const calculateShipping = async (selectedCity?: any) => {
+  const calculateShipping = async (selectedCity?: any, overrideInsurance?: boolean, overridePickup?: boolean) => {
     const city = selectedCity || shippingForm.selectedCity
     if (!city || !shippingForm.weight) return
 
     setShippingCalculating(true)
     try {
-      // Calculate minimum weight (10kg minimum)
-      const actualWeight = Math.max(shippingForm.weight, 10)
+      // Calculate actual weight with proper logic:
+      // If weight < 10kg: use 10kg (minimum shipping weight)
+      // If weight >= 10kg: round up to nearest integer (e.g. 11.2 -> 12, 18.8 -> 19)
+      const actualWeight = shippingForm.weight < 10 ? 10 : Math.ceil(shippingForm.weight)
       
       // Calculate shipping cost based on selected city price
       const shippingCost = actualWeight * parseFloat(city.price_per_kg || '15000')
       
+      // Use override values if provided, otherwise use current state
+      const currentInsuranceSelected = overrideInsurance !== undefined ? overrideInsurance : insuranceSelected
+      const currentPickupSelected = overridePickup !== undefined ? overridePickup : pickupSelected
+      
       // Insurance (optional - 1% of product value)
-      const insuranceCost = insuranceSelected ? Math.max(orderSummary.subtotal * 0.01, 5000) : 0
+      const insuranceCost = currentInsuranceSelected ? Math.max(orderSummary.subtotal * 0.01, 5000) : 0
       
       // Pickup fee (optional - fixed rate)
-      const pickupCost = pickupSelected ? 25000 : 0
+      const pickupCost = currentPickupSelected ? 25000 : 0
       
       const totalShippingCost = shippingCost + insuranceCost + pickupCost
 
@@ -294,10 +300,37 @@ export default function OrderPage() {
               <span>Subtotal:</span>
               <span>Rp {orderSummary.subtotal.toLocaleString()}</span>
             </div>
-            <div className="flex justify-between">
-              <span>Ongkir:</span>
-              <span>Rp {orderSummary.shippingCost.toLocaleString()}</span>
-            </div>
+            {/* Shipping Cost Breakdown */}
+            {shippingData && (
+              <>
+                <div className="flex justify-between text-sm">
+                  <span>Ongkir (PKS):</span>
+                  <span>Rp {Math.round((shippingData.cost || 0) - (shippingData.insuranceCost || 0) - (shippingData.pickupCost || 0)).toLocaleString()}</span>
+                </div>
+                {shippingData.insuranceCost && shippingData.insuranceCost > 0 && (
+                  <div className="flex justify-between text-sm">
+                    <span>Asuransi:</span>
+                    <span>Rp {shippingData.insuranceCost.toLocaleString()}</span>
+                  </div>
+                )}
+                {shippingData.pickupCost && shippingData.pickupCost > 0 && (
+                  <div className="flex justify-between text-sm">
+                    <span>Biaya Pickup:</span>
+                    <span>Rp {shippingData.pickupCost.toLocaleString()}</span>
+                  </div>
+                )}
+                <div className="flex justify-between font-medium border-t pt-1">
+                  <span>Total Ongkir:</span>
+                  <span>Rp {shippingData.cost.toLocaleString()}</span>
+                </div>
+              </>
+            )}
+            {!shippingData && orderSummary.shippingCost > 0 && (
+              <div className="flex justify-between">
+                <span>Ongkir:</span>
+                <span>Rp {orderSummary.shippingCost.toLocaleString()}</span>
+              </div>
+            )}
             <div className="flex justify-between font-bold text-lg border-t pt-2">
               <span>Grand Total:</span>
               <span>Rp {orderSummary.grandTotal.toLocaleString()}</span>
@@ -312,10 +345,10 @@ export default function OrderPage() {
     <div className="min-h-screen bg-gray-50 py-8">
       <div className="max-w-7xl mx-auto px-4">
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 mb-4">Buat Pesanan FloodBar</h1>
+          <h1 className="text-2xl md:text-3xl font-bold text-gray-900 mb-4">Buat Pesanan FloodBar</h1>
           
           {/* Progress Steps */}
-          <div className="flex items-center space-x-4 mb-8">
+          <div className="flex items-center space-x-2 md:space-x-4 mb-8 overflow-x-auto pb-2">
             {[
               { num: 1, title: 'Produk', icon: Package },
               { num: 2, title: 'Pengiriman', icon: Truck },
@@ -331,7 +364,7 @@ export default function OrderPage() {
                   }`}>
                     <Icon size={20} />
                   </div>
-                  <span className={`ml-2 text-sm font-medium ${
+                  <span className={`ml-2 text-xs md:text-sm font-medium whitespace-nowrap ${
                     step >= stepItem.num ? 'text-blue-600' : 'text-gray-500'
                   }`}>
                     {stepItem.title}
@@ -347,7 +380,7 @@ export default function OrderPage() {
           </div>
         </div>
 
-        <div className="flex gap-8">
+        <div className="flex flex-col lg:flex-row gap-8">
           {/* Main Content */}
           <div className="flex-1">
             {/* Step 1: Product Configuration */}
@@ -357,7 +390,7 @@ export default function OrderPage() {
                   <Package size={24} />
                   Konfigurasi Produk
                 </h2>
-                <div className="grid grid-cols-2 gap-4 mb-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
                       Lebar (cm)
@@ -460,16 +493,17 @@ export default function OrderPage() {
                 </div>
 
                 {/* Insurance and Pickup Options */}
-                <div className="grid grid-cols-2 gap-4 mb-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
                   <div className="flex items-center">
                     <input
                       type="checkbox"
                       id="insurance"
                       checked={insuranceSelected}
                       onChange={(e) => {
-                        setInsuranceSelected(e.target.checked)
+                        const newValue = e.target.checked
+                        setInsuranceSelected(newValue)
                         if (shippingForm.selectedCity) {
-                          calculateShipping()
+                          calculateShipping(undefined, newValue, pickupSelected)
                         }
                       }}
                       className="mr-2"
@@ -484,9 +518,10 @@ export default function OrderPage() {
                       id="pickup"
                       checked={pickupSelected}
                       onChange={(e) => {
-                        setPickupSelected(e.target.checked)
+                        const newValue = e.target.checked
+                        setPickupSelected(newValue)
                         if (shippingForm.selectedCity) {
-                          calculateShipping()
+                          calculateShipping(undefined, insuranceSelected, newValue)
                         }
                       }}
                       className="mr-2"
@@ -524,7 +559,7 @@ export default function OrderPage() {
                 </div>
                 {shippingData && (
                   <div className="mt-4 p-4 bg-green-50 rounded-md">
-                    <p className="font-medium">Ongkos Kirim: Rp {(shippingData.cost - (shippingData.insuranceCost || 0) - (shippingData.pickupCost || 0)).toLocaleString()}</p>
+                    <p className="font-medium">Ongkos Kirim: Rp {Math.round(shippingData.cost - (shippingData.insuranceCost || 0) - (shippingData.pickupCost || 0)).toLocaleString()}</p>
                     {shippingData.insuranceCost && shippingData.insuranceCost > 0 && (
                       <p className="text-sm text-gray-600">Asuransi: Rp {shippingData.insuranceCost.toLocaleString()}</p>
                     )}
@@ -546,7 +581,7 @@ export default function OrderPage() {
                   <User size={24} />
                   Data Diri & Alamat
                 </h2>
-                <div className="grid grid-cols-2 gap-4 mb-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
                       Nama Lengkap *
@@ -597,7 +632,7 @@ export default function OrderPage() {
                     required
                   />
                 </div>
-                <div className="grid grid-cols-3 gap-4 mb-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-4">
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
                       Kota

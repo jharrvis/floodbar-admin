@@ -34,7 +34,7 @@ export async function GET(request: NextRequest) {
     // Search cities in shipping_rates table
     const cities = await prisma.$queryRawUnsafe(`
       SELECT DISTINCT tujuan as city, 
-             COALESCE(hargaOnline, hargaPks, 15000) as price_per_kg,
+             COALESCE(hargaPks, hargaOnline, 15000) as price_per_kg,
              leadTime as estimasi_hari
       FROM shipping_rates 
       WHERE tujuan LIKE CONCAT('%', ?, '%')
