@@ -160,7 +160,7 @@ export async function POST(request: NextRequest) {
         try {
           // Only send in production to avoid spam during development
           if (process.env.NODE_ENV === 'production') {
-            await fetch(`${process.env.NEXTAUTH_URL}/api/notifications/email-paid`, {
+            await fetch(`${process.env.NEXTAUTH_URL || 'https://floodbar.id'}/api/notifications/email-paid`, {
               method: 'POST',
               headers: { 'Content-Type': 'application/json' },
               body: JSON.stringify({

@@ -185,7 +185,7 @@ export async function POST(request: NextRequest) {
     // Send email notification (skip for development to avoid ECONNREFUSED)
     if (process.env.NODE_ENV === 'production') {
       try {
-        await fetch(`${process.env.NEXTAUTH_URL}/api/notifications/email`, {
+        await fetch(`${process.env.NEXTAUTH_URL || 'https://floodbar.id'}/api/notifications/email`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
@@ -200,7 +200,7 @@ export async function POST(request: NextRequest) {
 
       // Send WhatsApp notification  
       try {
-        await fetch(`${process.env.NEXTAUTH_URL}/api/notifications/whatsapp`, {
+        await fetch(`${process.env.NEXTAUTH_URL || 'https://floodbar.id'}/api/notifications/whatsapp`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({

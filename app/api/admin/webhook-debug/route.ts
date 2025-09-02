@@ -28,7 +28,7 @@ export async function GET() {
       settings: {
         webhookTokenConfigured: !!settings?.xenditWebhookToken,
         xenditEnabled: !!settings?.isXenditEnabled,
-        webhookUrl: `${process.env.NEXTAUTH_URL || 'https://floodbar.id'}/api/webhooks/xendit`
+        webhookUrl: process.env.NODE_ENV === 'production' ? 'https://floodbar.id/api/webhooks/xendit' : `${process.env.NEXTAUTH_URL || 'http://localhost:3000'}/api/webhooks/xendit`
       }
     })
   } catch (error) {

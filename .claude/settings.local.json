@@ -34,7 +34,10 @@
       "Bash(git reset:*)",
       "Bash(git pull:*)",
       "Bash(npm run lint)",
-      "Bash(npx next build:*)"
+      "Bash(npx next build:*)",
+      "Bash(gh repo view:*)",
+      "Bash(gh run list:*)",
+      "WebFetch(domain:floodbar.id)"
     ],
     "deny": [],
     "ask": []
