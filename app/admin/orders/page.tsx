@@ -107,6 +107,7 @@ export default function OrdersPage() {
       const result = await response.json()
       
       if (result.success) {
+        console.log('Orders loaded:', result.orders.slice(0, 2)) // Debug first 2 orders
         setOrders(result.orders)
       }
     } catch (error) {
@@ -474,7 +475,7 @@ export default function OrdersPage() {
                         <Eye size={16} />
                       </button>
                       
-                      {order.paymentProvider === 'xendit' && order.paymentStatus === 'pending' && (
+                      {(order.paymentMethod === 'xendit' || order.paymentMethod === 'online' || order.paymentProvider === 'xendit') && (
                         <button
                           onClick={() => syncOrderStatus(order.id)}
                           disabled={syncingOrders.has(order.id)}
