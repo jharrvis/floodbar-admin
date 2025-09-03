@@ -22,7 +22,11 @@ import {
   CreditCard,
   Smartphone,
   Building2,
-  QrCode
+  QrCode,
+  ChevronUp,
+  ChevronDown,
+  ChevronLeft,
+  ChevronRight
 } from 'lucide-react'
 
 interface Order {
@@ -95,6 +99,15 @@ export default function OrdersPage() {
   const [shippingOrders, setShippingOrders] = useState<Set<string>>(new Set())
   const [showWebhookDebug, setShowWebhookDebug] = useState(false)
   const [webhookDebugData, setWebhookDebugData] = useState<any>(null)
+  
+  // New state for enhanced features
+  const [dateFrom, setDateFrom] = useState('')
+  const [dateTo, setDateTo] = useState('')
+  const [sortBy, setSortBy] = useState('createdAt')
+  const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc')
+  const [currentPage, setCurrentPage] = useState(1)
+  const [itemsPerPage, setItemsPerPage] = useState(10)
+  const [allOrders, setAllOrders] = useState<Order[]>([])
 
   useEffect(() => {
     loadOrders()
@@ -108,6 +121,7 @@ export default function OrdersPage() {
       
       if (result.success) {
         console.log('Orders loaded:', result.orders.slice(0, 2)) // Debug first 2 orders
+        setAllOrders(result.orders)
         setOrders(result.orders)
       }
     } catch (error) {
@@ -232,16 +246,89 @@ export default function OrdersPage() {
     setShowShippingModal(true)
   }
 
-  const filteredOrders = orders.filter(order => {
-    const matchesSearch = order.id.toLowerCase().includes(search.toLowerCase()) ||
-                         order.customerName.toLowerCase().includes(search.toLowerCase()) ||
-                         order.customerEmail.toLowerCase().includes(search.toLowerCase())
+  // Filter and sort orders
+  useEffect(() => {
+    let filtered = [...allOrders]
     
-    const matchesStatus = !statusFilter || order.status === statusFilter
-    const matchesPayment = !paymentFilter || order.paymentStatus === paymentFilter
+    // Apply search filter
+    if (search) {
+      filtered = filtered.filter(order => 
+        order.customerName.toLowerCase().includes(search.toLowerCase()) ||
+        order.customerEmail.toLowerCase().includes(search.toLowerCase()) ||
+        order.id.toLowerCase().includes(search.toLowerCase()) ||
+        order.customerPhone.includes(search)
+      )
+    }
     
-    return matchesSearch && matchesStatus && matchesPayment
-  })
+    // Apply status filter
+    if (statusFilter) {
+      filtered = filtered.filter(order => order.status === statusFilter)
+    }
+    
+    // Apply payment filter
+    if (paymentFilter) {
+      filtered = filtered.filter(order => order.paymentStatus === paymentFilter)
+    }
+    
+    // Apply date range filter
+    if (dateFrom) {
+      filtered = filtered.filter(order => 
+        new Date(order.createdAt) >= new Date(dateFrom + 'T00:00:00')
+      )
+    }
+    
+    if (dateTo) {
+      filtered = filtered.filter(order => 
+        new Date(order.createdAt) <= new Date(dateTo + 'T23:59:59')
+      )
+    }
+    
+    // Apply sorting
+    filtered.sort((a, b) => {
+      const aValue = sortBy === 'createdAt' ? new Date(a.createdAt).getTime() :
+                     sortBy === 'updatedAt' ? new Date(a.updatedAt).getTime() :
+                     sortBy === 'grandTotal' ? a.grandTotal :
+                     a[sortBy as keyof Order]
+      
+      const bValue = sortBy === 'createdAt' ? new Date(b.createdAt).getTime() :
+                     sortBy === 'updatedAt' ? new Date(b.updatedAt).getTime() :
+                     sortBy === 'grandTotal' ? b.grandTotal :
+                     b[sortBy as keyof Order]
+      
+      if (sortOrder === 'asc') {
+        return aValue > bValue ? 1 : -1
+      } else {
+        return aValue < bValue ? 1 : -1
+      }
+    })
+    
+    setOrders(filtered)
+    setCurrentPage(1) // Reset to first page when filters change
+  }, [allOrders, search, statusFilter, paymentFilter, dateFrom, dateTo, sortBy, sortOrder])
+
+  // Pagination
+  const totalPages = Math.ceil(orders.length / itemsPerPage)
+  const startIndex = (currentPage - 1) * itemsPerPage
+  const endIndex = startIndex + itemsPerPage
+  const currentOrders = orders.slice(startIndex, endIndex)
+
+  const handleSort = (column: string) => {
+    if (sortBy === column) {
+      setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc')
+    } else {
+      setSortBy(column)
+      setSortOrder('desc')
+    }
+  }
+
+  // Get unread orders count for notification badge
+  const getUnreadOrdersCount = () => {
+    const oneDayAgo = new Date(Date.now() - 24 * 60 * 60 * 1000)
+    return allOrders.filter(order => 
+      new Date(order.createdAt) > oneDayAgo && 
+      (order.status === 'pending' || order.paymentStatus === 'pending')
+    ).length
+  }
 
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat('id-ID', {
@@ -326,8 +413,8 @@ export default function OrdersPage() {
 
       {/* Filters */}
       <div className="bg-white p-4 rounded-lg shadow mb-6">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-          <div className="relative">
+        <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-6 gap-4">
+          <div className="relative lg:col-span-2">
             <Search className="absolute left-3 top-3 text-gray-400" size={20} />
             <input
               type="text"
@@ -363,8 +450,54 @@ export default function OrdersPage() {
             <option value="refunded">Refund</option>
           </select>
 
-          <div className="text-sm text-gray-600 flex items-center">
-            Total: {filteredOrders.length} pesanan
+          <div className="relative">
+            <Calendar className="absolute left-3 top-3 text-gray-400" size={16} />
+            <input
+              type="date"
+              placeholder="Tanggal Mulai"
+              value={dateFrom}
+              onChange={(e) => setDateFrom(e.target.value)}
+              className="pl-10 pr-4 py-2 w-full border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
+            />
+          </div>
+
+          <div className="relative">
+            <Calendar className="absolute left-3 top-3 text-gray-400" size={16} />
+            <input
+              type="date"
+              placeholder="Tanggal Akhir"
+              value={dateTo}
+              onChange={(e) => setDateTo(e.target.value)}
+              className="pl-10 pr-4 py-2 w-full border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
+            />
+          </div>
+        </div>
+        
+        <div className="flex justify-between items-center mt-4 pt-4 border-t border-gray-200">
+          <div className="text-sm text-gray-600 flex items-center gap-4">
+            <span>Total: {orders.length} pesanan</span>
+            {getUnreadOrdersCount() > 0 && (
+              <span className="flex items-center gap-1 text-red-600">
+                <div className="w-2 h-2 bg-red-500 rounded-full"></div>
+                {getUnreadOrdersCount()} transaksi baru (24 jam terakhir)
+              </span>
+            )}
+          </div>
+          
+          <div className="flex items-center gap-2">
+            <span className="text-sm text-gray-600">Tampilkan:</span>
+            <select
+              value={itemsPerPage}
+              onChange={(e) => setItemsPerPage(Number(e.target.value))}
+              className="px-2 py-1 border border-gray-300 rounded-md text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            >
+              <option value={5}>5</option>
+              <option value={10}>10</option>
+              <option value={25}>25</option>
+              <option value={50}>50</option>
+              <option value={100}>100</option>
+            </select>
+            <span className="text-sm text-gray-600">per halaman</span>
           </div>
         </div>
       </div>
@@ -376,22 +509,62 @@ export default function OrdersPage() {
             <thead className="bg-gray-50">
               <tr>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Order ID & Customer
+                  <button
+                    onClick={() => handleSort('id')}
+                    className="flex items-center gap-1 hover:text-gray-700"
+                  >
+                    Order ID & Customer
+                    {sortBy === 'id' && (
+                      sortOrder === 'asc' ? <ChevronUp size={14} /> : <ChevronDown size={14} />
+                    )}
+                  </button>
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Produk
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Total
+                  <button
+                    onClick={() => handleSort('grandTotal')}
+                    className="flex items-center gap-1 hover:text-gray-700"
+                  >
+                    Total
+                    {sortBy === 'grandTotal' && (
+                      sortOrder === 'asc' ? <ChevronUp size={14} /> : <ChevronDown size={14} />
+                    )}
+                  </button>
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Status Pesanan
+                  <button
+                    onClick={() => handleSort('status')}
+                    className="flex items-center gap-1 hover:text-gray-700"
+                  >
+                    Status Pesanan
+                    {sortBy === 'status' && (
+                      sortOrder === 'asc' ? <ChevronUp size={14} /> : <ChevronDown size={14} />
+                    )}
+                  </button>
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Pembayaran
+                  <button
+                    onClick={() => handleSort('paymentStatus')}
+                    className="flex items-center gap-1 hover:text-gray-700"
+                  >
+                    Pembayaran
+                    {sortBy === 'paymentStatus' && (
+                      sortOrder === 'asc' ? <ChevronUp size={14} /> : <ChevronDown size={14} />
+                    )}
+                  </button>
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Tanggal
+                  <button
+                    onClick={() => handleSort('createdAt')}
+                    className="flex items-center gap-1 hover:text-gray-700"
+                  >
+                    Tanggal
+                    {sortBy === 'createdAt' && (
+                      sortOrder === 'asc' ? <ChevronUp size={14} /> : <ChevronDown size={14} />
+                    )}
+                  </button>
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Aksi
@@ -399,7 +572,7 @@ export default function OrdersPage() {
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
-              {filteredOrders.map((order) => (
+              {currentOrders.map((order) => (
                 <tr key={order.id} className="hover:bg-gray-50">
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div>
@@ -494,7 +667,88 @@ export default function OrdersPage() {
         </div>
       </div>
 
-      {filteredOrders.length === 0 && (
+      {/* Pagination */}
+      {totalPages > 1 && (
+        <div className="bg-white px-4 py-3 flex items-center justify-between border-t border-gray-200 sm:px-6 mt-6 rounded-lg shadow">
+          <div className="flex-1 flex justify-between sm:hidden">
+            <button
+              onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
+              disabled={currentPage === 1}
+              className="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              Previous
+            </button>
+            <button
+              onClick={() => setCurrentPage(Math.min(totalPages, currentPage + 1))}
+              disabled={currentPage === totalPages}
+              className="ml-3 relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              Next
+            </button>
+          </div>
+          <div className="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
+            <div>
+              <p className="text-sm text-gray-700">
+                Menampilkan{' '}
+                <span className="font-medium">{startIndex + 1}</span>
+                {' '}sampai{' '}
+                <span className="font-medium">{Math.min(endIndex, orders.length)}</span>
+                {' '}dari{' '}
+                <span className="font-medium">{orders.length}</span>
+                {' '}hasil
+              </p>
+            </div>
+            <div>
+              <nav className="relative z-0 inline-flex rounded-md shadow-sm -space-x-px" aria-label="Pagination">
+                <button
+                  onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
+                  disabled={currentPage === 1}
+                  className="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  <ChevronLeft className="h-5 w-5" />
+                </button>
+                
+                {Array.from({ length: Math.min(totalPages, 7) }, (_, i) => {
+                  let pageNumber: number
+                  if (totalPages <= 7) {
+                    pageNumber = i + 1
+                  } else if (currentPage <= 4) {
+                    pageNumber = i + 1
+                  } else if (currentPage >= totalPages - 3) {
+                    pageNumber = totalPages - 6 + i
+                  } else {
+                    pageNumber = currentPage - 3 + i
+                  }
+                  
+                  return (
+                    <button
+                      key={pageNumber}
+                      onClick={() => setCurrentPage(pageNumber)}
+                      className={`relative inline-flex items-center px-4 py-2 border text-sm font-medium ${
+                        currentPage === pageNumber
+                          ? 'z-10 bg-blue-50 border-blue-500 text-blue-600'
+                          : 'bg-white border-gray-300 text-gray-500 hover:bg-gray-50'
+                      }`}
+                    >
+                      {pageNumber}
+                    </button>
+                  )
+                })}
+                
+                <button
+                  onClick={() => setCurrentPage(Math.min(totalPages, currentPage + 1))}
+                  disabled={currentPage === totalPages}
+                  className="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  <ChevronRight className="h-5 w-5" />
+                </button>
+              </nav>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {orders.length === 0 && !loading && (
         <div className="text-center py-12">
           <Package className="mx-auto h-12 w-12 text-gray-400" />
           <h3 className="mt-2 text-sm font-medium text-gray-900">Tidak ada pesanan</h3>

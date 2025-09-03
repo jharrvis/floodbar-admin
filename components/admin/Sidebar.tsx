@@ -3,6 +3,7 @@
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { signOut } from 'next-auth/react'
+import { useState, useEffect } from 'react'
 import { 
   Home, 
   Settings, 
@@ -58,8 +59,43 @@ const menuItems = [
   }
 ]
 
+interface Order {
+  id: string
+  createdAt: string
+  status: string
+  paymentStatus: string
+}
+
 export default function Sidebar() {
   const pathname = usePathname()
+  const [unreadOrdersCount, setUnreadOrdersCount] = useState(0)
+
+  // Load orders data to get unread count
+  useEffect(() => {
+    const loadUnreadCount = async () => {
+      try {
+        const response = await fetch('/api/orders')
+        const result = await response.json()
+        
+        if (result.success) {
+          const oneDayAgo = new Date(Date.now() - 24 * 60 * 60 * 1000)
+          const unreadCount = result.orders.filter((order: Order) => 
+            new Date(order.createdAt) > oneDayAgo && 
+            (order.status === 'pending' || order.paymentStatus === 'pending')
+          ).length
+          setUnreadOrdersCount(unreadCount)
+        }
+      } catch (error) {
+        console.error('Error loading unread orders count:', error)
+      }
+    }
+
+    loadUnreadCount()
+    
+    // Refresh count every 30 seconds
+    const interval = setInterval(loadUnreadCount, 30000)
+    return () => clearInterval(interval)
+  }, [])
 
   return (
     <div className="bg-gray-900 text-white w-64 min-h-screen p-4">
@@ -76,7 +112,7 @@ export default function Sidebar() {
             <Link
               key={item.href}
               href={item.href}
-              className={`flex items-center space-x-3 p-3 rounded-lg transition-colors ${
+              className={`flex items-center space-x-3 p-3 rounded-lg transition-colors relative ${
                 isActive
                   ? 'bg-primary-600 text-white'
                   : 'text-gray-300 hover:bg-gray-800 hover:text-white'
@@ -84,6 +120,11 @@ export default function Sidebar() {
             >
               <Icon size={20} />
               <span>{item.label}</span>
+              {item.href === '/admin/orders' && unreadOrdersCount > 0 && (
+                <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-6 w-6 flex items-center justify-center font-medium animate-pulse">
+                  {unreadOrdersCount > 99 ? '99+' : unreadOrdersCount}
+                </span>
+              )}
             </Link>
           )
         })}

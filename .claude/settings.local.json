@@ -37,7 +37,8 @@
       "Bash(npx next build:*)",
       "Bash(gh repo view:*)",
       "Bash(gh run list:*)",
-      "WebFetch(domain:floodbar.id)"
+      "WebFetch(domain:floodbar.id)",
+      "Bash(grep:*)"
     ],
     "deny": [],
     "ask": []
