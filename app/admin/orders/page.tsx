@@ -26,7 +26,10 @@ import {
   ChevronUp,
   ChevronDown,
   ChevronLeft,
-  ChevronRight
+  ChevronRight,
+  Check,
+  Square,
+  CheckSquare
 } from 'lucide-react'
 
 interface Order {
@@ -54,6 +57,7 @@ interface Order {
   grandTotal: number
   status: 'pending' | 'paid' | 'processing' | 'shipped' | 'delivered' | 'cancelled'
   paymentStatus: 'pending' | 'paid' | 'failed' | 'refunded'
+  isChecked?: boolean
   xenditInvoiceId?: string
   xenditInvoiceUrl?: string
   trackingNumber?: string
@@ -334,13 +338,34 @@ export default function OrdersPage() {
     }
   }
 
-  // Get unread orders count for notification badge
-  const getUnreadOrdersCount = () => {
-    const oneDayAgo = new Date(Date.now() - 24 * 60 * 60 * 1000)
-    return allOrders.filter(order => 
-      new Date(order.createdAt) > oneDayAgo && 
-      (order.status === 'pending' || order.paymentStatus === 'pending')
-    ).length
+  const toggleCheckedStatus = async (orderId: string, currentStatus: boolean) => {
+    try {
+      const response = await fetch(`/api/admin/orders/${orderId}/toggle-checked`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ isChecked: !currentStatus })
+      })
+
+      if (response.ok) {
+        // Update local state
+        setAllOrders(prev => prev.map(order => 
+          order.id === orderId 
+            ? { ...order, isChecked: !currentStatus }
+            : order
+        ))
+      } else {
+        console.error('Failed to update checked status')
+        alert('Gagal mengupdate status cek')
+      }
+    } catch (error) {
+      console.error('Error toggling checked status:', error)
+      alert('Terjadi kesalahan saat mengupdate status cek')
+    }
+  }
+
+  // Get unchecked orders count for notification badge
+  const getUncheckedOrdersCount = () => {
+    return allOrders.filter(order => !order.isChecked).length
   }
 
   const formatCurrency = (amount: number) => {
@@ -426,7 +451,8 @@ export default function OrdersPage() {
 
       {/* Filters */}
       <div className="bg-white p-4 rounded-lg shadow mb-6">
-        <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-6 gap-4">
+        {/* First Row - Main Filters */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
           <div className="relative lg:col-span-2">
             <Search className="absolute left-3 top-3 text-gray-400" size={20} />
             <input
@@ -462,7 +488,10 @@ export default function OrdersPage() {
             <option value="failed">Gagal</option>
             <option value="refunded">Refund</option>
           </select>
+        </div>
 
+        {/* Second Row - Date Filters and Clear Button */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
           <div className="relative">
             <Calendar className="absolute left-3 top-3 text-gray-400" size={16} />
             <input
@@ -484,15 +513,33 @@ export default function OrdersPage() {
               className="pl-10 pr-4 py-2 w-full border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
             />
           </div>
+
+          <button
+            onClick={() => {
+              setSearch('')
+              setStatusFilter('')
+              setPaymentFilter('')
+              setDateFrom('')
+              setDateTo('')
+            }}
+            className="flex items-center justify-center gap-2 px-4 py-2 text-gray-600 bg-gray-100 hover:bg-gray-200 rounded-md transition-colors"
+          >
+            <Filter size={16} />
+            Clear Filters
+          </button>
+
+          <div className="flex items-center text-sm text-gray-500">
+            Filter aktif: {[search, statusFilter, paymentFilter, dateFrom, dateTo].filter(Boolean).length}
+          </div>
         </div>
         
         <div className="flex justify-between items-center mt-4 pt-4 border-t border-gray-200">
           <div className="text-sm text-gray-600 flex items-center gap-4">
             <span>Total: {orders.length} pesanan</span>
-            {getUnreadOrdersCount() > 0 && (
+            {getUncheckedOrdersCount() > 0 && (
               <span className="flex items-center gap-1 text-red-600">
                 <div className="w-2 h-2 bg-red-500 rounded-full"></div>
-                {getUnreadOrdersCount()} transaksi baru (24 jam terakhir)
+                {getUncheckedOrdersCount()} transaksi belum dicek
               </span>
             )}
           </div>
@@ -580,6 +627,9 @@ export default function OrdersPage() {
                   </button>
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Status Cek
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Aksi
                 </th>
               </tr>
@@ -647,6 +697,19 @@ export default function OrdersPage() {
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                     {formatDate(order.createdAt)}
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-center">
+                    <button
+                      onClick={() => toggleCheckedStatus(order.id, order.isChecked || false)}
+                      className={`inline-flex items-center justify-center p-1 rounded transition-colors ${
+                        order.isChecked 
+                          ? 'text-green-600 hover:text-green-700 hover:bg-green-50' 
+                          : 'text-gray-400 hover:text-gray-600 hover:bg-gray-50'
+                      }`}
+                      title={order.isChecked ? 'Tandai belum dicek' : 'Tandai sudah dicek'}
+                    >
+                      {order.isChecked ? <CheckSquare size={18} /> : <Square size={18} />}
+                    </button>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                     <div className="flex items-center gap-2">

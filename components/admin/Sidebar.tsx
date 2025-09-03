@@ -64,6 +64,7 @@ interface Order {
   createdAt: string
   status: string
   paymentStatus: string
+  isChecked?: boolean
 }
 
 export default function Sidebar() {
@@ -78,12 +79,10 @@ export default function Sidebar() {
         const result = await response.json()
         
         if (result.success) {
-          const oneDayAgo = new Date(Date.now() - 24 * 60 * 60 * 1000)
-          const unreadCount = result.orders.filter((order: Order) => 
-            new Date(order.createdAt) > oneDayAgo && 
-            (order.status === 'pending' || order.paymentStatus === 'pending')
+          const uncheckedCount = result.orders.filter((order: Order) => 
+            !order.isChecked
           ).length
-          setUnreadOrdersCount(unreadCount)
+          setUnreadOrdersCount(uncheckedCount)
         }
       } catch (error) {
         console.error('Error loading unread orders count:', error)
