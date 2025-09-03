@@ -285,15 +285,28 @@ export default function OrdersPage() {
     
     // Apply sorting
     filtered.sort((a, b) => {
-      const aValue = sortBy === 'createdAt' ? new Date(a.createdAt).getTime() :
-                     sortBy === 'updatedAt' ? new Date(a.updatedAt).getTime() :
-                     sortBy === 'grandTotal' ? a.grandTotal :
-                     a[sortBy as keyof Order]
+      let aValue: string | number = ''
+      let bValue: string | number = ''
       
-      const bValue = sortBy === 'createdAt' ? new Date(b.createdAt).getTime() :
-                     sortBy === 'updatedAt' ? new Date(b.updatedAt).getTime() :
-                     sortBy === 'grandTotal' ? b.grandTotal :
-                     b[sortBy as keyof Order]
+      if (sortBy === 'createdAt') {
+        aValue = new Date(a.createdAt).getTime()
+        bValue = new Date(b.createdAt).getTime()
+      } else if (sortBy === 'updatedAt') {
+        aValue = new Date(a.updatedAt).getTime()
+        bValue = new Date(b.updatedAt).getTime()
+      } else if (sortBy === 'grandTotal') {
+        aValue = a.grandTotal || 0
+        bValue = b.grandTotal || 0
+      } else if (sortBy === 'id') {
+        aValue = a.id || ''
+        bValue = b.id || ''
+      } else if (sortBy === 'status') {
+        aValue = a.status || ''
+        bValue = b.status || ''
+      } else if (sortBy === 'paymentStatus') {
+        aValue = a.paymentStatus || ''
+        bValue = b.paymentStatus || ''
+      }
       
       if (sortOrder === 'asc') {
         return aValue > bValue ? 1 : -1
