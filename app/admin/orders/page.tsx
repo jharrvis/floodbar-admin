@@ -353,6 +353,18 @@ export default function OrdersPage() {
             ? { ...order, isChecked: !currentStatus }
             : order
         ))
+
+        // Dispatch custom event to notify sidebar of the change
+        window.dispatchEvent(new CustomEvent('orderCheckedStatusChanged', {
+          detail: { 
+            orderId, 
+            isChecked: !currentStatus,
+            // Send updated unchecked count
+            uncheckedCount: allOrders.filter(order => 
+              order.id === orderId ? !currentStatus : !order.isChecked
+            ).length
+          }
+        }))
       } else {
         console.error('Failed to update checked status')
         alert('Gagal mengupdate status cek')
@@ -580,9 +592,6 @@ export default function OrdersPage() {
                   </button>
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Produk
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   <button
                     onClick={() => handleSort('grandTotal')}
                     className="flex items-center gap-1 hover:text-gray-700"
@@ -642,14 +651,6 @@ export default function OrdersPage() {
                       <div className="text-sm font-medium text-gray-900">{order.id}</div>
                       <div className="text-sm text-gray-500">{order.customerName}</div>
                       <div className="text-sm text-gray-500">{order.customerEmail}</div>
-                    </div>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="text-sm text-gray-900">
-                      FloodBar {order.productWidth}×{order.productHeight}cm
-                    </div>
-                    <div className="text-sm text-gray-500">
-                      {order.productQuantity} pcs, {order.productThickness}mm
                     </div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">

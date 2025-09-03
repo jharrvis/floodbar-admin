@@ -93,7 +93,18 @@ export default function Sidebar() {
     
     // Refresh count every 30 seconds
     const interval = setInterval(loadUnreadCount, 30000)
-    return () => clearInterval(interval)
+
+    // Listen for real-time updates from orders page
+    const handleOrderCheckedChange = (event: CustomEvent) => {
+      setUnreadOrdersCount(event.detail.uncheckedCount)
+    }
+
+    window.addEventListener('orderCheckedStatusChanged', handleOrderCheckedChange as EventListener)
+    
+    return () => {
+      clearInterval(interval)
+      window.removeEventListener('orderCheckedStatusChanged', handleOrderCheckedChange as EventListener)
+    }
   }, [])
 
   return (
