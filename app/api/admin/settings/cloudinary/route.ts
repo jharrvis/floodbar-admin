@@ -8,6 +8,20 @@ const prisma = new PrismaClient()
 
 export async function GET() {
   try {
+    // Always return environment variables first for production reliability
+    const envSettings = {
+      cloudName: process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME || '',
+      apiKey: process.env.CLOUDINARY_API_KEY || '',
+      apiSecret: process.env.CLOUDINARY_API_SECRET || '',
+      uploadPreset: process.env.CLOUDINARY_UPLOAD_PRESET || 'floodbar_uploads'
+    }
+
+    // Return environment settings if available
+    if (envSettings.cloudName && envSettings.apiKey && envSettings.apiSecret) {
+      return NextResponse.json(envSettings)
+    }
+
+    // Try database as fallback
     const settingsRecord = await prisma.adminSettings.findFirst({
       where: { key: 'cloudinary_settings' }
     })
@@ -22,11 +36,11 @@ export async function GET() {
       })
     }
 
-    // Return default/fallback values
+    // Return empty/default values if nothing found
     return NextResponse.json({
-      cloudName: process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME || '',
-      apiKey: process.env.CLOUDINARY_API_KEY || '',
-      apiSecret: process.env.CLOUDINARY_API_SECRET || '',
+      cloudName: '',
+      apiKey: '',
+      apiSecret: '',
       uploadPreset: 'floodbar_uploads'
     })
   } catch (error) {
@@ -36,7 +50,7 @@ export async function GET() {
         cloudName: process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME || '',
         apiKey: process.env.CLOUDINARY_API_KEY || '',
         apiSecret: process.env.CLOUDINARY_API_SECRET || '',
-        uploadPreset: 'floodbar_uploads'
+        uploadPreset: process.env.CLOUDINARY_UPLOAD_PRESET || 'floodbar_uploads'
       },
       { status: 200 }
     )

@@ -14,20 +14,7 @@ let cachedConfig: CloudinaryConfig | null = null
 
 export async function getCloudinaryConfig(): Promise<CloudinaryConfig | null> {
   try {
-    // Try to get from database first
-    const setting = await prisma.adminSettings.findFirst({
-      where: { key: 'cloudinary_settings' }
-    })
-
-    if (setting && setting.value) {
-      const config = JSON.parse(setting.value) as CloudinaryConfig
-      if (config.cloudName && config.apiKey && config.apiSecret) {
-        cachedConfig = config
-        return config
-      }
-    }
-
-    // Fallback to environment variables
+    // Always prioritize environment variables in production for reliability
     const envConfig: CloudinaryConfig = {
       cloudName: process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME || '',
       apiKey: process.env.CLOUDINARY_API_KEY || '',
@@ -40,11 +27,24 @@ export async function getCloudinaryConfig(): Promise<CloudinaryConfig | null> {
       return envConfig
     }
 
+    // Try database as secondary option
+    const setting = await prisma.adminSettings.findFirst({
+      where: { key: 'cloudinary_settings' }
+    })
+
+    if (setting && setting.value) {
+      const config = JSON.parse(setting.value) as CloudinaryConfig
+      if (config.cloudName && config.apiKey && config.apiSecret) {
+        cachedConfig = config
+        return config
+      }
+    }
+
     return null
   } catch (error) {
     console.error('Error getting Cloudinary config:', error)
     
-    // Fallback to environment variables on database error
+    // Final fallback to environment variables
     const envConfig: CloudinaryConfig = {
       cloudName: process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME || '',
       apiKey: process.env.CLOUDINARY_API_KEY || '',
