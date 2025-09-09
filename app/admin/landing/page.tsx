@@ -377,6 +377,7 @@ export default function LandingPageEditor() {
                       console.log('New backgroundImage value:', value)
                       console.log('Previous data:', data.hero.backgroundImage)
                       setData(prevData => {
+                        if (!prevData) return prevData
                         const newData = {
                           ...prevData,
                           hero: { ...prevData.hero, backgroundImage: value }
@@ -398,6 +399,7 @@ export default function LandingPageEditor() {
                       console.log('New heroImage value:', value)
                       console.log('Previous data:', data.hero.heroImage)
                       setData(prevData => {
+                        if (!prevData) return prevData
                         const newData = {
                           ...prevData,
                           hero: { ...prevData.hero, heroImage: value }
