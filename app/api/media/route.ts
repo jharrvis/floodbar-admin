@@ -11,31 +11,34 @@ export async function GET(request: Request) {
     // Configure Cloudinary from database/environment
     const configured = await configureCloudinary()
     if (!configured) {
+      console.error('Cloudinary configuration failed')
       return NextResponse.json(
-        { success: false, error: 'Cloudinary configuration not found. Please configure in admin settings.' },
-        { status: 500 }
+        { success: false, error: 'Cloudinary configuration not found. Please configure in admin settings.', resources: [] },
+        { status: 200 } // Return 200 with empty array instead of 500
       )
     }
 
     const { searchParams } = new URL(request.url)
     const folder = searchParams.get('folder') || 'floodbar'
     
-    // Try search API first with folder filter
-    const result = await cloudinary.search
-      .expression(`folder:${folder}`)
-      .max_results(100)
-      .execute()
-
-    return NextResponse.json({
-      success: true,
-      resources: result.resources
-    })
-  } catch (error) {
-    console.error('Error fetching media with search API:', error)
+    console.log('Fetching media from folder:', folder)
     
-    // Fallback to admin API with folder prefix
+    // Try search API first with folder filter
     try {
-      const folder = new URL(request.url).searchParams.get('folder') || 'floodbar'
+      const result = await cloudinary.search
+        .expression(`folder:${folder}`)
+        .max_results(100)
+        .execute()
+
+      console.log('Search API success, found:', result.resources?.length || 0, 'resources')
+      return NextResponse.json({
+        success: true,
+        resources: result.resources || []
+      })
+    } catch (searchError) {
+      console.error('Search API failed, trying admin API:', searchError)
+      
+      // Fallback to admin API with folder prefix
       const adminResult = await cloudinary.api.resources({
         resource_type: 'image',
         type: 'upload',
@@ -43,17 +46,18 @@ export async function GET(request: Request) {
         max_results: 100
       })
       
+      console.log('Admin API success, found:', adminResult.resources?.length || 0, 'resources')
       return NextResponse.json({
         success: true,
-        resources: adminResult.resources
+        resources: adminResult.resources || []
       })
-    } catch (adminError) {
-      console.error('Error fetching media with admin API:', adminError)
-      return NextResponse.json(
-        { success: false, error: 'Failed to fetch media' },
-        { status: 500 }
-      )
     }
+  } catch (error) {
+    console.error('Error fetching media:', error)
+    return NextResponse.json(
+      { success: true, resources: [], error: 'Failed to fetch media, returning empty list' },
+      { status: 200 } // Return 200 with empty array for graceful degradation
+    )
   }
 }
 
