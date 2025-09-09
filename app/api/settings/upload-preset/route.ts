@@ -1,6 +1,5 @@
 import { NextResponse } from 'next/server'
-import fs from 'fs'
-import path from 'path'
+import { getCloudinaryConfig } from '@/lib/cloudinary-config'
 
 export const runtime = 'nodejs'
 export const dynamic = 'force-dynamic'
@@ -8,13 +7,23 @@ export const dynamic = 'force-dynamic'
 // GET - Get upload preset from Cloudinary settings
 export async function GET() {
   try {
-    // Try to get from environment first
-    const uploadPreset = process.env.CLOUDINARY_UPLOAD_PRESET || 'floodbar_uploads'
+    const config = await getCloudinaryConfig()
     
+    if (config) {
+      return NextResponse.json({
+        success: true,
+        uploadPreset: config.uploadPreset,
+        cloudName: config.cloudName,
+        folder: 'floodbar'
+      })
+    }
+    
+    // Fallback
     return NextResponse.json({
       success: true,
-      uploadPreset: uploadPreset,
-      folder: 'floodbar' // Default folder
+      uploadPreset: 'floodbar_uploads',
+      cloudName: process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME || '',
+      folder: 'floodbar'
     })
   } catch (error) {
     console.error('Error getting upload preset:', error)
@@ -22,7 +31,8 @@ export async function GET() {
       { 
         success: false, 
         error: 'Failed to get upload preset',
-        uploadPreset: 'floodbar_uploads', // fallback
+        uploadPreset: 'floodbar_uploads',
+        cloudName: process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME || '',
         folder: 'floodbar'
       },
       { status: 500 }

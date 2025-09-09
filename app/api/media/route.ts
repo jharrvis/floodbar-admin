@@ -1,19 +1,22 @@
 import { NextResponse } from 'next/server'
 import { v2 as cloudinary } from 'cloudinary'
+import { configureCloudinary } from '@/lib/cloudinary-config'
 
 export const runtime = 'nodejs'
 export const dynamic = 'force-dynamic'
 
-// Configure Cloudinary
-cloudinary.config({
-  cloud_name: process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME,
-  api_key: process.env.CLOUDINARY_API_KEY,
-  api_secret: process.env.CLOUDINARY_API_SECRET,
-})
-
 // GET - Fetch all media from Cloudinary
 export async function GET(request: Request) {
   try {
+    // Configure Cloudinary from database/environment
+    const configured = await configureCloudinary()
+    if (!configured) {
+      return NextResponse.json(
+        { success: false, error: 'Cloudinary configuration not found. Please configure in admin settings.' },
+        { status: 500 }
+      )
+    }
+
     const { searchParams } = new URL(request.url)
     const folder = searchParams.get('folder') || 'floodbar'
     
@@ -57,6 +60,15 @@ export async function GET(request: Request) {
 // DELETE - Delete media from Cloudinary
 export async function DELETE(request: Request) {
   try {
+    // Configure Cloudinary from database/environment
+    const configured = await configureCloudinary()
+    if (!configured) {
+      return NextResponse.json(
+        { success: false, error: 'Cloudinary configuration not found. Please configure in admin settings.' },
+        { status: 500 }
+      )
+    }
+
     const body = await request.json()
     const { public_id } = body
 

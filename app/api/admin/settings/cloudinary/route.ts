@@ -8,25 +8,36 @@ const prisma = new PrismaClient()
 
 export async function GET() {
   try {
-    const settingsResult = await prisma.$queryRawUnsafe(`
-      SELECT cloudName, apiKey, apiSecret, uploadPreset 
-      FROM cloudinary_settings 
-      ORDER BY createdAt DESC 
-      LIMIT 1
-    `) as any[]
+    const settingsRecord = await prisma.adminSettings.findFirst({
+      where: { key: 'cloudinary_settings' }
+    })
 
-    const settings = settingsResult.length > 0 ? settingsResult[0] : {
-      cloudName: '',
-      apiKey: '',
-      apiSecret: '',
-      uploadPreset: 'floodbar_uploads'
+    if (settingsRecord && settingsRecord.value) {
+      const settings = JSON.parse(settingsRecord.value)
+      return NextResponse.json({
+        cloudName: settings.cloudName || '',
+        apiKey: settings.apiKey || '',
+        apiSecret: settings.apiSecret || '',
+        uploadPreset: settings.uploadPreset || 'floodbar_uploads'
+      })
     }
 
-    return NextResponse.json(settings)
+    // Return default/fallback values
+    return NextResponse.json({
+      cloudName: process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME || '',
+      apiKey: process.env.CLOUDINARY_API_KEY || '',
+      apiSecret: process.env.CLOUDINARY_API_SECRET || '',
+      uploadPreset: 'floodbar_uploads'
+    })
   } catch (error) {
     console.error('Error fetching Cloudinary settings:', error)
     return NextResponse.json(
-      { cloudName: '', apiKey: '', apiSecret: '', uploadPreset: 'floodbar_uploads' },
+      { 
+        cloudName: process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME || '',
+        apiKey: process.env.CLOUDINARY_API_KEY || '',
+        apiSecret: process.env.CLOUDINARY_API_SECRET || '',
+        uploadPreset: 'floodbar_uploads'
+      },
       { status: 200 }
     )
   }
@@ -37,33 +48,42 @@ export async function PUT(request: NextRequest) {
     const data = await request.json()
     const { cloudName, apiKey, apiSecret, uploadPreset } = data
 
-    // Check if settings exist
-    const existingSettingsResult = await prisma.$queryRawUnsafe(`
-      SELECT id FROM cloudinary_settings LIMIT 1
-    `) as any[]
-
-    if (existingSettingsResult && existingSettingsResult.length > 0) {
-      // Update existing settings
-      await prisma.$executeRawUnsafe(`
-        UPDATE cloudinary_settings 
-        SET cloudName = ?, apiKey = ?, apiSecret = ?, uploadPreset = ?, updatedAt = NOW()
-        WHERE id = ?
-      `, cloudName, apiKey, apiSecret, uploadPreset, existingSettingsResult[0].id)
-    } else {
-      // Create new settings
-      await prisma.$executeRawUnsafe(`
-        INSERT INTO cloudinary_settings (id, cloudName, apiKey, apiSecret, uploadPreset)
-        VALUES (?, ?, ?, ?, ?)
-      `, 'cloudinary-' + Date.now(), cloudName, apiKey, apiSecret, uploadPreset)
+    // Save to AdminSettings table
+    const settingsData = {
+      cloudName,
+      apiKey,
+      apiSecret,
+      uploadPreset: uploadPreset || 'floodbar_uploads'
     }
 
-    // Also update environment file
-    await updateEnvironmentFile(data)
+    const existingSetting = await prisma.adminSettings.findFirst({
+      where: { key: 'cloudinary_settings' }
+    })
+
+    if (existingSetting) {
+      // Update existing settings
+      await prisma.adminSettings.update({
+        where: { id: existingSetting.id },
+        data: {
+          value: JSON.stringify(settingsData),
+          updatedAt: new Date()
+        }
+      })
+    } else {
+      // Create new settings
+      await prisma.adminSettings.create({
+        data: {
+          key: 'cloudinary_settings',
+          value: JSON.stringify(settingsData),
+          description: 'Cloudinary configuration settings'
+        }
+      })
+    }
 
     return NextResponse.json({ 
       success: true, 
       message: 'Cloudinary settings saved successfully',
-      data: { cloudName, apiKey, apiSecret: '***', uploadPreset }
+      data: { cloudName, apiKey, apiSecret: '***', uploadPreset: settingsData.uploadPreset }
     })
   } catch (error) {
     console.error('Error saving Cloudinary settings:', error)
@@ -74,40 +94,3 @@ export async function PUT(request: NextRequest) {
   }
 }
 
-async function updateEnvironmentFile(settings: any) {
-  try {
-    const fs = require('fs')
-    const path = require('path')
-    
-    const envPath = path.join(process.cwd(), '.env.local')
-    let envContent = ''
-    
-    try {
-      envContent = fs.readFileSync(envPath, 'utf8')
-    } catch (err) {
-      // File doesn't exist, create new content
-    }
-    
-    // Update or add Cloudinary variables
-    const envVars = {
-      'NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME': settings.cloudName,
-      'CLOUDINARY_API_KEY': settings.apiKey,
-      'CLOUDINARY_API_SECRET': settings.apiSecret
-    }
-    
-    let newContent = envContent
-    
-    Object.entries(envVars).forEach(([key, value]) => {
-      const regex = new RegExp(`^${key}=.*`, 'm')
-      if (regex.test(newContent)) {
-        newContent = newContent.replace(regex, `${key}=${value}`)
-      } else {
-        newContent += `\n${key}=${value}`
-      }
-    })
-    
-    fs.writeFileSync(envPath, newContent.trim() + '\n')
-  } catch (error) {
-    console.error('Error updating environment file:', error)
-  }
-}

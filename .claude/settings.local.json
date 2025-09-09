@@ -38,7 +38,10 @@
       "Bash(gh repo view:*)",
       "Bash(gh run list:*)",
       "WebFetch(domain:floodbar.id)",
-      "Bash(grep:*)"
+      "Bash(grep:*)",
+      "WebFetch(domain:floodbar-6s7f34sk9-jharrvis-projects.vercel.app)",
+      "WebFetch(domain:www.floodbar.id)",
+      "WebFetch(domain:floodbar-p7v4ufg8o-jharrvis-projects.vercel.app)"
     ],
     "deny": [],
     "ask": []
