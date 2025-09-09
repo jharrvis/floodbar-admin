@@ -29,7 +29,6 @@ export default function MediaSelector({ value, onChange, disabled, showMediaLibr
   const [loading, setLoading] = useState(false)
   const [searchTerm, setSearchTerm] = useState('')
   const [uploadPreset, setUploadPreset] = useState('floodbar_uploads')
-  const [cloudName, setCloudName] = useState('')
   const [refreshKey, setRefreshKey] = useState(0)
 
   // Debug value changes
@@ -43,18 +42,13 @@ export default function MediaSelector({ value, onChange, disabled, showMediaLibr
   }, [refreshKey])
 
   useEffect(() => {
-    // Fetch upload preset and cloud name settings
+    // Fetch upload preset settings
     const fetchUploadPreset = async () => {
       try {
         const response = await fetch('/api/settings/upload-preset')
         const data = await response.json()
-        if (data.success) {
-          if (data.uploadPreset) {
-            setUploadPreset(data.uploadPreset)
-          }
-          if (data.cloudName) {
-            setCloudName(data.cloudName)
-          }
+        if (data.success && data.uploadPreset) {
+          setUploadPreset(data.uploadPreset)
         }
       } catch (error) {
         console.error('Error fetching upload preset:', error)
@@ -203,9 +197,8 @@ export default function MediaSelector({ value, onChange, disabled, showMediaLibr
       
       <div className="flex gap-2">
         <CldUploadWidget
-          key={`selector-${uploadPreset}-${cloudName}`}
+          key={`selector-${uploadPreset}`}
           uploadPreset={uploadPreset}
-          cloudName={cloudName || undefined}
           options={{
             maxFiles: 1,
             resourceType: 'image',
