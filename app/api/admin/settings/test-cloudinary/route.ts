@@ -60,7 +60,7 @@ export async function POST(request: NextRequest) {
   } catch (error) {
     console.error('Error testing Cloudinary connection:', error)
     return NextResponse.json(
-      { success: false, error: 'Connection test failed: ' + error.message },
+      { success: false, error: 'Connection test failed: ' + (error instanceof Error ? error.message : String(error)) },
       { status: 500 }
     )
   }
