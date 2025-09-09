@@ -13,6 +13,7 @@ import {
   Truck,
   CreditCard,
   ShoppingBag,
+  Image,
   LogOut 
 } from 'lucide-react'
 
@@ -26,6 +27,11 @@ const menuItems = [
     label: 'Landing Page',
     href: '/admin/landing',
     icon: FileText
+  },
+  {
+    label: 'Media',
+    href: '/admin/media',
+    icon: Image
   },
   {
     label: 'Produk & Pengiriman',
