@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react'
 import { CldUploadWidget } from 'next-cloudinary'
 import Image from 'next/image'
 import { Upload, Trash2, Search, Grid, Download, Copy, Check, RefreshCw } from 'lucide-react'
+import { CloudinaryClientConfig } from '@/lib/cloudinary-client-config'
 
 interface MediaItem {
   public_id: string
@@ -24,23 +25,39 @@ export default function MediaManager() {
   const [copiedUrl, setCopiedUrl] = useState<string | null>(null)
   const [uploadPreset, setUploadPreset] = useState('floodbar_uploads')
   const [refreshKey, setRefreshKey] = useState(0)
+  const [cloudName, setCloudName] = useState('')
+  const [configReady, setConfigReady] = useState(false)
 
   useEffect(() => {
     fetchMediaItems()
-    // Fetch upload preset settings
-    const fetchUploadPreset = async () => {
+    
+    // Initialize Cloudinary client configuration
+    const initCloudinary = async () => {
       try {
-        const response = await fetch('/api/settings/upload-preset')
-        const data = await response.json()
-        if (data.success && data.uploadPreset) {
-          setUploadPreset(data.uploadPreset)
+        const cloudName = await CloudinaryClientConfig.initialize()
+        
+        if (cloudName) {
+          setCloudName(cloudName)
+          setConfigReady(true)
+          
+          // Fetch additional config
+          const response = await fetch('/api/settings/upload-preset')
+          const data = await response.json()
+          
+          if (data.success) {
+            setUploadPreset(data.uploadPreset || 'floodbar_uploads')
+          }
+        } else {
+          console.error('Failed to initialize Cloudinary config')
+          setConfigReady(false)
         }
       } catch (error) {
-        console.error('Error fetching upload preset:', error)
+        console.error('Error initializing Cloudinary config:', error)
+        setConfigReady(false)
       }
     }
     
-    fetchUploadPreset()
+    initCloudinary()
   }, [])
 
   const fetchMediaItems = async () => {
@@ -210,61 +227,69 @@ export default function MediaManager() {
                   </p>
                 </div>
                 
-                <CldUploadWidget
-                    key={`upload-${uploadPreset}`}
-                    uploadPreset={uploadPreset}
-                    options={{
-                      maxFiles: 10,
-                      resourceType: 'image',
-                      maxImageWidth: 1920,
-                      maxImageHeight: 1080,
-                      cropping: false,
-                      multiple: true,
-                      clientAllowedFormats: ['jpg', 'jpeg', 'png', 'webp', 'gif'],
-                      sources: ['local', 'url']
-                    }}
-                    onUpload={(result, { widget }) => {
-                      console.log('onUpload triggered:', result)
-                      handleUpload(result)
-                    }}
-                    onSuccess={(result, { widget }) => {
-                      console.log('onSuccess triggered:', result)
-                      handleUpload(result)
-                    }}
-                    onQueuesEnd={(result, { widget }) => {
-                      console.log('onQueuesEnd triggered, fetching media items')
-                      // This ensures we refresh when all uploads are done
-                      setTimeout(() => {
-                        fetchMediaItems()
-                        setRefreshKey(prev => prev + 1)
-                      }, 500)
-                    }}
-                    onOpen={() => {
-                      console.log('Upload widget opened')
-                      setIsUploading(true)
-                    }}
-                    onClose={() => {
-                      console.log('Upload widget closed')
-                      setIsUploading(false)
-                      // Also refresh when widget is closed
-                      setTimeout(() => {
-                        console.log('Widget closed, refreshing media')
-                        fetchMediaItems()
-                        setRefreshKey(prev => prev + 1)
-                      }, 300)
-                    }}
-                  >
-                    {({ open }) => (
-                      <button
-                        onClick={() => open?.()}
-                        disabled={isUploading}
-                        className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50 flex items-center gap-2"
-                      >
-                        <Upload size={20} />
-                        {isUploading ? 'Uploading...' : 'Upload Media'}
-                      </button>
-                    )}
-                </CldUploadWidget>
+{configReady && cloudName ? (
+                  <CldUploadWidget
+                      key={`upload-${uploadPreset}-${cloudName}`}
+                      uploadPreset={uploadPreset}
+                      options={{
+                        maxFiles: 10,
+                        resourceType: 'image',
+                        maxImageWidth: 1920,
+                        maxImageHeight: 1080,
+                        cropping: false,
+                        multiple: true,
+                        clientAllowedFormats: ['jpg', 'jpeg', 'png', 'webp', 'gif'],
+                        sources: ['local', 'url'],
+                        cloudName: cloudName
+                      }}
+                      onUpload={(result, { widget }) => {
+                        console.log('onUpload triggered:', result)
+                        handleUpload(result)
+                      }}
+                      onSuccess={(result, { widget }) => {
+                        console.log('onSuccess triggered:', result)
+                        handleUpload(result)
+                      }}
+                      onQueuesEnd={(result, { widget }) => {
+                        console.log('onQueuesEnd triggered, fetching media items')
+                        // This ensures we refresh when all uploads are done
+                        setTimeout(() => {
+                          fetchMediaItems()
+                          setRefreshKey(prev => prev + 1)
+                        }, 500)
+                      }}
+                      onOpen={() => {
+                        console.log('Upload widget opened')
+                        setIsUploading(true)
+                      }}
+                      onClose={() => {
+                        console.log('Upload widget closed')
+                        setIsUploading(false)
+                        // Also refresh when widget is closed
+                        setTimeout(() => {
+                          console.log('Widget closed, refreshing media')
+                          fetchMediaItems()
+                          setRefreshKey(prev => prev + 1)
+                        }, 300)
+                      }}
+                    >
+                      {({ open }) => (
+                        <button
+                          onClick={() => open?.()}
+                          disabled={isUploading}
+                          className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50 flex items-center gap-2"
+                        >
+                          <Upload size={20} />
+                          {isUploading ? 'Uploading...' : 'Upload Media'}
+                        </button>
+                      )}
+                  </CldUploadWidget>
+                ) : (
+                  <div className="bg-gray-100 px-4 py-2 rounded-lg flex items-center gap-2 text-gray-500">
+                    <Upload size={20} />
+                    {configReady ? 'Cloudinary not configured' : 'Loading configuration...'}
+                  </div>
+                )}
               </div>
 
               <div className="flex flex-col gap-4">

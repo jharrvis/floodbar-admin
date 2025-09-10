@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react'
 import { CldUploadWidget } from 'next-cloudinary'
 import Image from 'next/image'
 import { Upload, X, Grid, Search, Trash2 } from 'lucide-react'
+import { CloudinaryClientConfig } from '@/lib/cloudinary-client-config'
 
 interface MediaItem {
   public_id: string
@@ -44,34 +45,33 @@ export default function MediaSelector({ value, onChange, disabled, showMediaLibr
   }, [refreshKey])
 
   useEffect(() => {
-    // Fetch upload preset settings and cloud name from database
-    const fetchCloudinaryConfig = async () => {
+    // Initialize Cloudinary client configuration
+    const initCloudinary = async () => {
       try {
-        const response = await fetch('/api/settings/upload-preset')
-        const data = await response.json()
+        const cloudName = await CloudinaryClientConfig.initialize()
         
-        console.log('Cloudinary config response:', data)
-        
-        if (data.success) {
-          setUploadPreset(data.uploadPreset || 'floodbar_uploads')
-          setCloudName(data.cloudName || '')
+        if (cloudName) {
+          setCloudName(cloudName)
           setConfigReady(true)
           
-          // Set cloud name as global for next-cloudinary
-          if (data.cloudName && typeof window !== 'undefined') {
-            (window as any).cloudinary_cloud_name = data.cloudName
+          // Fetch additional config
+          const response = await fetch('/api/settings/upload-preset')
+          const data = await response.json()
+          
+          if (data.success) {
+            setUploadPreset(data.uploadPreset || 'floodbar_uploads')
           }
         } else {
-          console.error('Failed to fetch Cloudinary config:', data.error)
+          console.error('Failed to initialize Cloudinary config')
           setConfigReady(false)
         }
       } catch (error) {
-        console.error('Error fetching Cloudinary config:', error)
+        console.error('Error initializing Cloudinary config:', error)
         setConfigReady(false)
       }
     }
     
-    fetchCloudinaryConfig()
+    initCloudinary()
   }, [])
 
   const handleUpload = (result: any) => {
