@@ -4,7 +4,6 @@ import { useState, useEffect } from 'react'
 import { CldUploadWidget } from 'next-cloudinary'
 import Image from 'next/image'
 import { Upload, X, Grid, Search, Trash2 } from 'lucide-react'
-import { CloudinaryClientConfig } from '@/lib/cloudinary-client-config'
 
 interface MediaItem {
   public_id: string
@@ -45,33 +44,27 @@ export default function MediaSelector({ value, onChange, disabled, showMediaLibr
   }, [refreshKey])
 
   useEffect(() => {
-    // Initialize Cloudinary client configuration
-    const initCloudinary = async () => {
+    // Fetch upload preset settings from database
+    const fetchConfig = async () => {
       try {
-        const cloudName = await CloudinaryClientConfig.initialize()
+        const response = await fetch('/api/settings/upload-preset')
+        const data = await response.json()
         
-        if (cloudName) {
-          setCloudName(cloudName)
+        if (data.success) {
+          setUploadPreset(data.uploadPreset || 'floodbar_uploads')
+          setCloudName(data.cloudName || '')
           setConfigReady(true)
-          
-          // Fetch additional config
-          const response = await fetch('/api/settings/upload-preset')
-          const data = await response.json()
-          
-          if (data.success) {
-            setUploadPreset(data.uploadPreset || 'floodbar_uploads')
-          }
         } else {
-          console.error('Failed to initialize Cloudinary config')
+          console.error('Failed to fetch config:', data.error)
           setConfigReady(false)
         }
       } catch (error) {
-        console.error('Error initializing Cloudinary config:', error)
+        console.error('Error fetching config:', error)
         setConfigReady(false)
       }
     }
     
-    initCloudinary()
+    fetchConfig()
   }, [])
 
   const handleUpload = (result: any) => {
@@ -212,9 +205,9 @@ export default function MediaSelector({ value, onChange, disabled, showMediaLibr
       )}
       
       <div className="flex gap-2">
-        {configReady && cloudName ? (
+        {configReady ? (
           <CldUploadWidget
-            key={`selector-${uploadPreset}-${cloudName}`}
+            key={`selector-${uploadPreset}`}
             uploadPreset={uploadPreset}
             options={{
               maxFiles: 1,
@@ -223,8 +216,7 @@ export default function MediaSelector({ value, onChange, disabled, showMediaLibr
               maxImageHeight: 1080,
               cropping: false,
               multiple: false,
-              clientAllowedFormats: ['jpg', 'jpeg', 'png', 'webp', 'gif'],
-              cloudName: cloudName
+              clientAllowedFormats: ['jpg', 'jpeg', 'png', 'webp', 'gif']
             }}
             onUpload={(result, { widget }) => {
               console.log('MediaSelector onUpload triggered:', result)
@@ -272,9 +264,7 @@ export default function MediaSelector({ value, onChange, disabled, showMediaLibr
         ) : (
           <div className="flex-1 border-2 border-dashed rounded-lg p-4 text-center border-gray-300 bg-gray-50">
             <Upload className="mx-auto h-8 w-8 text-gray-300 mb-2" />
-            <p className="text-sm text-gray-500">
-              {configReady ? 'Cloudinary not configured' : 'Loading configuration...'}
-            </p>
+            <p className="text-sm text-gray-500">Loading configuration...</p>
             <p className="text-xs text-gray-400 mt-1">
               Please configure Cloudinary in admin settings
             </p>
