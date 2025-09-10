@@ -18,13 +18,14 @@ export async function GET() {
       })
     }
     
-    // Fallback
+    // No configuration found - return error
     return NextResponse.json({
-      success: true,
+      success: false,
+      error: 'No Cloudinary configuration found. Please configure in admin settings.',
       uploadPreset: 'floodbar_uploads',
-      cloudName: process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME || '',
+      cloudName: '',
       folder: 'floodbar'
-    })
+    }, { status: 400 })
   } catch (error) {
     console.error('Error getting upload preset:', error)
     return NextResponse.json(
@@ -32,7 +33,7 @@ export async function GET() {
         success: false, 
         error: 'Failed to get upload preset',
         uploadPreset: 'floodbar_uploads',
-        cloudName: process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME || '',
+        cloudName: '',
         folder: 'floodbar'
       },
       { status: 500 }

@@ -30,6 +30,8 @@ export default function MediaSelector({ value, onChange, disabled, showMediaLibr
   const [searchTerm, setSearchTerm] = useState('')
   const [uploadPreset, setUploadPreset] = useState('floodbar_uploads')
   const [refreshKey, setRefreshKey] = useState(0)
+  const [cloudName, setCloudName] = useState('')
+  const [configReady, setConfigReady] = useState(false)
 
   // Debug value changes
   useEffect(() => {
@@ -42,20 +44,34 @@ export default function MediaSelector({ value, onChange, disabled, showMediaLibr
   }, [refreshKey])
 
   useEffect(() => {
-    // Fetch upload preset settings
-    const fetchUploadPreset = async () => {
+    // Fetch upload preset settings and cloud name from database
+    const fetchCloudinaryConfig = async () => {
       try {
         const response = await fetch('/api/settings/upload-preset')
         const data = await response.json()
-        if (data.success && data.uploadPreset) {
-          setUploadPreset(data.uploadPreset)
+        
+        console.log('Cloudinary config response:', data)
+        
+        if (data.success) {
+          setUploadPreset(data.uploadPreset || 'floodbar_uploads')
+          setCloudName(data.cloudName || '')
+          setConfigReady(true)
+          
+          // Set cloud name as global for next-cloudinary
+          if (data.cloudName && typeof window !== 'undefined') {
+            (window as any).cloudinary_cloud_name = data.cloudName
+          }
+        } else {
+          console.error('Failed to fetch Cloudinary config:', data.error)
+          setConfigReady(false)
         }
       } catch (error) {
-        console.error('Error fetching upload preset:', error)
+        console.error('Error fetching Cloudinary config:', error)
+        setConfigReady(false)
       }
     }
     
-    fetchUploadPreset()
+    fetchCloudinaryConfig()
   }, [])
 
   const handleUpload = (result: any) => {
@@ -196,61 +212,74 @@ export default function MediaSelector({ value, onChange, disabled, showMediaLibr
       )}
       
       <div className="flex gap-2">
-        <CldUploadWidget
-          key={`selector-${uploadPreset}`}
-          uploadPreset={uploadPreset}
-          options={{
-            maxFiles: 1,
-            resourceType: 'image',
-            maxImageWidth: 1920,
-            maxImageHeight: 1080,
-            cropping: false,
-            multiple: false,
-            clientAllowedFormats: ['jpg', 'jpeg', 'png', 'webp', 'gif']
-          }}
-          onUpload={(result, { widget }) => {
-            console.log('MediaSelector onUpload triggered:', result)
-            handleUpload(result)
-          }}
-          onSuccess={(result, { widget }) => {
-            console.log('MediaSelector onSuccess triggered:', result)
-            handleUpload(result)
-          }}
-          onQueuesEnd={(result, { widget }) => {
-            console.log('MediaSelector onQueuesEnd triggered')
-            // Ensure final refresh when all uploads are done
-            setTimeout(() => {
-              setRefreshKey(prev => prev + 1)
-            }, 300)
-          }}
-          onOpen={() => {
-            console.log('MediaSelector upload widget opened')
-            setIsUploading(true)
-          }}
-          onClose={() => {
-            console.log('MediaSelector upload widget closed')
-            setIsUploading(false)
-            // Additional refresh when widget closes to ensure preview updates
-            setTimeout(() => {
-              console.log('Widget closed, forcing refresh')
-              setRefreshKey(prev => prev + 1)
-            }, 200)
-          }}
-        >
-          {({ open }) => (
-            <button
-              type="button"
-              onClick={() => open?.()}
-              disabled={disabled || isUploading}
-              className="flex-1 border-2 border-dashed rounded-lg p-4 text-center transition-colors border-gray-300 hover:border-gray-400 disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              <Upload className="mx-auto h-8 w-8 text-gray-400 mb-2" />
-              <p className="text-sm text-gray-600">
-                {isUploading ? 'Uploading...' : 'Upload New'}
-              </p>
-            </button>
-          )}
-        </CldUploadWidget>
+        {configReady && cloudName ? (
+          <CldUploadWidget
+            key={`selector-${uploadPreset}-${cloudName}`}
+            uploadPreset={uploadPreset}
+            options={{
+              maxFiles: 1,
+              resourceType: 'image',
+              maxImageWidth: 1920,
+              maxImageHeight: 1080,
+              cropping: false,
+              multiple: false,
+              clientAllowedFormats: ['jpg', 'jpeg', 'png', 'webp', 'gif'],
+              cloudName: cloudName
+            }}
+            onUpload={(result, { widget }) => {
+              console.log('MediaSelector onUpload triggered:', result)
+              handleUpload(result)
+            }}
+            onSuccess={(result, { widget }) => {
+              console.log('MediaSelector onSuccess triggered:', result)
+              handleUpload(result)
+            }}
+            onQueuesEnd={(result, { widget }) => {
+              console.log('MediaSelector onQueuesEnd triggered')
+              // Ensure final refresh when all uploads are done
+              setTimeout(() => {
+                setRefreshKey(prev => prev + 1)
+              }, 300)
+            }}
+            onOpen={() => {
+              console.log('MediaSelector upload widget opened')
+              setIsUploading(true)
+            }}
+            onClose={() => {
+              console.log('MediaSelector upload widget closed')
+              setIsUploading(false)
+              // Additional refresh when widget closes to ensure preview updates
+              setTimeout(() => {
+                console.log('Widget closed, forcing refresh')
+                setRefreshKey(prev => prev + 1)
+              }, 200)
+            }}
+          >
+            {({ open }) => (
+              <button
+                type="button"
+                onClick={() => open?.()}
+                disabled={disabled || isUploading}
+                className="flex-1 border-2 border-dashed rounded-lg p-4 text-center transition-colors border-gray-300 hover:border-gray-400 disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                <Upload className="mx-auto h-8 w-8 text-gray-400 mb-2" />
+                <p className="text-sm text-gray-600">
+                  {isUploading ? 'Uploading...' : 'Upload New'}
+                </p>
+              </button>
+            )}
+          </CldUploadWidget>
+        ) : (
+          <div className="flex-1 border-2 border-dashed rounded-lg p-4 text-center border-gray-300 bg-gray-50">
+            <Upload className="mx-auto h-8 w-8 text-gray-300 mb-2" />
+            <p className="text-sm text-gray-500">
+              {configReady ? 'Cloudinary not configured' : 'Loading configuration...'}
+            </p>
+            <p className="text-xs text-gray-400 mt-1">
+              Please configure Cloudinary in admin settings
+            </p>
+          </div>
+        )}
 
         {showMediaLibrary && (
           <button

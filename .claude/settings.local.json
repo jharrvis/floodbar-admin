@@ -46,7 +46,14 @@
       "WebFetch(domain:floodbar-k6nemh5sw-jharrvis-projects.vercel.app)",
       "WebFetch(domain:floodbar-2zzxuvj6a-jharrvis-projects.vercel.app)",
       "WebFetch(domain:floodbar-kw7pii3zb-jharrvis-projects.vercel.app)",
-      "WebFetch(domain:floodbar-1q6fm9sb4-jharrvis-projects.vercel.app)"
+      "WebFetch(domain:floodbar-1q6fm9sb4-jharrvis-projects.vercel.app)",
+      "WebFetch(domain:floodbar-nfmisdcqt-jharrvis-projects.vercel.app)",
+      "WebFetch(domain:floodbar-5ikfeytm7-jharrvis-projects.vercel.app)",
+      "WebFetch(domain:api.cloudinary.com)",
+      "WebFetch(domain:floodbar-810adp90b-jharrvis-projects.vercel.app)",
+      "WebFetch(domain:floodbar-nipmehvrt-jharrvis-projects.vercel.app)",
+      "WebFetch(domain:floodbar-mq7m6gu6t-jharrvis-projects.vercel.app)",
+      "WebFetch(domain:floodbar-1sd5l9knw-jharrvis-projects.vercel.app)"
     ],
     "deny": [],
     "ask": []

@@ -1,19 +1,22 @@
 import { NextResponse } from 'next/server'
 import { v2 as cloudinary } from 'cloudinary'
+import { configureCloudinary } from '@/lib/cloudinary-config'
 
 export const runtime = 'nodejs'
 export const dynamic = 'force-dynamic'
 
-// Configure Cloudinary
-cloudinary.config({
-  cloud_name: process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME,
-  api_key: process.env.CLOUDINARY_API_KEY,
-  api_secret: process.env.CLOUDINARY_API_SECRET,
-})
-
 // GET - Get all folders from Cloudinary
 export async function GET() {
   try {
+    // Configure Cloudinary from database
+    const configured = await configureCloudinary()
+    if (!configured) {
+      return NextResponse.json(
+        { success: false, error: 'Cloudinary configuration not found. Please configure in admin settings.', folders: [] },
+        { status: 200 }
+      )
+    }
+
     // Get all folders from Cloudinary
     const result = await cloudinary.api.root_folders()
     
@@ -51,6 +54,15 @@ export async function GET() {
 // POST - Create new folder
 export async function POST(request: Request) {
   try {
+    // Configure Cloudinary from database
+    const configured = await configureCloudinary()
+    if (!configured) {
+      return NextResponse.json(
+        { success: false, error: 'Cloudinary configuration not found. Please configure in admin settings.' },
+        { status: 400 }
+      )
+    }
+
     const body = await request.json()
     const { folderName, parentFolder } = body
 
@@ -94,6 +106,15 @@ export async function POST(request: Request) {
 // DELETE - Delete folder (and all its contents)
 export async function DELETE(request: Request) {
   try {
+    // Configure Cloudinary from database
+    const configured = await configureCloudinary()
+    if (!configured) {
+      return NextResponse.json(
+        { success: false, error: 'Cloudinary configuration not found. Please configure in admin settings.' },
+        { status: 400 }
+      )
+    }
+
     const body = await request.json()
     const { folderPath } = body
 

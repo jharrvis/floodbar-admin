@@ -1,52 +1,51 @@
 import { NextResponse } from 'next/server'
 import { v2 as cloudinary } from 'cloudinary'
+import { getCloudinaryConfig } from '@/lib/cloudinary-config'
 
 export const runtime = 'nodejs'
 export const dynamic = 'force-dynamic'
 
 export async function GET() {
   try {
-    console.log('=== CLOUDINARY DEBUG START ===')
+    console.log('=== CLOUDINARY DEBUG START (Database-Only) ===')
     
-    // Check environment variables
-    const envVars = {
-      cloudName: process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME,
-      apiKey: process.env.CLOUDINARY_API_KEY,
-      apiSecret: process.env.CLOUDINARY_API_SECRET,
-      uploadPreset: process.env.CLOUDINARY_UPLOAD_PRESET
-    }
+    // Get configuration from database
+    const config = await getCloudinaryConfig()
     
-    console.log('Environment variables:', {
-      cloudName: envVars.cloudName || 'NOT SET',
-      apiKey: envVars.apiKey ? 'SET' : 'NOT SET',
-      apiSecret: envVars.apiSecret ? 'SET' : 'NOT SET',
-      uploadPreset: envVars.uploadPreset || 'NOT SET'
-    })
-
-    if (!envVars.cloudName || !envVars.apiKey || !envVars.apiSecret) {
+    if (!config) {
       return NextResponse.json({
         success: false,
-        error: 'Missing required environment variables',
-        envStatus: {
-          cloudName: envVars.cloudName ? 'SET' : 'NOT SET',
-          apiKey: envVars.apiKey ? 'SET' : 'NOT SET',
-          apiSecret: envVars.apiSecret ? 'SET' : 'NOT SET'
-        }
+        error: 'No Cloudinary configuration found in database',
+        dbStatus: 'NO CONFIG'
       })
     }
 
+    console.log('Database configuration found:', {
+      cloudName: config.cloudName || 'NOT SET',
+      apiKey: config.apiKey ? `SET (length: ${config.apiKey.length})` : 'NOT SET',
+      apiSecret: config.apiSecret ? `SET (length: ${config.apiSecret.length})` : 'NOT SET',
+      uploadPreset: config.uploadPreset || 'NOT SET'
+    })
+
+    // Additional debug: show first/last few characters
+    console.log('Debug values:', {
+      cloudName: config.cloudName,
+      apiKey: config.apiKey ? `${config.apiKey.substring(0, 3)}...${config.apiKey.slice(-3)}` : 'NOT SET',
+      apiSecret: config.apiSecret ? `${config.apiSecret.substring(0, 3)}...${config.apiSecret.slice(-3)}` : 'NOT SET'
+    })
+
     // Configure Cloudinary
     cloudinary.config({
-      cloud_name: envVars.cloudName,
-      api_key: envVars.apiKey,
-      api_secret: envVars.apiSecret,
+      cloud_name: config.cloudName,
+      api_key: config.apiKey,
+      api_secret: config.apiSecret,
     })
 
     console.log('Cloudinary configured, testing connection...')
 
     // Test with direct API call
-    const testUrl = `https://api.cloudinary.com/v1_1/${envVars.cloudName}/resources/image`
-    const auth = Buffer.from(`${envVars.apiKey}:${envVars.apiSecret}`).toString('base64')
+    const testUrl = `https://api.cloudinary.com/v1_1/${config.cloudName}/resources/image`
+    const auth = Buffer.from(`${config.apiKey}:${config.apiSecret}`).toString('base64')
 
     console.log('Making direct API call to:', testUrl)
 

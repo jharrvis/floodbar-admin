@@ -141,6 +141,13 @@ export default function SettingsPage() {
   const handleSaveCloudinary = async () => {
     setSaving(true)
     try {
+      console.log('Saving Cloudinary settings:', {
+        cloudName: cloudinarySettings.cloudName || 'NOT SET',
+        apiKey: cloudinarySettings.apiKey ? 'SET' : 'NOT SET',
+        apiSecret: cloudinarySettings.apiSecret ? 'SET' : 'NOT SET',
+        uploadPreset: cloudinarySettings.uploadPreset || 'NOT SET'
+      })
+
       const response = await fetch('/api/admin/settings/cloudinary', {
         method: 'PUT',
         headers: {
@@ -148,15 +155,20 @@ export default function SettingsPage() {
         },
         body: JSON.stringify(cloudinarySettings),
       })
+
+      const result = await response.json()
+      console.log('Save response:', result)
       
-      if (response.ok) {
+      if (response.ok && result.success) {
         alert('Pengaturan Cloudinary berhasil disimpan!')
+        // Reload settings to verify they were saved
+        await loadSettings()
       } else {
-        alert('Gagal menyimpan pengaturan Cloudinary')
+        alert('Gagal menyimpan pengaturan Cloudinary: ' + (result.error || 'Unknown error'))
       }
     } catch (error) {
       console.error('Error saving Cloudinary settings:', error)
-      alert('Gagal menyimpan pengaturan Cloudinary')
+      alert('Gagal menyimpan pengaturan Cloudinary: ' + (error instanceof Error ? error.message : String(error)))
     } finally {
       setSaving(false)
     }

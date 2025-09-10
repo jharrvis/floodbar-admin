@@ -8,20 +8,7 @@ const prisma = new PrismaClient()
 
 export async function GET() {
   try {
-    // Always return environment variables first for production reliability
-    const envSettings = {
-      cloudName: process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME || '',
-      apiKey: process.env.CLOUDINARY_API_KEY || '',
-      apiSecret: process.env.CLOUDINARY_API_SECRET || '',
-      uploadPreset: process.env.CLOUDINARY_UPLOAD_PRESET || 'floodbar_uploads'
-    }
-
-    // Return environment settings if available
-    if (envSettings.cloudName && envSettings.apiKey && envSettings.apiSecret) {
-      return NextResponse.json(envSettings)
-    }
-
-    // Try database as fallback
+    // Only use database settings
     const settingsRecord = await prisma.adminSettings.findFirst({
       where: { key: 'cloudinary_settings' }
     })
@@ -36,7 +23,7 @@ export async function GET() {
       })
     }
 
-    // Return empty/default values if nothing found
+    // Return empty/default values if nothing found in database
     return NextResponse.json({
       cloudName: '',
       apiKey: '',
@@ -44,13 +31,13 @@ export async function GET() {
       uploadPreset: 'floodbar_uploads'
     })
   } catch (error) {
-    console.error('Error fetching Cloudinary settings:', error)
+    console.error('Error fetching Cloudinary settings from database:', error)
     return NextResponse.json(
       { 
-        cloudName: process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME || '',
-        apiKey: process.env.CLOUDINARY_API_KEY || '',
-        apiSecret: process.env.CLOUDINARY_API_SECRET || '',
-        uploadPreset: process.env.CLOUDINARY_UPLOAD_PRESET || 'floodbar_uploads'
+        cloudName: '',
+        apiKey: '',
+        apiSecret: '',
+        uploadPreset: 'floodbar_uploads'
       },
       { status: 200 }
     )
@@ -59,8 +46,25 @@ export async function GET() {
 
 export async function PUT(request: NextRequest) {
   try {
+    console.log('=== CLOUDINARY SETTINGS SAVE START ===')
+    
     const data = await request.json()
+    console.log('Received data:', { 
+      cloudName: data.cloudName || 'NOT SET',
+      apiKey: data.apiKey ? 'SET' : 'NOT SET',
+      apiSecret: data.apiSecret ? 'SET' : 'NOT SET',
+      uploadPreset: data.uploadPreset || 'NOT SET'
+    })
+    
     const { cloudName, apiKey, apiSecret, uploadPreset } = data
+
+    if (!cloudName || !apiKey || !apiSecret) {
+      console.log('Missing required fields')
+      return NextResponse.json(
+        { success: false, error: 'Missing required fields: cloudName, apiKey, and apiSecret are required' },
+        { status: 400 }
+      )
+    }
 
     // Save to AdminSettings table
     const settingsData = {
@@ -70,12 +74,13 @@ export async function PUT(request: NextRequest) {
       uploadPreset: uploadPreset || 'floodbar_uploads'
     }
 
+    console.log('Searching for existing settings...')
     const existingSetting = await prisma.adminSettings.findFirst({
       where: { key: 'cloudinary_settings' }
     })
 
     if (existingSetting) {
-      // Update existing settings
+      console.log('Updating existing settings...')
       await prisma.adminSettings.update({
         where: { id: existingSetting.id },
         data: {
@@ -83,8 +88,9 @@ export async function PUT(request: NextRequest) {
           updatedAt: new Date()
         }
       })
+      console.log('Settings updated successfully')
     } else {
-      // Create new settings
+      console.log('Creating new settings...')
       await prisma.adminSettings.create({
         data: {
           key: 'cloudinary_settings',
@@ -92,17 +98,39 @@ export async function PUT(request: NextRequest) {
           description: 'Cloudinary configuration settings'
         }
       })
+      console.log('Settings created successfully')
+    }
+
+    // Verify settings were saved
+    const savedSettings = await prisma.adminSettings.findFirst({
+      where: { key: 'cloudinary_settings' }
+    })
+    
+    if (savedSettings) {
+      console.log('Settings verified in database')
+      const parsedSettings = JSON.parse(savedSettings.value)
+      console.log('Saved settings:', {
+        cloudName: parsedSettings.cloudName || 'NOT SET',
+        apiKey: parsedSettings.apiKey ? 'SET' : 'NOT SET',
+        apiSecret: parsedSettings.apiSecret ? 'SET' : 'NOT SET',
+        uploadPreset: parsedSettings.uploadPreset || 'NOT SET'
+      })
     }
 
     return NextResponse.json({ 
       success: true, 
       message: 'Cloudinary settings saved successfully',
-      data: { cloudName, apiKey, apiSecret: '***', uploadPreset: settingsData.uploadPreset }
+      data: { 
+        cloudName, 
+        apiKey: apiKey.substring(0, 3) + '***' + apiKey.slice(-3), 
+        apiSecret: '***', 
+        uploadPreset: settingsData.uploadPreset 
+      }
     })
   } catch (error) {
     console.error('Error saving Cloudinary settings:', error)
     return NextResponse.json(
-      { success: false, error: 'Failed to save Cloudinary settings' },
+      { success: false, error: 'Failed to save Cloudinary settings: ' + (error instanceof Error ? error.message : String(error)) },
       { status: 500 }
     )
   }

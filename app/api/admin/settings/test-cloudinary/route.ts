@@ -6,12 +6,7 @@ export const dynamic = 'force-dynamic'
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json()
-    let { cloudName, apiKey, apiSecret } = body
-
-    // Use environment variables as primary source if frontend doesn't provide them
-    cloudName = cloudName || process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME
-    apiKey = apiKey || process.env.CLOUDINARY_API_KEY  
-    apiSecret = apiSecret || process.env.CLOUDINARY_API_SECRET
+    const { cloudName, apiKey, apiSecret } = body
 
     console.log('Testing Cloudinary with:', {
       cloudName: cloudName || 'NOT SET',
@@ -21,7 +16,7 @@ export async function POST(request: NextRequest) {
 
     if (!cloudName || !apiKey || !apiSecret) {
       return NextResponse.json(
-        { success: false, error: 'Missing required credentials. Please check environment variables or provide credentials.' },
+        { success: false, error: 'Missing required credentials. Please provide cloudName, apiKey, and apiSecret.' },
         { status: 400 }
       )
     }

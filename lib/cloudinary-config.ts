@@ -14,20 +14,7 @@ let cachedConfig: CloudinaryConfig | null = null
 
 export async function getCloudinaryConfig(): Promise<CloudinaryConfig | null> {
   try {
-    // Always prioritize environment variables in production for reliability
-    const envConfig: CloudinaryConfig = {
-      cloudName: process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME || '',
-      apiKey: process.env.CLOUDINARY_API_KEY || '',
-      apiSecret: process.env.CLOUDINARY_API_SECRET || '',
-      uploadPreset: process.env.CLOUDINARY_UPLOAD_PRESET || 'floodbar_uploads'
-    }
-
-    if (envConfig.cloudName && envConfig.apiKey && envConfig.apiSecret) {
-      cachedConfig = envConfig
-      return envConfig
-    }
-
-    // Try database as secondary option
+    // Only use database settings - no environment variables
     const setting = await prisma.adminSettings.findFirst({
       where: { key: 'cloudinary_settings' }
     })
@@ -40,22 +27,10 @@ export async function getCloudinaryConfig(): Promise<CloudinaryConfig | null> {
       }
     }
 
+    console.log('No Cloudinary configuration found in database')
     return null
   } catch (error) {
-    console.error('Error getting Cloudinary config:', error)
-    
-    // Final fallback to environment variables
-    const envConfig: CloudinaryConfig = {
-      cloudName: process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME || '',
-      apiKey: process.env.CLOUDINARY_API_KEY || '',
-      apiSecret: process.env.CLOUDINARY_API_SECRET || '',
-      uploadPreset: process.env.CLOUDINARY_UPLOAD_PRESET || 'floodbar_uploads'
-    }
-
-    if (envConfig.cloudName && envConfig.apiKey && envConfig.apiSecret) {
-      return envConfig
-    }
-
+    console.error('Error getting Cloudinary config from database:', error)
     return null
   }
 }
