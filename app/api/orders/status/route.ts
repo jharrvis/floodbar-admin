@@ -13,10 +13,10 @@ export async function GET(request: NextRequest) {
       )
     }
 
-    // Find order by orderId
+    // Find order by id (which contains the orderId)
     const order = await prisma.order.findFirst({
       where: {
-        orderId: orderId
+        id: orderId
       }
     })
 
@@ -27,15 +27,9 @@ export async function GET(request: NextRequest) {
       )
     }
 
-    // Parse JSON fields
-    const productConfig = order.productConfig ? JSON.parse(order.productConfig as string) : null
-    const shipping = order.shipping ? JSON.parse(order.shipping as string) : null
-    const customer = order.customer ? JSON.parse(order.customer as string) : null
-    const orderSummary = order.orderSummary ? JSON.parse(order.orderSummary as string) : null
-
-    // Return order with parsed data
+    // Return order with actual schema fields
     const orderData = {
-      orderId: order.orderId,
+      orderId: order.id,
       status: order.status,
       createdAt: order.createdAt,
       updatedAt: order.updatedAt,
@@ -43,14 +37,29 @@ export async function GET(request: NextRequest) {
       processingAt: order.processingAt,
       shippedAt: order.shippedAt,
       deliveredAt: order.deliveredAt,
-      productConfig,
-      shipping,
-      customer,
-      orderSummary,
+      productConfig: {
+        model: order.productModel || 'Custom',
+        width: order.productWidth,
+        height: order.productHeight,
+        quantity: order.productQuantity
+      },
+      shipping: {
+        destination: order.shippingDestination,
+        weight: order.shippingWeight,
+        cost: order.shippingCost
+      },
+      customer: {
+        name: order.customerName,
+        email: order.customerEmail,
+        city: order.customerCity
+      },
+      orderSummary: {
+        grandTotal: order.grandTotal
+      },
       paymentMethod: order.paymentMethod,
-      customerName: customer?.name || '',
-      customerEmail: customer?.email || '',
-      customerCity: customer?.city || '',
+      customerName: order.customerName,
+      customerEmail: order.customerEmail,
+      customerCity: order.customerCity,
       estimatedDelivery: order.estimatedDelivery,
       trackingNumber: order.trackingNumber,
       courier: order.courier
