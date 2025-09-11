@@ -71,9 +71,7 @@ export default function OrderPage() {
   // Check for model parameter from URL on component mount
   useEffect(() => {
     const model = searchParams.get('model')
-    console.log('URL model parameter:', model) // Debug log
     if (model && (model === 'Model A' || model === 'Model B')) {
-      console.log('Setting model to:', model) // Debug log
       setProductForm(prev => ({ ...prev, model }))
     }
   }, [searchParams])
