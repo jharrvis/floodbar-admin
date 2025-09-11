@@ -60,10 +60,20 @@ export default function OrderPage() {
 
   // Product configuration form
   const [productForm, setProductForm] = useState({
+    model: '',
     width: '',
     height: '',
     quantity: 1
   })
+  
+  // Check for model parameter from URL on component mount
+  useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search)
+    const model = urlParams.get('model')
+    if (model && (model === 'Model A' || model === 'Model B')) {
+      setProductForm(prev => ({ ...prev, model }))
+    }
+  }, [])
   const [calculating, setCalculating] = useState(false)
 
   // Shipping form
@@ -103,7 +113,7 @@ export default function OrderPage() {
         
         const newItem: OrderItem = {
           id: '1',
-          name: `FloodBar Custom ${productForm.width}cm x ${productForm.height}cm`,
+          name: `FloodBar ${productForm.model} ${productForm.width}cm x ${productForm.height}cm`,
           width: parseFloat(productForm.width),
           height: parseFloat(productForm.height),
           quantity: productForm.quantity,
@@ -390,6 +400,34 @@ export default function OrderPage() {
                   <Package size={24} />
                   Konfigurasi Produk
                 </h2>
+                
+                {/* Model Selection */}
+                <div className="mb-6">
+                  <label className="block text-sm font-medium text-gray-700 mb-3">
+                    Pilih Model FloodBar *
+                  </label>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {['Model A', 'Model B'].map((model) => (
+                      <label key={model} className="flex items-center space-x-3 cursor-pointer p-4 border rounded-lg hover:bg-gray-50 transition-colors">
+                        <input
+                          type="radio"
+                          name="model"
+                          value={model}
+                          checked={productForm.model === model}
+                          onChange={(e) => setProductForm({ ...productForm, model: e.target.value })}
+                          className="w-4 h-4 text-blue-600"
+                        />
+                        <div className="flex-1">
+                          <div className="font-medium text-lg">{model}</div>
+                          <div className="text-sm text-gray-600">
+                            {model === 'Model A' ? 'Desain standar dengan fitur lengkap' : 'Desain premium dengan fitur advanced'}
+                          </div>
+                        </div>
+                      </label>
+                    ))}
+                  </div>
+                </div>
+                
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -431,7 +469,7 @@ export default function OrderPage() {
                 <div className="flex gap-4">
                   <button
                     onClick={calculateProductPrice}
-                    disabled={calculating || !productForm.width || !productForm.height}
+                    disabled={calculating || !productForm.model || !productForm.width || !productForm.height}
                     className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md flex items-center gap-2 disabled:opacity-50"
                   >
                     <Calculator size={16} />
@@ -446,6 +484,12 @@ export default function OrderPage() {
                     </button>
                   )}
                 </div>
+                
+                {!productForm.model && (
+                  <div className="mt-2 text-sm text-red-600">
+                    Silakan pilih model terlebih dahulu
+                  </div>
+                )}
               </div>
             )}
 
@@ -492,45 +536,6 @@ export default function OrderPage() {
                   </div>
                 </div>
 
-                {/* Insurance and Pickup Options */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
-                  <div className="flex items-center">
-                    <input
-                      type="checkbox"
-                      id="insurance"
-                      checked={insuranceSelected}
-                      onChange={(e) => {
-                        const newValue = e.target.checked
-                        setInsuranceSelected(newValue)
-                        if (shippingForm.selectedCity) {
-                          calculateShipping(undefined, newValue, pickupSelected)
-                        }
-                      }}
-                      className="mr-2"
-                    />
-                    <label htmlFor="insurance" className="text-sm text-gray-700">
-                      Asuransi Pengiriman (1% dari nilai barang, min Rp 5.000)
-                    </label>
-                  </div>
-                  <div className="flex items-center">
-                    <input
-                      type="checkbox"
-                      id="pickup"
-                      checked={pickupSelected}
-                      onChange={(e) => {
-                        const newValue = e.target.checked
-                        setPickupSelected(newValue)
-                        if (shippingForm.selectedCity) {
-                          calculateShipping(undefined, insuranceSelected, newValue)
-                        }
-                      }}
-                      className="mr-2"
-                    />
-                    <label htmlFor="pickup" className="text-sm text-gray-700">
-                      Layanan Pickup (Rp 25.000)
-                    </label>
-                  </div>
-                </div>
                 <div className="mb-4">
                   <p className="text-sm text-gray-600">
                     Berat total: {shippingForm.weight} kg
@@ -694,9 +699,7 @@ export default function OrderPage() {
                 </h2>
                 <div className="space-y-3 mb-6">
                   {[
-                    { id: 'xendit', name: 'Pembayaran Online', desc: 'Kartu Kredit, Virtual Account, E-Wallet, QRIS via Xendit' },
-                    { id: 'bank_transfer', name: 'Transfer Bank Manual', desc: 'Transfer ke rekening bank (konfirmasi manual)' },
-                    { id: 'cod', name: 'Bayar di Tempat (COD)', desc: 'Pembayaran saat barang diterima' }
+                    { id: 'xendit', name: 'Pembayaran Online', desc: 'Kartu Kredit, Virtual Account, E-Wallet, QRIS via Xendit' }
                   ].map((method) => (
                     <label key={method.id} className="flex items-start space-x-3 cursor-pointer p-3 border rounded-lg hover:bg-gray-50">
                       <input

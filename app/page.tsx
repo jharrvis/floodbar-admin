@@ -337,7 +337,7 @@ export default function HomePage() {
                 </div>
                 
                 <div className="mt-6 text-center">
-                  <Link href="/order">
+                  <Link href={`/order?model=${encodeURIComponent(product.name)}`}>
                     <button className="bg-blue-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-blue-700 transition-colors w-full">
                       Pre-Order {product.name}
                     </button>
