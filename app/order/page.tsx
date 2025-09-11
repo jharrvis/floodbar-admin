@@ -182,9 +182,9 @@ export default function OrderPage() {
     setShippingCalculating(true)
     try {
       // Use the actual calculated weight from the product calculation
-      // Only apply minimum 10kg for shipping cost calculation, but display real weight
-      const realWeight = shippingForm.weight
-      const shippingWeight = Math.max(realWeight, 10) // Minimum 10kg for shipping cost only
+      // Round up the weight (e.g., 14.4kg becomes 15kg) then apply minimum 10kg
+      const roundedWeight = Math.ceil(shippingForm.weight)
+      const shippingWeight = Math.max(roundedWeight, 10) // Minimum 10kg for shipping cost
       
       // Calculate shipping cost based on selected city price
       const shippingCost = shippingWeight * parseFloat(city.price_per_kg || '15000')
@@ -204,7 +204,7 @@ export default function OrderPage() {
       setShippingData({
         cost: totalShippingCost,
         estimatedDays: '3-5 hari kerja',
-        weight: realWeight, // Show actual weight, not minimum weight
+        weight: roundedWeight, // Show rounded weight for billing
         insuranceCost,
         pickupCost
       })
@@ -592,7 +592,7 @@ export default function OrderPage() {
                     )}
                     <p className="text-sm text-gray-600">Total: Rp {shippingData.cost.toLocaleString()}</p>
                     <p className="text-sm text-gray-600">Estimasi: {shippingData.estimatedDays}</p>
-                    <p className="text-sm text-gray-600">Berat: {shippingData.weight} kg {shippingData.weight < 10 ? '(ditagih minimum 10kg)' : ''}</p>
+                    <p className="text-sm text-gray-600">Berat: {shippingData.weight} kg (dibulatkan ke atas)</p>
                   </div>
                 )}
               </div>
