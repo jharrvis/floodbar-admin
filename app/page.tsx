@@ -183,6 +183,11 @@ export default function HomePage() {
           <div className="hidden md:flex items-center space-x-6">
             <span className="text-sm">Layanan: ★★★★★</span>
             <span className="text-sm">Kualitas: ★★★★★</span>
+            <Link href="/order-status">
+              <button className="bg-blue-600 px-4 py-2 rounded text-sm font-semibold hover:bg-blue-700 mr-2">
+                Cek Status Pesanan
+              </button>
+            </Link>
             <button className="bg-green-600 px-4 py-2 rounded text-sm font-semibold hover:bg-green-700">
               Hubungi Kami
             </button>

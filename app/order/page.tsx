@@ -68,10 +68,12 @@ export default function OrderPage() {
   
   // Check for model parameter from URL on component mount
   useEffect(() => {
-    const urlParams = new URLSearchParams(window.location.search)
-    const model = urlParams.get('model')
-    if (model && (model === 'Model A' || model === 'Model B')) {
-      setProductForm(prev => ({ ...prev, model }))
+    if (typeof window !== 'undefined') {
+      const urlParams = new URLSearchParams(window.location.search)
+      const model = urlParams.get('model')
+      if (model && (model === 'Model A' || model === 'Model B')) {
+        setProductForm(prev => ({ ...prev, model }))
+      }
     }
   }, [])
   const [calculating, setCalculating] = useState(false)
@@ -352,10 +354,28 @@ export default function OrderPage() {
   )
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8">
-      <div className="max-w-7xl mx-auto px-4">
-        <div className="mb-8">
-          <h1 className="text-2xl md:text-3xl font-bold text-gray-900 mb-4">Buat Pesanan FloodBar</h1>
+    <div className="min-h-screen bg-gray-900">
+      {/* Navigation Bar */}
+      <nav className="bg-gray-900 text-white px-4 py-3 border-b border-gray-800">
+        <div className="max-w-7xl mx-auto flex items-center justify-between">
+          <div className="flex items-center space-x-2">
+            <div className="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center">
+              <Package className="w-5 h-5" />
+            </div>
+            <span className="font-bold text-xl">FloodBar.id</span>
+          </div>
+          <div className="hidden md:flex items-center space-x-6">
+            <span className="text-sm">Pre-Order: ★★★★★</span>
+            <span className="text-sm">Custom Fit: ★★★★★</span>
+          </div>
+        </div>
+      </nav>
+
+      <div className="py-8 px-4">
+      <div className="max-w-7xl mx-auto">
+        <div className="mb-8 text-center">
+          <h1 className="text-3xl md:text-4xl font-bold text-white mb-4">Pre-Order FloodBar Custom</h1>
+          <p className="text-lg text-gray-300">Sekat pintu anti banjir yang dibuat khusus sesuai ukuran pintu Anda</p>
           
           {/* Progress Steps */}
           <div className="flex items-center space-x-2 md:space-x-4 mb-8 overflow-x-auto pb-2">
@@ -765,9 +785,50 @@ export default function OrderPage() {
 
           {/* Sidebar */}
           <div className="w-80">
-            <OrderSidebar />
+            <div className="bg-gray-800 p-6 rounded-xl shadow-2xl border border-gray-700 sticky top-4">
+              <h3 className="text-xl font-bold mb-4 flex items-center gap-3 text-white">
+                <ShoppingCart size={24} className="text-blue-400" />
+                Ringkasan Pre-Order
+              </h3>
+              
+              {orderItems.length > 0 && (
+                <div className="space-y-4">
+                  {orderItems.map((item) => (
+                    <div key={item.id} className="border-b border-gray-700 pb-4">
+                      <h4 className="font-semibold text-white">{item.name}</h4>
+                      <p className="text-sm text-gray-300">
+                        Quantity: {item.quantity} unit
+                      </p>
+                      <p className="text-lg font-bold text-blue-400">
+                        Rp {item.totalPrice.toLocaleString()}
+                      </p>
+                    </div>
+                  ))}
+                  
+                  <div className="space-y-3 pt-4 border-t border-gray-700">
+                    <div className="flex justify-between text-white">
+                      <span>Subtotal:</span>
+                      <span className="font-semibold">Rp {orderSummary.subtotal.toLocaleString()}</span>
+                    </div>
+                    {shippingData && (
+                      <>
+                        <div className="flex justify-between text-sm text-gray-300">
+                          <span>Ongkir:</span>
+                          <span>Rp {shippingData.cost.toLocaleString()}</span>
+                        </div>
+                      </>
+                    )}
+                    <div className="flex justify-between font-bold text-xl border-t border-gray-700 pt-3 text-blue-400">
+                      <span>Grand Total:</span>
+                      <span>Rp {orderSummary.grandTotal.toLocaleString()}</span>
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
           </div>
         </div>
+      </div>
       </div>
     </div>
   )
