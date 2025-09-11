@@ -26,7 +26,6 @@ interface LandingPageData {
   }>
   products: Array<{
     name: string
-    price: string
     description: string
     image: string
     features: string[]
@@ -124,8 +123,7 @@ export async function GET() {
         ],
         products: [
           {
-            name: 'FloodBar Standard',
-            price: 'Rp 750.000/meter',
+            name: 'Model A',
             description: 'Sekat pintu anti banjir dengan tinggi 60cm, cocok untuk rumah tinggal standard',
             image: 'https://cdn.pixabay.com/photo/2023/05/15/10/55/door-8013011_1280.jpg',
             features: [
@@ -137,8 +135,7 @@ export async function GET() {
             ]
           },
           {
-            name: 'FloodBar Premium',
-            price: 'Rp 1.200.000/meter',
+            name: 'Model B',
             description: 'Sekat pintu heavy duty dengan tinggi 80cm untuk perlindungan maksimal',
             image: 'https://cdn.pixabay.com/photo/2016/11/30/12/24/door-1873464_1280.jpg',
             features: [
@@ -266,8 +263,7 @@ export async function GET() {
       ])),
       products: JSON.parse(landingPage.productsJson || JSON.stringify([
         {
-          name: 'FloodBar Standard',
-          price: 'Rp 750.000/meter',
+          name: 'Model A',
           description: 'Sekat pintu anti banjir dengan tinggi 60cm, cocok untuk rumah tinggal standard',
           image: 'https://cdn.pixabay.com/photo/2023/05/15/10/55/door-8013011_1280.jpg',
           features: [
@@ -279,8 +275,7 @@ export async function GET() {
           ]
         },
         {
-          name: 'FloodBar Premium',
-          price: 'Rp 1.200.000/meter',
+          name: 'Model B',
           description: 'Sekat pintu heavy duty dengan tinggi 80cm untuk perlindungan maksimal',
           image: 'https://cdn.pixabay.com/photo/2016/11/30/12/24/door-1873464_1280.jpg',
           features: [

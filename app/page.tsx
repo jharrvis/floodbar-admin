@@ -24,7 +24,6 @@ interface LandingPageData {
   }>
   products: Array<{
     name: string
-    price: string
     description: string
     image: string
     features: string[]
@@ -294,6 +293,75 @@ export default function HomePage() {
                 </div>
               )
             })}
+          </div>
+        </div>
+      </section>
+
+      {/* Products Section */}
+      <section id="products" className="py-16 px-4 bg-white">
+        <div className="max-w-7xl mx-auto">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+              Pilihan Model FloodBar
+            </h2>
+            <p className="text-lg text-gray-600">
+              Dua model berbeda dengan spesifikasi dan bentuk yang disesuaikan kebutuhan Anda
+            </p>
+          </div>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            {data.products.map((product, index) => (
+              <div key={index} className="bg-gray-50 rounded-xl p-6 shadow-sm hover:shadow-lg transition-shadow">
+                <div className="relative mb-6">
+                  <img 
+                    src={`${product.image}${product.image ? `?t=${Date.now()}` : ''}`}
+                    alt={product.name}
+                    className="w-full h-64 object-cover rounded-lg"
+                    key={product.image}
+                  />
+                </div>
+                
+                <div className="text-center mb-6">
+                  <h3 className="text-2xl font-bold text-gray-900 mb-3">{product.name}</h3>
+                  <p className="text-gray-600 mb-4">{product.description}</p>
+                </div>
+                
+                <div className="space-y-3">
+                  <h4 className="text-lg font-semibold text-gray-900 mb-3">Spesifikasi:</h4>
+                  {product.features.map((feature, featureIndex) => (
+                    <div key={featureIndex} className="flex items-start space-x-3">
+                      <CheckCircle className="w-5 h-5 text-green-600 mt-0.5 flex-shrink-0" />
+                      <span className="text-gray-700">{feature}</span>
+                    </div>
+                  ))}
+                </div>
+                
+                <div className="mt-6 text-center">
+                  <Link href="/order">
+                    <button className="bg-blue-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-blue-700 transition-colors w-full">
+                      Pre-Order {product.name}
+                    </button>
+                  </Link>
+                </div>
+              </div>
+            ))}
+          </div>
+          
+          <div className="text-center mt-12">
+            <p className="text-gray-600 mb-6">
+              Kedua model memiliki harga yang sama, perbedaan hanya pada bentuk dan spesifikasi.
+              Pilih sesuai kebutuhan perlindungan rumah Anda.
+            </p>
+            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+              <Link href="/order">
+                <button className="bg-blue-600 text-white px-8 py-4 rounded-lg font-semibold hover:bg-blue-700 transition-colors">
+                  Konsultasi & Pre-Order
+                </button>
+              </Link>
+              <button className="border border-blue-600 text-blue-600 px-8 py-4 rounded-lg font-semibold hover:bg-blue-50 transition-colors">
+                Hubungi Kami
+              </button>
+            </div>
           </div>
         </div>
       </section>

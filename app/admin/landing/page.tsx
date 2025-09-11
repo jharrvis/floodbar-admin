@@ -24,7 +24,6 @@ interface LandingPageData {
   }>
   products: Array<{
     name: string
-    price: string
     description: string
     image: string
     features: string[]
@@ -136,7 +135,6 @@ export default function LandingPageEditor() {
         ...data.products,
         {
           name: '',
-          price: '',
           description: '',
           image: '',
           features: ['']
@@ -582,37 +580,20 @@ export default function LandingPageEditor() {
                     >
                       <Trash2 size={16} />
                     </button>
-                    <div className="grid grid-cols-2 gap-4 mb-4">
-                      <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">
-                          Name
-                        </label>
-                        <input
-                          type="text"
-                          value={product.name}
-                          onChange={(e) => {
-                            const newProducts = [...data.products]
-                            newProducts[index].name = e.target.value
-                            setData({ ...data, products: newProducts })
-                          }}
-                          className="w-full px-3 py-2 border border-gray-300 rounded-md"
-                        />
-                      </div>
-                      <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">
-                          Price
-                        </label>
-                        <input
-                          type="text"
-                          value={product.price}
-                          onChange={(e) => {
-                            const newProducts = [...data.products]
-                            newProducts[index].price = e.target.value
-                            setData({ ...data, products: newProducts })
-                          }}
-                          className="w-full px-3 py-2 border border-gray-300 rounded-md"
-                        />
-                      </div>
+                    <div className="mb-4">
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        Name
+                      </label>
+                      <input
+                        type="text"
+                        value={product.name}
+                        onChange={(e) => {
+                          const newProducts = [...data.products]
+                          newProducts[index].name = e.target.value
+                          setData({ ...data, products: newProducts })
+                        }}
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md"
+                      />
                     </div>
                     <div className="mb-4">
                       <label className="block text-sm font-medium text-gray-700 mb-1">
