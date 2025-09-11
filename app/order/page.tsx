@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import { useSearchParams } from 'next/navigation'
 import { Calculator, ShoppingCart, User, MapPin, CreditCard, Send, Package, Truck } from 'lucide-react'
 
 interface OrderItem {
@@ -38,6 +39,7 @@ interface OrderSummary {
 }
 
 export default function OrderPage() {
+  const searchParams = useSearchParams()
   const [step, setStep] = useState(1) // 1: Product Config, 2: Shipping, 3: Customer Data, 4: Payment, 5: Confirmation
   const [orderItems, setOrderItems] = useState<OrderItem[]>([])
   const [shippingData, setShippingData] = useState<ShippingCalculation | null>(null)
@@ -68,14 +70,13 @@ export default function OrderPage() {
   
   // Check for model parameter from URL on component mount
   useEffect(() => {
-    if (typeof window !== 'undefined') {
-      const urlParams = new URLSearchParams(window.location.search)
-      const model = urlParams.get('model')
-      if (model && (model === 'Model A' || model === 'Model B')) {
-        setProductForm(prev => ({ ...prev, model }))
-      }
+    const model = searchParams.get('model')
+    console.log('URL model parameter:', model) // Debug log
+    if (model && (model === 'Model A' || model === 'Model B')) {
+      console.log('Setting model to:', model) // Debug log
+      setProductForm(prev => ({ ...prev, model }))
     }
-  }, [])
+  }, [searchParams])
   const [calculating, setCalculating] = useState(false)
 
   // Shipping form
@@ -182,13 +183,13 @@ export default function OrderPage() {
 
     setShippingCalculating(true)
     try {
-      // Calculate actual weight with proper logic:
-      // If weight < 10kg: use 10kg (minimum shipping weight)
-      // If weight >= 10kg: round up to nearest integer (e.g. 11.2 -> 12, 18.8 -> 19)
-      const actualWeight = shippingForm.weight < 10 ? 10 : Math.ceil(shippingForm.weight)
+      // Use the actual calculated weight from the product calculation
+      // Only apply minimum 10kg for shipping cost calculation, but display real weight
+      const realWeight = shippingForm.weight
+      const shippingWeight = Math.max(realWeight, 10) // Minimum 10kg for shipping cost only
       
       // Calculate shipping cost based on selected city price
-      const shippingCost = actualWeight * parseFloat(city.price_per_kg || '15000')
+      const shippingCost = shippingWeight * parseFloat(city.price_per_kg || '15000')
       
       // Use override values if provided, otherwise use current state
       const currentInsuranceSelected = overrideInsurance !== undefined ? overrideInsurance : insuranceSelected
@@ -205,7 +206,7 @@ export default function OrderPage() {
       setShippingData({
         cost: totalShippingCost,
         estimatedDays: '3-5 hari kerja',
-        weight: actualWeight,
+        weight: realWeight, // Show actual weight, not minimum weight
         insuranceCost,
         pickupCost
       })
@@ -593,7 +594,7 @@ export default function OrderPage() {
                     )}
                     <p className="text-sm text-gray-600">Total: Rp {shippingData.cost.toLocaleString()}</p>
                     <p className="text-sm text-gray-600">Estimasi: {shippingData.estimatedDays}</p>
-                    <p className="text-sm text-gray-600">Berat: {shippingData.weight} kg (minimum 10kg)</p>
+                    <p className="text-sm text-gray-600">Berat: {shippingData.weight} kg {shippingData.weight < 10 ? '(ditagih minimum 10kg)' : ''}</p>
                   </div>
                 )}
               </div>
