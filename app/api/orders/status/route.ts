@@ -27,18 +27,15 @@ export async function GET(request: NextRequest) {
       )
     }
 
-    // Return order with actual schema fields
+    // Return order with actual schema fields only
     const orderData = {
       orderId: order.id,
       status: order.status,
       createdAt: order.createdAt,
       updatedAt: order.updatedAt,
-      paidAt: order.paidAt,
-      processingAt: order.processingAt,
-      shippedAt: order.shippedAt,
-      deliveredAt: order.deliveredAt,
+      paymentStatus: order.paymentStatus,
       productConfig: {
-        model: order.productModel || 'Custom',
+        model: 'Custom', // No productModel field in current schema
         width: order.productWidth,
         height: order.productHeight,
         quantity: order.productQuantity
@@ -60,9 +57,7 @@ export async function GET(request: NextRequest) {
       customerName: order.customerName,
       customerEmail: order.customerEmail,
       customerCity: order.customerCity,
-      estimatedDelivery: order.estimatedDelivery,
-      trackingNumber: order.trackingNumber,
-      courier: order.courier
+      xenditInvoiceUrl: order.xenditInvoiceUrl
     }
 
     return NextResponse.json({
