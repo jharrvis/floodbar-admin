@@ -40,6 +40,7 @@ interface Order {
   customerAddress: string
   customerCity: string
   customerPostalCode: string
+  productModel?: string
   productWidth: number
   productHeight: number
   productThickness: number
@@ -880,6 +881,11 @@ export default function OrdersPage() {
                   <Package size={16} /> Informasi Produk
                 </h4>
                 <div className="grid grid-cols-2 gap-4 text-sm">
+                  {selectedOrder.productModel && (
+                    <div>
+                      <span className="font-medium">Model:</span> {selectedOrder.productModel}
+                    </div>
+                  )}
                   <div>
                     <span className="font-medium">Ukuran:</span> {selectedOrder.productWidth}×{selectedOrder.productHeight}cm
                   </div>

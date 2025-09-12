@@ -235,6 +235,7 @@ export default function OrderPage() {
       const firstItem = orderItems[0] // Assuming single product for now
       const orderData = {
         productConfig: {
+          model: productForm.model,
           width: firstItem?.width || 0,
           height: firstItem?.height || 0,
           thickness: 5,

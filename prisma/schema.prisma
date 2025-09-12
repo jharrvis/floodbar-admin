@@ -159,6 +159,7 @@ model Order {
   customerAddress      String   @db.Text
   customerCity         String   @db.VarChar(255)
   customerPostalCode   String   @db.VarChar(10)
+  productModel         String?  @db.VarChar(255)
   productWidth         Decimal  @db.Decimal(8,2)
   productHeight        Decimal  @db.Decimal(8,2)
   productThickness     Decimal? @db.Decimal(8,2)

@@ -8,6 +8,7 @@ const prisma = new PrismaClient()
 
 interface OrderData {
   productConfig: {
+    model?: string
     width: number
     height: number
     thickness: number
@@ -59,12 +60,12 @@ export async function POST(request: NextRequest) {
     await prisma.$executeRawUnsafe(`
       INSERT INTO orders (
         id, customerName, customerEmail, customerPhone, customerAddress, 
-        customerCity, customerPostalCode, productWidth, productHeight, 
+        customerCity, customerPostalCode, productModel, productWidth, productHeight, 
         productThickness, productQuantity, productFinish, shippingOrigin,
         shippingDestination, shippingWeight, shippingService, shippingCost,
         paymentMethod, paymentProvider, subtotal, adminFee, grandTotal,
         status, createdAt, updatedAt
-      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW(), NOW())
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW(), NOW())
     `,
       orderId,
       orderData.customer.name,
@@ -73,6 +74,7 @@ export async function POST(request: NextRequest) {
       orderData.customer.address,
       orderData.customer.city,
       orderData.customer.postalCode,
+      orderData.productConfig.model || null,
       orderData.productConfig.width,
       orderData.productConfig.height,
       orderData.productConfig.thickness,
