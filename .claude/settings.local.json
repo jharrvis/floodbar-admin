@@ -58,7 +58,9 @@
       "WebFetch(domain:floodbar-8r8illkjy-jharrvis-projects.vercel.app)",
       "WebFetch(domain:floodbar-k04m5sntw-jharrvis-projects.vercel.app)",
       "Bash(echo:*)",
-      "WebFetch(domain:floodbar-d6s2dtfsq-jharrvis-projects.vercel.app)"
+      "WebFetch(domain:floodbar-d6s2dtfsq-jharrvis-projects.vercel.app)",
+      "WebFetch(domain:floodbar-ligsbk0i9-jharrvis-projects.vercel.app)",
+      "WebFetch(domain:floodbar-iu16u1uqh-jharrvis-projects.vercel.app)"
     ],
     "deny": [],
     "ask": []
