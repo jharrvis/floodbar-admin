@@ -9,7 +9,7 @@ const prisma = new PrismaClient()
 export async function GET() {
   try {
     const settings = await prisma.$queryRawUnsafe(`
-      SELECT * FROM system_settings ORDER BY createdAt DESC LIMIT 1
+      SELECT * FROM settings ORDER BY createdAt DESC LIMIT 1
     `)
 
     if (Array.isArray(settings) && settings.length > 0) {
@@ -70,7 +70,7 @@ export async function PUT(request: NextRequest) {
 
     // Check if settings exists
     const existingSettings = await prisma.$queryRawUnsafe(`
-      SELECT id FROM system_settings LIMIT 1
+      SELECT id FROM settings LIMIT 1
     `) as any[]
 
     const settingsData = {
@@ -88,7 +88,7 @@ export async function PUT(request: NextRequest) {
     if (existingSettings && existingSettings.length > 0) {
       // Update existing settings
       await prisma.$executeRawUnsafe(`
-        UPDATE system_settings 
+        UPDATE settings 
         SET siteName = ?, siteDescription = ?, adminEmail = ?, 
             timezone = ?, language = ?, maintenanceMode = ?, 
             allowRegistration = ?, emailNotifications = ?, backupFrequency = ?, 
@@ -103,7 +103,7 @@ export async function PUT(request: NextRequest) {
     } else {
       // Create new settings
       await prisma.$executeRawUnsafe(`
-        INSERT INTO system_settings (
+        INSERT INTO settings (
           id, siteName, siteDescription, adminEmail, timezone, language,
           maintenanceMode, allowRegistration, emailNotifications, backupFrequency
         ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)

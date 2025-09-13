@@ -23,11 +23,16 @@ export async function POST(request: NextRequest) {
         SELECT adminEmail FROM settings ORDER BY createdAt DESC LIMIT 1
       `) as any[]
       
+      console.log('Admin email query result:', settingsResult)
+      
       if (settingsResult.length > 0 && settingsResult[0].adminEmail) {
         adminEmail = settingsResult[0].adminEmail
+        console.log('Admin email loaded from settings:', adminEmail)
+      } else {
+        console.log('No admin email found in settings, using fallback:', adminEmail)
       }
     } catch (error) {
-      console.log('Could not load admin email from settings, using fallback:', adminEmail)
+      console.log('Could not load admin email from settings, using fallback:', adminEmail, 'Error:', error)
     }
 
     // Format currency
@@ -285,15 +290,24 @@ export async function POST(request: NextRequest) {
         SELECT * FROM payment_settings ORDER BY createdAt DESC LIMIT 1
       `) as any[]
 
+      console.log('Payment settings query result:', settingsResult.length > 0 ? 'Found settings' : 'No settings found')
+      
       if (settingsResult.length && settingsResult[0].isEmailEnabled) {
         emailSettings = {
           gmailUser: settingsResult[0].gmailUser,
-          gmailAppPassword: settingsResult[0].gmailAppPassword,
+          gmailAppPassword: settingsResult[0].gmailAppPassword ? '***CONFIGURED***' : 'NOT SET',
           emailFrom: settingsResult[0].emailFrom || 'FloodBar Admin',
           isEnabled: true
         }
+        console.log('Email settings loaded:', {
+          gmailUser: settingsResult[0].gmailUser,
+          hasPassword: !!settingsResult[0].gmailAppPassword,
+          emailFrom: emailSettings.emailFrom,
+          isEnabled: true
+        })
       } else {
         emailSettings = { isEnabled: false }
+        console.log('Email notifications disabled or not configured')
       }
     } catch (dbError) {
       console.log('Could not load email settings from database:', dbError instanceof Error ? dbError.message : dbError)
