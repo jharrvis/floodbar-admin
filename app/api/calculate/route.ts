@@ -57,11 +57,18 @@ export async function POST(request: NextRequest) {
     let additionalCosts = 0
     const costs = []
 
-    // Packing cost is always included
-    const packingCost = Number(config.packingCost || 0)
-    if (packingCost > 0) {
-      additionalCosts += packingCost
-      costs.push({ type: 'packing', amount: packingCost, description: 'Biaya Packing' })
+    // Packing cost calculation: MAX(width, height) / 100, rounded up, then multiplied by packing cost from database
+    const packingCostPerUnit = Number(config.packingCost || 0)
+    if (packingCostPerUnit > 0) {
+      const maxDimension = Math.max(width, height)
+      const packingUnits = Math.ceil(maxDimension / 100) // Round up
+      const totalPackingCost = packingUnits * packingCostPerUnit
+      additionalCosts += totalPackingCost
+      costs.push({ 
+        type: 'packing', 
+        amount: totalPackingCost, 
+        description: `Biaya Packing (${packingUnits} unit × Rp ${packingCostPerUnit.toLocaleString()})` 
+      })
     }
 
     if (includePickup) {
