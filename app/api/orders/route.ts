@@ -186,6 +186,7 @@ export async function POST(request: NextRequest) {
 
     // Send email notification (skip for development to avoid ECONNREFUSED)
     if (process.env.NODE_ENV === 'production') {
+      // Send email to customer
       try {
         await fetch(`${process.env.NEXTAUTH_URL || 'https://floodbar.id'}/api/notifications/email`, {
           method: 'POST',
@@ -197,7 +198,21 @@ export async function POST(request: NextRequest) {
           })
         })
       } catch (emailError) {
-        console.error('Email notification failed:', emailError)
+        console.error('Customer email notification failed:', emailError)
+      }
+
+      // Send email to admin
+      try {
+        await fetch(`${process.env.NEXTAUTH_URL || 'https://floodbar.id'}/api/notifications/admin-email`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            orderId,
+            orderData
+          })
+        })
+      } catch (adminEmailError) {
+        console.error('Admin email notification failed:', adminEmailError)
       }
 
       // Send WhatsApp notification  
@@ -216,7 +231,8 @@ export async function POST(request: NextRequest) {
       }
     } else {
       console.log('Development mode: Email and WhatsApp notifications skipped')
-      console.log(`Email would be sent to: ${orderData.customer.email}`)
+      console.log(`Customer email would be sent to: ${orderData.customer.email}`)
+      console.log(`Admin email would be sent to admin`)
       console.log(`WhatsApp would be sent to: ${orderData.customer.phone}`)
     }
 
