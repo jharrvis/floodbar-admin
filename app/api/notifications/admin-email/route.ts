@@ -304,7 +304,7 @@ export async function POST(request: NextRequest) {
     if (emailSettings.isEnabled && emailSettings.gmailUser && emailSettings.gmailAppPassword) {
       try {
         // Create SMTP transporter
-        const transporter = nodemailer.createTransporter({
+        const transporter = nodemailer.createTransport({
           host: 'smtp.gmail.com',
           port: 587,
           secure: false,
