@@ -26,6 +26,12 @@ export async function GET() {
         allowRegistration: Boolean(systemSettings.allowRegistration),
         emailNotifications: Boolean(systemSettings.emailNotifications),
         backupFrequency: systemSettings.backupFrequency,
+        logoUrl: systemSettings.logoUrl,
+        instagramUrl: systemSettings.instagramUrl,
+        tiktokUrl: systemSettings.tiktokUrl,
+        facebookUrl: systemSettings.facebookUrl,
+        facebookPixel: systemSettings.facebookPixel,
+        googleAnalytics: systemSettings.googleAnalytics,
         createdAt: systemSettings.createdAt,
         updatedAt: systemSettings.updatedAt
       }
@@ -43,7 +49,13 @@ export async function GET() {
         maintenanceMode: false,
         allowRegistration: false,
         emailNotifications: true,
-        backupFrequency: 'daily'
+        backupFrequency: 'daily',
+        logoUrl: '',
+        instagramUrl: '',
+        tiktokUrl: '',
+        facebookUrl: '',
+        facebookPixel: '',
+        googleAnalytics: ''
       }
       return NextResponse.json(defaultSettings)
     }
@@ -82,7 +94,13 @@ export async function PUT(request: NextRequest) {
       maintenanceMode: Boolean(data.maintenanceMode),
       allowRegistration: Boolean(data.allowRegistration),
       emailNotifications: Boolean(data.emailNotifications),
-      backupFrequency: data.backupFrequency || 'daily'
+      backupFrequency: data.backupFrequency || 'daily',
+      logoUrl: data.logoUrl || '',
+      instagramUrl: data.instagramUrl || '',
+      tiktokUrl: data.tiktokUrl || '',
+      facebookUrl: data.facebookUrl || '',
+      facebookPixel: data.facebookPixel || '',
+      googleAnalytics: data.googleAnalytics || ''
     }
 
     if (existingSettings && existingSettings.length > 0) {
@@ -91,27 +109,32 @@ export async function PUT(request: NextRequest) {
         UPDATE settings 
         SET siteName = ?, siteDescription = ?, adminEmail = ?, 
             timezone = ?, language = ?, maintenanceMode = ?, 
-            allowRegistration = ?, emailNotifications = ?, backupFrequency = ?, 
-            updatedAt = NOW()
+            allowRegistration = ?, emailNotifications = ?, backupFrequency = ?,
+            logoUrl = ?, instagramUrl = ?, tiktokUrl = ?, facebookUrl = ?,
+            facebookPixel = ?, googleAnalytics = ?, updatedAt = NOW()
         WHERE id = ?
       `, 
         settingsData.siteName, settingsData.siteDescription, settingsData.adminEmail,
         settingsData.timezone, settingsData.language, settingsData.maintenanceMode,
         settingsData.allowRegistration, settingsData.emailNotifications, settingsData.backupFrequency,
-        existingSettings[0].id
+        settingsData.logoUrl, settingsData.instagramUrl, settingsData.tiktokUrl, settingsData.facebookUrl,
+        settingsData.facebookPixel, settingsData.googleAnalytics, existingSettings[0].id
       )
     } else {
       // Create new settings
       await prisma.$executeRawUnsafe(`
         INSERT INTO settings (
           id, siteName, siteDescription, adminEmail, timezone, language,
-          maintenanceMode, allowRegistration, emailNotifications, backupFrequency
-        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+          maintenanceMode, allowRegistration, emailNotifications, backupFrequency,
+          logoUrl, instagramUrl, tiktokUrl, facebookUrl, facebookPixel, googleAnalytics
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
       `,
         'settings-' + Date.now(),
         settingsData.siteName, settingsData.siteDescription, settingsData.adminEmail,
         settingsData.timezone, settingsData.language, settingsData.maintenanceMode,
-        settingsData.allowRegistration, settingsData.emailNotifications, settingsData.backupFrequency
+        settingsData.allowRegistration, settingsData.emailNotifications, settingsData.backupFrequency,
+        settingsData.logoUrl, settingsData.instagramUrl, settingsData.tiktokUrl, settingsData.facebookUrl,
+        settingsData.facebookPixel, settingsData.googleAnalytics
       )
     }
 

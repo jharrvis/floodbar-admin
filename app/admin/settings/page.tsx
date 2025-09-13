@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { Save, Eye, EyeOff } from 'lucide-react'
+import { Save, Eye, EyeOff, Upload, Instagram, Facebook } from 'lucide-react'
 
 interface SystemSettings {
   siteName: string
@@ -13,6 +13,12 @@ interface SystemSettings {
   backupFrequency: string
   timezone: string
   language: string
+  logoUrl?: string
+  instagramUrl?: string
+  tiktokUrl?: string
+  facebookUrl?: string
+  facebookPixel?: string
+  googleAnalytics?: string
 }
 
 interface CloudinarySettings {
@@ -32,7 +38,13 @@ export default function SettingsPage() {
     emailNotifications: true,
     backupFrequency: 'daily',
     timezone: 'Asia/Jakarta',
-    language: 'id'
+    language: 'id',
+    logoUrl: '',
+    instagramUrl: '',
+    tiktokUrl: '',
+    facebookUrl: '',
+    facebookPixel: '',
+    googleAnalytics: ''
   })
 
   const [cloudinarySettings, setCloudinarySettings] = useState<CloudinarySettings>({
@@ -46,6 +58,7 @@ export default function SettingsPage() {
   const [showApiSecret, setShowApiSecret] = useState(false)
   const [testingConnection, setTestingConnection] = useState(false)
   const [connectionStatus, setConnectionStatus] = useState<'idle' | 'success' | 'error'>('idle')
+  const [uploadingLogo, setUploadingLogo] = useState(false)
 
   const [passwordData, setPasswordData] = useState({
     currentPassword: '',
@@ -82,7 +95,13 @@ export default function SettingsPage() {
           emailNotifications: data.emailNotifications !== undefined ? data.emailNotifications : true,
           backupFrequency: data.backupFrequency || 'daily',
           timezone: data.timezone || 'Asia/Jakarta',
-          language: data.language || 'id'
+          language: data.language || 'id',
+          logoUrl: data.logoUrl || '',
+          instagramUrl: data.instagramUrl || '',
+          tiktokUrl: data.tiktokUrl || '',
+          facebookUrl: data.facebookUrl || '',
+          facebookPixel: data.facebookPixel || '',
+          googleAnalytics: data.googleAnalytics || ''
         })
       }
 
@@ -238,6 +257,55 @@ export default function SettingsPage() {
     }
   }
 
+  const handleLogoUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0]
+    if (!file) return
+
+    // Check file size (max 2MB)
+    if (file.size > 2 * 1024 * 1024) {
+      alert('Ukuran file terlalu besar. Maksimal 2MB.')
+      return
+    }
+
+    // Check file type
+    if (!file.type.startsWith('image/')) {
+      alert('File harus berupa gambar.')
+      return
+    }
+
+    setUploadingLogo(true)
+    
+    try {
+      const formData = new FormData()
+      formData.append('file', file)
+      formData.append('upload_preset', cloudinarySettings.uploadPreset || 'floodbar_uploads')
+
+      // Upload to Cloudinary
+      const response = await fetch(`https://api.cloudinary.com/v1_1/${cloudinarySettings.cloudName}/image/upload`, {
+        method: 'POST',
+        body: formData
+      })
+
+      const result = await response.json()
+
+      if (response.ok) {
+        // Update logo URL in settings
+        setSettings(prev => ({
+          ...prev,
+          logoUrl: result.secure_url
+        }))
+        alert('Logo berhasil diupload!')
+      } else {
+        throw new Error(result.error?.message || 'Upload gagal')
+      }
+    } catch (error) {
+      console.error('Upload error:', error)
+      alert('Gagal mengupload logo. Pastikan konfigurasi Cloudinary sudah benar.')
+    } finally {
+      setUploadingLogo(false)
+    }
+  }
+
   if (loading) {
     return (
       <div className="max-w-4xl mx-auto">
@@ -331,6 +399,149 @@ export default function SettingsPage() {
                 rows={3}
                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500"
               />
+            </div>
+          </div>
+
+          {/* Branding Section */}
+          <div className="mt-8 pt-6 border-t border-gray-200">
+            <h3 className="text-md font-semibold text-gray-800 mb-4">Branding & Logo</h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {/* Logo Upload */}
+              <div className="md:col-span-2">
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Logo Website
+                </label>
+                <div className="flex items-start gap-4">
+                  {settings.logoUrl && (
+                    <div className="flex-shrink-0">
+                      <img 
+                        src={settings.logoUrl} 
+                        alt="Logo" 
+                        className="h-16 w-16 object-contain rounded-md border border-gray-300"
+                      />
+                    </div>
+                  )}
+                  <div className="flex-1">
+                    <input
+                      type="file"
+                      accept="image/*"
+                      onChange={handleLogoUpload}
+                      disabled={uploadingLogo}
+                      className="hidden"
+                      id="logo-upload"
+                    />
+                    <label
+                      htmlFor="logo-upload"
+                      className={`inline-flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-md cursor-pointer hover:bg-gray-50 ${
+                        uploadingLogo ? 'opacity-50 cursor-not-allowed' : ''
+                      }`}
+                    >
+                      <Upload size={16} />
+                      {uploadingLogo ? 'Mengupload...' : 'Upload Logo'}
+                    </label>
+                    <p className="text-xs text-gray-500 mt-1">
+                      Format: JPG, PNG. Maksimal 2MB. Disarankan 200x200px.
+                    </p>
+                    {settings.logoUrl && (
+                      <button
+                        type="button"
+                        onClick={() => setSettings(prev => ({ ...prev, logoUrl: '' }))}
+                        className="text-red-600 text-sm mt-2 hover:underline"
+                      >
+                        Hapus Logo
+                      </button>
+                    )}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Social Media Section */}
+          <div className="mt-8 pt-6 border-t border-gray-200">
+            <h3 className="text-md font-semibold text-gray-800 mb-4">Media Sosial</h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <Instagram size={16} className="inline mr-2" />
+                  Instagram URL
+                </label>
+                <input
+                  type="url"
+                  value={settings.instagramUrl}
+                  onChange={(e) => handleSettingChange('instagramUrl', e.target.value)}
+                  placeholder="https://instagram.com/username"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <svg className="inline w-4 h-4 mr-2" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M12.53 9.29l-.01-.02-1.46 1.47-3.53 3.53-6.5 6.5s.31.31.72.31c.38 0 .7-.14.97-.39l5.5-5.5 3.5-3.5 1.47-1.47-.66-.69zm6.21 8.09c1.17-1.17 1.17-3.07 0-4.24l-1.17-1.17-1.46 1.47 1.17 1.17c.39.39.39 1.02 0 1.41l-1.17 1.17-1.46 1.47 1.17 1.17c1.17 1.17 3.07 1.17 4.24 0 .29-.29.68-.72.68-.68z"/>
+                  </svg>
+                  TikTok URL
+                </label>
+                <input
+                  type="url"
+                  value={settings.tiktokUrl}
+                  onChange={(e) => handleSettingChange('tiktokUrl', e.target.value)}
+                  placeholder="https://tiktok.com/@username"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <Facebook size={16} className="inline mr-2" />
+                  Facebook URL
+                </label>
+                <input
+                  type="url"
+                  value={settings.facebookUrl}
+                  onChange={(e) => handleSettingChange('facebookUrl', e.target.value)}
+                  placeholder="https://facebook.com/page"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500"
+                />
+              </div>
+            </div>
+          </div>
+
+          {/* Analytics Section */}
+          <div className="mt-8 pt-6 border-t border-gray-200">
+            <h3 className="text-md font-semibold text-gray-800 mb-4">Analytics & Tracking</h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Google Analytics ID
+                </label>
+                <input
+                  type="text"
+                  value={settings.googleAnalytics}
+                  onChange={(e) => handleSettingChange('googleAnalytics', e.target.value)}
+                  placeholder="GA-XXXXXXXXX-X atau G-XXXXXXXXXX"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500"
+                />
+                <p className="text-xs text-gray-500 mt-1">
+                  Masukkan Google Analytics Measurement ID
+                </p>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Facebook Pixel ID
+                </label>
+                <input
+                  type="text"
+                  value={settings.facebookPixel}
+                  onChange={(e) => handleSettingChange('facebookPixel', e.target.value)}
+                  placeholder="123456789012345"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500"
+                />
+                <p className="text-xs text-gray-500 mt-1">
+                  Masukkan Facebook Pixel ID (hanya angka)
+                </p>
+              </div>
             </div>
           </div>
 

@@ -51,6 +51,15 @@ model Settings {
   backupFrequency String @default("daily")
   timezone String @default("Asia/Jakarta")
   language String @default("id")
+  
+  // New fields for enhanced settings
+  logoUrl String? @db.VarChar(500)
+  instagramUrl String? @db.VarChar(255)
+  tiktokUrl String? @db.VarChar(255)
+  facebookUrl String? @db.VarChar(255)
+  facebookPixel String? @db.VarChar(100)
+  googleAnalytics String? @db.VarChar(100)
+  
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
