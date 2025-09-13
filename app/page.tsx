@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { Phone, Mail, MapPin, Star, Shield, Wrench, Droplets, CheckCircle, AlertTriangle, Home, ChevronLeft, ChevronRight, ArrowUp } from 'lucide-react'
+import { Phone, Mail, MapPin, Star, Shield, Wrench, Droplets, CheckCircle, AlertTriangle, Home, ChevronLeft, ChevronRight, ArrowUp, Instagram, Facebook, Play } from 'lucide-react'
 import Link from 'next/link'
 
 interface LandingPageData {
@@ -71,6 +71,7 @@ const iconMap: { [key: string]: any } = {
 
 export default function HomePage() {
   const [data, setData] = useState<LandingPageData | null>(null)
+  const [settings, setSettings] = useState<any>(null)
   const [loading, setLoading] = useState(true)
   const [currentTestimonial, setCurrentTestimonial] = useState(0)
   const [showScrollTop, setShowScrollTop] = useState(false)
@@ -115,6 +116,7 @@ export default function HomePage() {
 
   useEffect(() => {
     fetchData()
+    fetchSettings()
     
     // Scroll to top button visibility
     const handleScroll = () => {
@@ -157,6 +159,16 @@ export default function HomePage() {
     }
   }
 
+  const fetchSettings = async () => {
+    try {
+      const response = await fetch('/api/settings')
+      const result = await response.json()
+      setSettings(result)
+    } catch (error) {
+      console.error('Error fetching settings:', error)
+    }
+  }
+
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50">
@@ -175,10 +187,18 @@ export default function HomePage() {
       <nav className="bg-gray-900 text-white px-4 py-3">
         <div className="max-w-7xl mx-auto flex items-center justify-between">
           <div className="flex items-center space-x-2">
-            <div className="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center">
-              <Shield className="w-5 h-5" />
-            </div>
-            <span className="font-bold text-xl">FloodBar.id</span>
+            {settings?.logoUrl ? (
+              <img 
+                src={settings.logoUrl} 
+                alt={settings.siteName || 'FloodBar.id'} 
+                className="w-8 h-8 object-contain rounded"
+              />
+            ) : (
+              <div className="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center">
+                <Shield className="w-5 h-5" />
+              </div>
+            )}
+            <span className="font-bold text-xl">{settings?.siteName || 'FloodBar.id'}</span>
           </div>
           <div className="hidden md:flex items-center space-x-6">
             <span className="text-sm">Layanan: ★★★★★</span>
@@ -689,16 +709,61 @@ export default function HomePage() {
         <div className="max-w-7xl mx-auto">
           <div className="text-center">
             <div className="flex items-center justify-center space-x-2 mb-4">
-              <div className="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center">
-                <Shield className="w-5 h-5" />
-              </div>
-              <span className="font-bold text-xl">FloodBar.id</span>
+              {settings?.logoUrl ? (
+                <img 
+                  src={settings.logoUrl} 
+                  alt={settings.siteName || 'FloodBar.id'} 
+                  className="w-8 h-8 object-contain rounded"
+                />
+              ) : (
+                <div className="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center">
+                  <Shield className="w-5 h-5" />
+                </div>
+              )}
+              <span className="font-bold text-xl">{settings?.siteName || 'FloodBar.id'}</span>
             </div>
             <p className="text-gray-400 mb-6 max-w-2xl mx-auto">
-              Sekat pintu anti banjir custom untuk rumah Anda. Pre-order sekarang sebelum musim hujan!
+              {settings?.siteDescription || 'Sekat pintu anti banjir custom untuk rumah Anda. Pre-order sekarang sebelum musim hujan!'}
             </p>
+            
+            {/* Social Media Links */}
+            {(settings?.instagramUrl || settings?.facebookUrl || settings?.tiktokUrl) && (
+              <div className="flex justify-center space-x-4 mb-6">
+                {settings.instagramUrl && (
+                  <a 
+                    href={settings.instagramUrl} 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    className="bg-gradient-to-r from-purple-500 to-pink-500 p-3 rounded-full hover:opacity-80 transition-opacity"
+                  >
+                    <Instagram size={20} />
+                  </a>
+                )}
+                {settings.facebookUrl && (
+                  <a 
+                    href={settings.facebookUrl} 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    className="bg-blue-600 p-3 rounded-full hover:opacity-80 transition-opacity"
+                  >
+                    <Facebook size={20} />
+                  </a>
+                )}
+                {settings.tiktokUrl && (
+                  <a 
+                    href={settings.tiktokUrl} 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    className="bg-black p-3 rounded-full hover:opacity-80 transition-opacity"
+                  >
+                    <Play size={20} />
+                  </a>
+                )}
+              </div>
+            )}
+            
             <p className="text-gray-400">
-              © 2024 FloodBar.id - Semua hak dilindungi undang-undang.
+              © 2024 {settings?.siteName || 'FloodBar.id'} - Semua hak dilindungi undang-undang.
             </p>
           </div>
         </div>
