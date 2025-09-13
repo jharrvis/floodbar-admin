@@ -104,6 +104,8 @@ export default function OrdersPage() {
   const [shippingOrders, setShippingOrders] = useState<Set<string>>(new Set())
   const [showWebhookDebug, setShowWebhookDebug] = useState(false)
   const [webhookDebugData, setWebhookDebugData] = useState<any>(null)
+  const [costBreakdown, setCostBreakdown] = useState<any>(null)
+  const [loadingCostBreakdown, setLoadingCostBreakdown] = useState(false)
   
   // New state for enhanced features
   const [dateFrom, setDateFrom] = useState('')
@@ -207,6 +209,35 @@ export default function OrdersPage() {
       }
     } catch (error) {
       console.error('Error loading webhook debug:', error)
+    }
+  }
+
+  const loadCostBreakdown = async (order: Order) => {
+    setLoadingCostBreakdown(true)
+    setCostBreakdown(null)
+    
+    try {
+      const response = await fetch('/api/calculate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          width: order.productWidth,
+          height: order.productHeight,
+          includePickup: false, // We'll determine this based on stored data
+          includeInsurance: false // We'll determine this based on stored data
+        })
+      })
+
+      if (response.ok) {
+        const result = await response.json()
+        if (result.success) {
+          setCostBreakdown(result.data)
+        }
+      }
+    } catch (error) {
+      console.error('Error loading cost breakdown:', error)
+    } finally {
+      setLoadingCostBreakdown(false)
     }
   }
 
@@ -719,6 +750,7 @@ export default function OrdersPage() {
                         onClick={() => {
                           setSelectedOrder(order)
                           setShowDetailModal(true)
+                          loadCostBreakdown(order)
                         }}
                         className="text-blue-600 hover:text-blue-900"
                         title="Lihat Detail"
@@ -843,7 +875,10 @@ export default function OrdersPage() {
             <div className="flex justify-between items-center mb-4">
               <h3 className="text-lg font-medium">Detail Pesanan {selectedOrder.id}</h3>
               <button
-                onClick={() => setShowDetailModal(false)}
+                onClick={() => {
+                  setShowDetailModal(false)
+                  setCostBreakdown(null)
+                }}
                 className="text-gray-400 hover:text-gray-600"
               >
                 <XCircle size={24} />
@@ -895,9 +930,6 @@ export default function OrdersPage() {
                   <div>
                     <span className="font-medium">Jumlah:</span> {selectedOrder.productQuantity} pcs
                   </div>
-                  <div>
-                    <span className="font-medium">Finishing:</span> {selectedOrder.productFinish}
-                  </div>
                 </div>
               </div>
 
@@ -908,7 +940,7 @@ export default function OrdersPage() {
                 </h4>
                 <div className="grid grid-cols-2 gap-4 text-sm">
                   <div>
-                    <span className="font-medium">Asal:</span> {selectedOrder.shippingOrigin}
+                    <span className="font-medium">Asal:</span> Kota Kudus
                   </div>
                   <div>
                     <span className="font-medium">Tujuan:</span> {selectedOrder.shippingDestination}
@@ -976,11 +1008,59 @@ export default function OrdersPage() {
                   )}
                 </div>
               </div>
+
+              {/* Cost Breakdown */}
+              <div className="bg-gray-50 p-4 rounded-lg">
+                <h4 className="font-medium text-gray-900 mb-3 flex items-center gap-2">
+                  <DollarSign size={16} /> Rincian Biaya
+                </h4>
+                {loadingCostBreakdown ? (
+                  <div className="text-center py-4">
+                    <div className="text-sm text-gray-500">Memuat rincian biaya...</div>
+                  </div>
+                ) : costBreakdown ? (
+                  <div className="space-y-2 text-sm">
+                    <div className="flex justify-between">
+                      <span>Biaya Produk ({selectedOrder.productWidth}×{selectedOrder.productHeight}cm)</span>
+                      <span className="font-medium">{formatCurrency(costBreakdown.pricing.basePrice)}</span>
+                    </div>
+                    {costBreakdown.costs.map((cost: any, index: number) => (
+                      <div key={index} className="flex justify-between">
+                        <span>{cost.description}</span>
+                        <span className="font-medium">{formatCurrency(cost.amount)}</span>
+                      </div>
+                    ))}
+                    <div className="flex justify-between border-t pt-2">
+                      <span>Subtotal Produk</span>
+                      <span className="font-medium">{formatCurrency(costBreakdown.pricing.totalPrice)}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span>Ongkos Kirim</span>
+                      <span className="font-medium">{formatCurrency(selectedOrder.shippingCost)}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span>Biaya Admin</span>
+                      <span className="font-medium">{formatCurrency(selectedOrder.adminFee)}</span>
+                    </div>
+                    <div className="flex justify-between border-t pt-2 font-medium text-lg">
+                      <span>Total Keseluruhan</span>
+                      <span>{formatCurrency(selectedOrder.grandTotal)}</span>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="text-center py-4">
+                    <div className="text-sm text-gray-500">Gagal memuat rincian biaya</div>
+                  </div>
+                )}
+              </div>
             </div>
 
             <div className="flex justify-end mt-6 space-x-3">
               <button
-                onClick={() => setShowDetailModal(false)}
+                onClick={() => {
+                  setShowDetailModal(false)
+                  setCostBreakdown(null)
+                }}
                 className="px-4 py-2 bg-gray-300 text-gray-700 rounded-md hover:bg-gray-400"
               >
                 Tutup
