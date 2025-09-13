@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { Phone, Mail, MapPin, Star, Shield, Wrench, Droplets, CheckCircle, AlertTriangle, Home, ChevronLeft, ChevronRight, ArrowUp, Instagram, Facebook, Play } from 'lucide-react'
+import { Phone, Mail, MapPin, Star, Shield, Wrench, Droplets, CheckCircle, AlertTriangle, Home, ChevronLeft, ChevronRight, ArrowUp, Instagram, Facebook, Play, ChevronDown } from 'lucide-react'
 import Link from 'next/link'
 
 interface LandingPageData {
@@ -69,6 +69,35 @@ const iconMap: { [key: string]: any } = {
   alert: AlertTriangle,
 }
 
+function FAQAccordion({ question, answer }: { question: string; answer: string }) {
+  const [isOpen, setIsOpen] = useState(false)
+
+  return (
+    <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
+      <button
+        onClick={() => setIsOpen(!isOpen)}
+        className="w-full px-6 py-4 text-left flex items-center justify-between hover:bg-gray-50 transition-colors"
+      >
+        <h3 className="text-lg font-semibold text-gray-900 pr-4">
+          {question}
+        </h3>
+        <ChevronDown 
+          className={`w-5 h-5 text-gray-500 transition-transform duration-200 flex-shrink-0 ${
+            isOpen ? 'transform rotate-180' : ''
+          }`}
+        />
+      </button>
+      {isOpen && (
+        <div className="px-6 pb-4 pt-2">
+          <p className="text-gray-600 leading-relaxed">
+            {answer}
+          </p>
+        </div>
+      )}
+    </div>
+  )
+}
+
 export default function HomePage() {
   const [data, setData] = useState<LandingPageData | null>(null)
   const [settings, setSettings] = useState<any>(null)
@@ -76,43 +105,6 @@ export default function HomePage() {
   const [currentTestimonial, setCurrentTestimonial] = useState(0)
   const [showScrollTop, setShowScrollTop] = useState(false)
 
-  const testimonials = [
-    {
-      name: "Pak Budi Santoso",
-      location: "Jakarta Barat",
-      image: "https://cdn.pixabay.com/photo/2016/03/23/04/01/woman-1274056_1280.jpg",
-      text: "FloodBar custom fit sempurna di pintu rumah saya. Waktu banjir kemarin, air tidak masuk sama sekali. Pre-order worth it banget!",
-      rating: 5
-    },
-    {
-      name: "Ibu Sari Dewi",
-      location: "Bekasi",
-      image: "https://cdn.pixabay.com/photo/2016/11/29/13/14/attractive-1869761_1280.jpg", 
-      text: "Pesan FloodBar 2 bulan sebelum musim hujan. Pas hujan deras kemarin, rumah aman total. Investasi terbaik!",
-      rating: 5
-    },
-    {
-      name: "Pak Ahmad Rizki",
-      location: "Tangerang",
-      image: "https://cdn.pixabay.com/photo/2017/08/30/12/45/girl-2693617_1280.jpg",
-      text: "Custom ukuran 1.2 meter pas banget dengan lebar pintu. Material kuat dan instalasi mudah. Recommended!",
-      rating: 5
-    },
-    {
-      name: "Ibu Linda Pratiwi",
-      location: "Depok",
-      image: "https://cdn.pixabay.com/photo/2018/01/21/14/16/woman-3096664_1280.jpg",
-      text: "Sudah 2 tahun pakai FloodBar, masih bagus dan efektif. Pre-order memang butuh sabar tapi hasilnya memuaskan.",
-      rating: 5
-    },
-    {
-      name: "Pak Hendro Wijaya",
-      location: "Bogor", 
-      image: "https://cdn.pixabay.com/photo/2016/03/23/04/01/woman-1274056_1280.jpg",
-      text: "FloodBar Premium tinggi 80cm melindungi rumah dengan sempurna. Meski mahal tapi kualitasnya sepadan.",
-      rating: 5
-    }
-  ]
 
   useEffect(() => {
     fetchData()
@@ -129,18 +121,24 @@ export default function HomePage() {
 
   // Testimonial carousel auto-play
   useEffect(() => {
-    const interval = setInterval(() => {
-      setCurrentTestimonial((prev) => (prev + 1) % testimonials.length)
-    }, 5000)
-    return () => clearInterval(interval)
-  }, [testimonials.length])
+    if (data?.testimonials?.length) {
+      const interval = setInterval(() => {
+        setCurrentTestimonial((prev) => (prev + 1) % data.testimonials.length)
+      }, 5000)
+      return () => clearInterval(interval)
+    }
+  }, [data?.testimonials])
 
   const nextTestimonial = () => {
-    setCurrentTestimonial((prev) => (prev + 1) % testimonials.length)
+    if (data?.testimonials?.length) {
+      setCurrentTestimonial((prev) => (prev + 1) % data.testimonials.length)
+    }
   }
 
   const prevTestimonial = () => {
-    setCurrentTestimonial((prev) => (prev - 1 + testimonials.length) % testimonials.length)
+    if (data?.testimonials?.length) {
+      setCurrentTestimonial((prev) => (prev - 1 + data.testimonials.length) % data.testimonials.length)
+    }
   }
 
   const scrollToTop = () => {
@@ -247,11 +245,9 @@ export default function HomePage() {
               <img 
                 src={`${data.hero.heroImage || "https://cdn.pixabay.com/photo/2017/10/20/10/58/elephant-2870777_1280.jpg"}${data.hero.heroImage ? `?t=${Date.now()}` : ''}`}
                 alt="FloodBar Sekat Pintu Anti Banjir" 
-                className="w-full h-64 object-cover rounded-lg mb-4"
+                className="w-full h-80 md:h-96 object-cover rounded-lg"
                 key={data.hero.heroImage}
               />
-              <h3 className="text-gray-900 text-xl font-semibold mb-2">FloodBar Custom Fit</h3>
-              <p className="text-gray-600">Sekat pintu anti banjir yang dibuat custom sesuai lebar pintu rumah Anda. Pre-order sekarang!</p>
             </div>
           </div>
         </div>
@@ -262,17 +258,13 @@ export default function HomePage() {
         <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
           <div>
             <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-6">
-              FloodBar - Sekat Pintu Anti Banjir Custom
+              {data.service?.title || "FloodBar - Sekat Pintu Anti Banjir Custom"}
             </h2>
             <p className="text-lg text-gray-600 mb-8 leading-relaxed">
-              FloodBar adalah solusi sekat pintu anti banjir yang dibuat custom sesuai lebar pintu rumah Anda. 
-              Dengan sistem pre-order, setiap FloodBar diproduksi khusus untuk memastikan fit yang sempurna 
-              dan perlindungan maksimal saat banjir datang.
+              {data.service?.description || "FloodBar adalah solusi sekat pintu anti banjir yang dibuat custom sesuai lebar pintu rumah Anda. Dengan sistem pre-order, setiap FloodBar diproduksi khusus untuk memastikan fit yang sempurna dan perlindungan maksimal saat banjir datang."}
             </p>
             <p className="text-gray-600 mb-8">
-              <strong>Cara Pesan:</strong> Ukur lebar pintu → Pre-order FloodBar → Proses produksi 5-7 hari → 
-              Terima FloodBar yang pas sempurna. Material aluminium premium dengan rubber seal memastikan 
-              tidak ada air yang bisa masuk melalui pintu Anda.
+              {data.service?.process || "Cara Pesan: Ukur lebar pintu → Pre-order FloodBar → Proses produksi 5-7 hari → Terima FloodBar yang pas sempurna. Material aluminium premium dengan rubber seal memastikan tidak ada air yang bisa masuk melalui pintu Anda."}
             </p>
             <Link href="/order">
               <button className="bg-blue-600 text-white px-8 py-4 rounded-lg font-semibold hover:bg-blue-700 transition-colors">
@@ -334,14 +326,14 @@ export default function HomePage() {
             </p>
           </div>
           
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-stretch">
             {data.products.map((product, index) => (
-              <div key={index} className="bg-gray-50 rounded-xl p-6 shadow-sm hover:shadow-lg transition-shadow">
+              <div key={index} className="bg-gray-50 rounded-xl p-6 shadow-sm hover:shadow-lg transition-shadow flex flex-col">
                 <div className="relative mb-6">
                   <img 
                     src={`${product.image}${product.image ? `?t=${Date.now()}` : ''}`}
                     alt={product.name}
-                    className="w-full h-64 object-cover rounded-lg"
+                    className="w-full h-80 md:h-96 object-cover rounded-lg"
                     key={product.image}
                   />
                 </div>
@@ -351,7 +343,7 @@ export default function HomePage() {
                   <p className="text-gray-600 mb-4">{product.description}</p>
                 </div>
                 
-                <div className="space-y-3">
+                <div className="space-y-3 flex-grow">
                   <h4 className="text-lg font-semibold text-gray-900 mb-3">Spesifikasi:</h4>
                   {product.features.map((feature, featureIndex) => (
                     <div key={featureIndex} className="flex items-start space-x-3">
@@ -364,7 +356,7 @@ export default function HomePage() {
                 <div className="mt-6 text-center">
                   <Link href={`/order?model=${encodeURIComponent(product.name)}`}>
                     <button className="bg-blue-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-blue-700 transition-colors w-full">
-                      Pre-Order {product.name}
+                      Pesan {product.name}
                     </button>
                   </Link>
                 </div>
@@ -372,94 +364,343 @@ export default function HomePage() {
             ))}
           </div>
           
-          <div className="text-center mt-12">
-            <p className="text-gray-600 mb-6">
-              Kedua model memiliki harga yang sama, perbedaan hanya pada bentuk dan spesifikasi.
-              Pilih sesuai kebutuhan perlindungan rumah Anda.
-            </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Link href="/order">
-                <button className="bg-blue-600 text-white px-8 py-4 rounded-lg font-semibold hover:bg-blue-700 transition-colors">
-                  Konsultasi & Pre-Order
-                </button>
-              </Link>
-              <button className="border border-blue-600 text-blue-600 px-8 py-4 rounded-lg font-semibold hover:bg-blue-50 transition-colors">
-                Hubungi Kami
-              </button>
+          <div className="mt-16">
+            <div className="bg-gradient-to-br from-blue-50 to-indigo-100 border border-blue-200 rounded-2xl p-8 shadow-lg">
+              <div className="text-center mb-8">
+                <div className="inline-flex items-center justify-center w-16 h-16 bg-blue-600 rounded-full mb-4">
+                  <CheckCircle className="w-8 h-8 text-white" />
+                </div>
+                <h3 className="text-2xl font-bold text-gray-900 mb-2">Panduan Memilih Model</h3>
+                <p className="text-gray-600">Pilih model yang sesuai dengan kebutuhan spesifik Anda</p>
+              </div>
+              
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                <div className="bg-white rounded-xl p-6 border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
+                  <div className="flex items-center mb-4">
+                    <div className="w-10 h-10 bg-green-600 rounded-full flex items-center justify-center mr-3">
+                      <span className="text-white font-bold text-sm">A</span>
+                    </div>
+                    <h4 className="text-lg font-semibold text-gray-900">Model A - Perlindungan Maksimal</h4>
+                  </div>
+                  <p className="text-gray-700 leading-relaxed">
+                    Dirancang untuk perlindungan maksimal di luar pintu. Ideal untuk <span className="font-medium">garasi dan pintu depan rumah</span> yang membutuhkan ketahanan ekstra.
+                  </p>
+                  <div className="mt-4 flex items-center text-sm text-green-700">
+                    <CheckCircle className="w-4 h-4 mr-2" />
+                    <span>Cocok untuk area dengan risiko banjir tinggi</span>
+                  </div>
+                </div>
+                
+                <div className="bg-white rounded-xl p-6 border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
+                  <div className="flex items-center mb-4">
+                    <div className="w-10 h-10 bg-blue-600 rounded-full flex items-center justify-center mr-3">
+                      <span className="text-white font-bold text-sm">B</span>
+                    </div>
+                    <h4 className="text-lg font-semibold text-gray-900">Model B - Estetika & Fungsi</h4>
+                  </div>
+                  <p className="text-gray-700 leading-relaxed">
+                    Mengutamakan <span className="font-medium">kerapian dan estetika</span> tanpa mengorbankan keamanan. Tetap memberikan perlindungan optimal dari banjir.
+                  </p>
+                  <div className="mt-4 flex items-center text-sm text-blue-700">
+                    <CheckCircle className="w-4 h-4 mr-2" />
+                    <span>Desain minimalis yang elegan</span>
+                  </div>
+                </div>
+              </div>
+              
+              <div className="text-center bg-white rounded-lg p-6 border border-gray-200">
+                <p className="text-gray-700 text-lg mb-4">
+                  <span className="font-semibold text-gray-900">Sudah menentukan pilihan?</span><br/>
+                  Klik tombol di bawah untuk memulai pemesanan sesuai kebutuhan Anda
+                </p>
+                <Link href="/order">
+                  <button className="bg-gradient-to-r from-blue-600 to-blue-700 text-white px-10 py-4 rounded-xl font-semibold hover:from-blue-700 hover:to-blue-800 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5">
+                    🛡️ Pesan FloodBar Sekarang
+                  </button>
+                </Link>
+              </div>
             </div>
           </div>
         </div>
       </section>
 
       {/* Testimonial Carousel Section */}
-      <section className="py-16 px-4 bg-white">
-        <div className="max-w-6xl mx-auto">
+      {data.testimonials && data.testimonials.length > 0 && (
+        <section className="py-16 px-4 bg-white">
+          <div className="max-w-6xl mx-auto">
+            <div className="text-center mb-12">
+              <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+                Testimoni Pelanggan FloodBar.id
+              </h2>
+              <p className="text-lg text-gray-600">
+                Dengarkan pengalaman nyata pelanggan yang telah menggunakan FloodBar custom
+              </p>
+            </div>
+            
+            <div className="relative max-w-4xl mx-auto">
+              <div className="overflow-hidden rounded-2xl bg-gradient-to-br from-blue-50 to-blue-100 shadow-xl">
+                <div className="p-8 md:p-12">
+                  <div className="text-center">
+                    <div 
+                      className="w-24 h-24 bg-gray-300 rounded-full mx-auto mb-6 bg-cover bg-center shadow-lg"
+                      style={{
+                        backgroundImage: `url('${data.testimonials[currentTestimonial]?.image || "https://cdn.pixabay.com/photo/2016/03/23/04/01/woman-1274056_1280.jpg"}')`
+                      }}
+                    ></div>
+                    
+                    <div className="flex justify-center mb-6">
+                      {[...Array(data.testimonials[currentTestimonial]?.rating || 5)].map((_, i) => (
+                        <Star key={i} className="text-yellow-400 fill-current" size={20} />
+                      ))}
+                    </div>
+                    
+                    <blockquote className="text-xl md:text-2xl text-gray-700 mb-6 italic leading-relaxed">
+                      "{data.testimonials[currentTestimonial]?.text || ''}"
+                    </blockquote>
+                    
+                    <div>
+                      <p className="font-bold text-xl text-gray-900">{data.testimonials[currentTestimonial]?.name || ''}</p>
+                      <p className="text-gray-600">{data.testimonials[currentTestimonial]?.location || ''}</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              
+              {/* Navigation Arrows */}
+              <button 
+                onClick={prevTestimonial}
+                className="absolute left-4 top-1/2 transform -translate-y-1/2 bg-white rounded-full p-3 shadow-lg hover:shadow-xl transition-all duration-200 hover:bg-blue-50"
+              >
+                <ChevronLeft className="w-6 h-6 text-blue-600" />
+              </button>
+              
+              <button 
+                onClick={nextTestimonial}
+                className="absolute right-4 top-1/2 transform -translate-y-1/2 bg-white rounded-full p-3 shadow-lg hover:shadow-xl transition-all duration-200 hover:bg-blue-50"
+              >
+                <ChevronRight className="w-6 h-6 text-blue-600" />
+              </button>
+              
+              {/* Dots Indicator */}
+              <div className="flex justify-center mt-8 space-x-2">
+                {data.testimonials.map((_, index) => (
+                  <button
+                    key={index}
+                    onClick={() => setCurrentTestimonial(index)}
+                    className={`w-3 h-3 rounded-full transition-all duration-200 ${
+                      index === currentTestimonial 
+                        ? 'bg-blue-600 w-8' 
+                        : 'bg-gray-300 hover:bg-gray-400'
+                    }`}
+                  />
+                ))}
+              </div>
+            </div>
+          </div>
+        </section>
+      )}
+
+      {/* FAQ Section */}
+      <section className="py-16 px-4 bg-gray-50">
+        <div className="max-w-4xl mx-auto">
           <div className="text-center mb-12">
             <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-              Testimoni Pelanggan FloodBar.id
+              {data.faq?.title || "FAQ FloodBar - Sekat Pintu Anti Banjir Custom"}
             </h2>
-            <p className="text-lg text-gray-600">
-              Dengarkan pengalaman nyata pelanggan yang telah menggunakan FloodBar custom
-            </p>
           </div>
           
-          <div className="relative max-w-4xl mx-auto">
-            <div className="overflow-hidden rounded-2xl bg-gradient-to-br from-blue-50 to-blue-100 shadow-xl">
-              <div className="p-8 md:p-12">
-                <div className="text-center">
-                  <div 
-                    className="w-24 h-24 bg-gray-300 rounded-full mx-auto mb-6 bg-cover bg-center shadow-lg"
-                    style={{
-                      backgroundImage: `url('${testimonials[currentTestimonial].image}')`
-                    }}
-                  ></div>
-                  
-                  <div className="flex justify-center mb-6">
-                    {[...Array(testimonials[currentTestimonial].rating)].map((_, i) => (
-                      <Star key={i} className="text-yellow-400 fill-current" size={20} />
-                    ))}
+          <div className="space-y-4">
+            {data.faq?.questions?.map((faq, index) => (
+              <FAQAccordion key={index} question={faq.question} answer={faq.answer} />
+            )) || (
+              // Fallback FAQ if no data
+              <>
+                <FAQAccordion 
+                  question="Berapa lama proses pre-order FloodBar custom?"
+                  answer="FloodBar Standard: 5-7 hari kerja. FloodBar Premium: 7-10 hari kerja. Waktu produksi tergantung kompleksitas ukuran custom dan ketersediaan material."
+                />
+                <FAQAccordion 
+                  question="Bagaimana cara mengukur lebar pintu yang benar?"
+                  answer="Ukur lebar dalam kusen pintu (dari dinding ke dinding). Tambahkan toleransi 2-3cm untuk pemasangan yang optimal. Tim kami akan membantu konfirmasi ukuran sebelum produksi."
+                />
+              </>
+            )}
+          </div>
+          
+        </div>
+      </section>
+
+      {/* Flood Information Section */}
+      <section className="py-16 px-4 bg-gray-900 text-white">
+        <div className="max-w-7xl mx-auto">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center mb-16">
+            {/* News Cards Section */}
+            <div className="space-y-4">
+              {/* Latest Bali Flood News */}
+              <div className="bg-gray-800 rounded-lg p-4 border border-gray-700 hover:bg-gray-750 transition-colors">
+                <div className="flex space-x-4">
+                  <div className="w-20 h-20 bg-gray-700 rounded-lg flex-shrink-0 overflow-hidden">
+                    <img 
+                      src="https://cdn.pixabay.com/photo/2020/10/30/08/04/flood-5696948_1280.jpg"
+                      alt="Bali Flood" 
+                      className="w-full h-full object-cover"
+                    />
                   </div>
-                  
-                  <blockquote className="text-xl md:text-2xl text-gray-700 mb-6 italic leading-relaxed">
-                    "{testimonials[currentTestimonial].text}"
-                  </blockquote>
-                  
-                  <div>
-                    <p className="font-bold text-xl text-gray-900">{testimonials[currentTestimonial].name}</p>
-                    <p className="text-gray-600">{testimonials[currentTestimonial].location}</p>
+                  <div className="flex-1">
+                    <h4 className="font-semibold text-white text-sm mb-1">Dari Gelombang Rossby hingga Tata Ruang Bermasalah, Ini ...</h4>
+                    <p className="text-xs text-gray-400 mb-2">Sep 12, 2025 — 210 Peristiwa Bencana di Bali BPBD mencatat...</p>
+                    <div className="flex items-center text-xs text-gray-500">
+                      <div className="w-4 h-4 bg-orange-600 rounded-full mr-2 flex items-center justify-center">
+                        <span className="text-white text-xs">!</span>
+                      </div>
+                      <span>Inilah.com</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Jakarta Flood News */}
+              <div className="bg-gray-800 rounded-lg p-4 border border-gray-700 hover:bg-gray-750 transition-colors">
+                <div className="flex space-x-4">
+                  <div className="w-20 h-20 bg-gray-700 rounded-lg flex-shrink-0 overflow-hidden">
+                    <img 
+                      src="https://cdn.pixabay.com/photo/2017/11/09/21/41/hurricane-2934719_1280.jpg"
+                      alt="Jakarta Flood" 
+                      className="w-full h-full object-cover"
+                    />
+                  </div>
+                  <div className="flex-1">
+                    <h4 className="font-semibold text-white text-sm mb-1">Seberapa Titik Banjir Jakarta (6 Juli 2025 Pukul 07.00 WIB)</h4>
+                    <p className="text-xs text-gray-400 mb-2">Jul 8, 2025 — Hujan deras mengguyur Jakarta pada Senin, 7...</p>
+                    <div className="flex items-center text-xs text-gray-500">
+                      <div className="w-4 h-4 bg-blue-600 rounded-full mr-2 flex items-center justify-center">
+                        <span className="text-white text-xs">D</span>
+                      </div>
+                      <span>Databoks</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Additional News Cards */}
+              <div className="bg-gray-800 rounded-lg p-4 border border-gray-700 hover:bg-gray-750 transition-colors">
+                <div className="flex space-x-4">
+                  <div className="w-20 h-20 bg-gray-700 rounded-lg flex-shrink-0 overflow-hidden">
+                    <img 
+                      src="https://cdn.pixabay.com/photo/2018/08/31/15/20/living-room-3645325_1280.jpg"
+                      alt="Semarang Flood" 
+                      className="w-full h-full object-cover"
+                    />
+                  </div>
+                  <div className="flex-1">
+                    <h4 className="font-semibold text-white text-sm mb-1">Banjir Rob Semarang Makin Parah</h4>
+                    <p className="text-xs text-gray-400 mb-2">Sep 10, 2025 — Banjir rob di pesisir utara Semarang...</p>
+                    <div className="flex items-center text-xs text-gray-500">
+                      <div className="w-4 h-4 bg-green-600 rounded-full mr-2 flex items-center justify-center">
+                        <span className="text-white text-xs">N</span>
+                      </div>
+                      <span>News Portal</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div className="bg-gray-800 rounded-lg p-4 border border-gray-700 hover:bg-gray-750 transition-colors">
+                <div className="flex space-x-4">
+                  <div className="w-20 h-20 bg-gray-700 rounded-lg flex-shrink-0 overflow-hidden">
+                    <img 
+                      src="https://cdn.pixabay.com/photo/2017/10/20/10/58/elephant-2870777_1280.jpg"
+                      alt="Bekasi Flood" 
+                      className="w-full h-full object-cover"
+                    />
+                  </div>
+                  <div className="flex-1">
+                    <h4 className="font-semibold text-white text-sm mb-1">Bekasi & Tangerang Terendam Banjir</h4>
+                    <p className="text-xs text-gray-400 mb-2">Sep 15, 2025 — Daerah satelit Jakarta kembali terendam...</p>
+                    <div className="flex items-center text-xs text-gray-500">
+                      <div className="w-4 h-4 bg-purple-600 rounded-full mr-2 flex items-center justify-center">
+                        <span className="text-white text-xs">M</span>
+                      </div>
+                      <span>Media Online</span>
+                    </div>
                   </div>
                 </div>
               </div>
             </div>
             
-            {/* Navigation Arrows */}
-            <button 
-              onClick={prevTestimonial}
-              className="absolute left-4 top-1/2 transform -translate-y-1/2 bg-white rounded-full p-3 shadow-lg hover:shadow-xl transition-all duration-200 hover:bg-blue-50"
-            >
-              <ChevronLeft className="w-6 h-6 text-blue-600" />
+            <div>
+              <h2 className="text-3xl md:text-4xl font-bold mb-6">
+                {data.floodInfo?.title || "Kenapa FloodBar.id Solusi Terbaik?"}
+              </h2>
+              <p className="text-lg text-gray-300 mb-6 leading-relaxed">
+                {data.floodInfo?.description || "Banjir di Indonesia semakin sering terjadi. Jakarta, Bekasi, Tangerang, Bogor, dan kota-kota lainnya rutin mengalami genangan setiap musim hujan. Kerugian mencapai jutaan rupiah karena kerusakan furniture, elektronik, dan renovasi rumah."}
+              </p>
+              <p className="text-gray-300 mb-8">
+                {data.floodInfo?.description2 || "FloodBar.id hadir dengan solusi sekat pintu anti banjir yang dibuat custom untuk setiap rumah. Sistem pre-order memastikan FloodBar fit sempurna di pintu Anda. Investasi ratusan ribu untuk melindungi aset jutaan rupiah."}
+              </p>
+              <div className="flex items-center space-x-4">
+                {data.floodInfo?.stats?.map((stat, index) => (
+                  <div key={index} className="text-center">
+                    <div className="text-2xl font-bold text-blue-400">{stat.value}</div>
+                    <div className="text-sm text-gray-400">{stat.label}</div>
+                  </div>
+                )) || (
+                  // Fallback stats if no data
+                  <>
+                    <div className="text-center">
+                      <div className="text-2xl font-bold text-blue-400">Custom</div>
+                      <div className="text-sm text-gray-400">Ukuran Presisi</div>
+                    </div>
+                    <div className="text-center">
+                      <div className="text-2xl font-bold text-green-400">500+</div>
+                      <div className="text-sm text-gray-400">FloodBar Terpasang</div>
+                    </div>
+                    <div className="text-center">
+                      <div className="text-2xl font-bold text-yellow-400">5-10</div>
+                      <div className="text-sm text-gray-400">Hari Pre-Order</div>
+                    </div>
+                  </>
+                )}
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </section>
+
+      {/* CTA Section */}
+      <section className="py-16 px-4 bg-gray-900 text-white">
+        <div className="max-w-7xl mx-auto text-center">
+          <h2 className="text-3xl md:text-4xl font-bold mb-6">
+            Siap Pre-Order FloodBar Custom Anda?
+          </h2>
+          <p className="text-lg text-gray-300 mb-8 max-w-3xl mx-auto">
+            Jangan tunggu banjir datang! Pre-order FloodBar sekarang dan dapatkan sekat pintu anti banjir 
+            yang dibuat khusus sesuai ukuran pintu rumah Anda. Konsultasi gratis untuk desain custom.
+          </p>
+          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <Link href="/order">
+              <button className="bg-blue-600 text-white px-10 py-4 rounded-lg font-bold text-lg hover:bg-blue-700 transition-colors shadow-lg">
+                🚨 Pre-Order FloodBar Sekarang
+              </button>
+            </Link>
+            <button className="border border-white text-white px-8 py-4 rounded-lg font-semibold hover:bg-gray-800 transition-colors">
+              Konsultasi Custom Gratis
             </button>
-            
-            <button 
-              onClick={nextTestimonial}
-              className="absolute right-4 top-1/2 transform -translate-y-1/2 bg-white rounded-full p-3 shadow-lg hover:shadow-xl transition-all duration-200 hover:bg-blue-50"
-            >
-              <ChevronRight className="w-6 h-6 text-blue-600" />
-            </button>
-            
-            {/* Dots Indicator */}
-            <div className="flex justify-center mt-8 space-x-2">
-              {testimonials.map((_, index) => (
-                <button
-                  key={index}
-                  onClick={() => setCurrentTestimonial(index)}
-                  className={`w-3 h-3 rounded-full transition-all duration-200 ${
-                    index === currentTestimonial 
-                      ? 'bg-blue-600 w-8' 
-                      : 'bg-gray-300 hover:bg-gray-400'
-                  }`}
-                />
-              ))}
+          </div>
+          
+          <div className="mt-12 grid grid-cols-1 md:grid-cols-3 gap-6 max-w-4xl mx-auto">
+            <div className="bg-gray-800 p-6 rounded-lg">
+              <h3 className="font-bold text-lg mb-2">✅ Custom Fit</h3>
+              <p className="text-gray-300 text-sm">Dibuat sesuai ukuran pintu Anda</p>
+            </div>
+            <div className="bg-gray-800 p-6 rounded-lg">
+              <h3 className="font-bold text-lg mb-2">⏱️ Pre-Order</h3>
+              <p className="text-gray-300 text-sm">Proses produksi 5-10 hari kerja</p>
+            </div>
+            <div className="bg-gray-800 p-6 rounded-lg">
+              <h3 className="font-bold text-lg mb-2">🛡️ Perlindungan</h3>
+              <p className="text-gray-300 text-sm">Tahan air hingga 50-70cm</p>
             </div>
           </div>
         </div>
