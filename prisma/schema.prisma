@@ -82,6 +82,7 @@ model ProductConfig {
   // Additional costs
   pickupCost     Decimal @default(0.00) @db.Decimal(10,2) // Pickup service cost
   insuranceCost  Decimal @default(0.00) @db.Decimal(10,2) // Insurance cost
+  packingCost    Decimal @default(0.00) @db.Decimal(10,2) // Packing cost
   
   // Warehouse address
   warehouseName    String @default("Gudang Utama")

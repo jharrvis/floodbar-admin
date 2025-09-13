@@ -25,6 +25,7 @@ export async function GET() {
         minShippingWeight: Number(productConfig.minShippingWeight),
         pickupCost: Number(productConfig.pickupCost),
         insuranceCost: Number(productConfig.insuranceCost),
+        packingCost: Number(productConfig.packingCost || 0),
         warehouseName: productConfig.warehouseName,
         warehouseAddress: productConfig.warehouseAddress,
         warehouseCity: productConfig.warehouseCity,
@@ -47,6 +48,7 @@ export async function GET() {
         minShippingWeight: 10.00,
         pickupCost: 0.00,
         insuranceCost: 0.00,
+        packingCost: 0.00,
         warehouseName: 'Gudang Utama',
         warehouseAddress: '',
         warehouseCity: '',
@@ -90,6 +92,7 @@ export async function PUT(request: NextRequest) {
       minShippingWeight: parseFloat(data.minShippingWeight || 10),
       pickupCost: parseFloat(data.pickupCost || 0),
       insuranceCost: parseFloat(data.insuranceCost || 0),
+      packingCost: parseFloat(data.packingCost || 0),
       warehouseName: data.warehouseName || 'Gudang Utama',
       warehouseAddress: data.warehouseAddress || '',
       warehouseCity: data.warehouseCity || '',
@@ -104,14 +107,14 @@ export async function PUT(request: NextRequest) {
         UPDATE product_config 
         SET priceUnder60cm = ?, priceOver60cm = ?, packingThickness = ?, 
             weightConstant = ?, minShippingWeight = ?, pickupCost = ?, 
-            insuranceCost = ?, warehouseName = ?, warehouseAddress = ?, 
+            insuranceCost = ?, packingCost = ?, warehouseName = ?, warehouseAddress = ?, 
             warehouseCity = ?, warehouseProvince = ?, warehousePostalCode = ?, 
             warehousePhone = ?, updatedAt = NOW()
         WHERE id = ?
       `, 
         configData.priceUnder60cm, configData.priceOver60cm, configData.packingThickness,
         configData.weightConstant, configData.minShippingWeight, configData.pickupCost,
-        configData.insuranceCost, configData.warehouseName, configData.warehouseAddress,
+        configData.insuranceCost, configData.packingCost, configData.warehouseName, configData.warehouseAddress,
         configData.warehouseCity, configData.warehouseProvince, configData.warehousePostalCode,
         configData.warehousePhone, existingConfig[0].id
       )
@@ -120,15 +123,15 @@ export async function PUT(request: NextRequest) {
       await prisma.$executeRawUnsafe(`
         INSERT INTO product_config (
           id, priceUnder60cm, priceOver60cm, packingThickness, 
-          weightConstant, minShippingWeight, pickupCost, insuranceCost,
+          weightConstant, minShippingWeight, pickupCost, insuranceCost, packingCost,
           warehouseName, warehouseAddress, warehouseCity, warehouseProvince,
           warehousePostalCode, warehousePhone
-        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
       `,
         'config-' + Date.now(),
         configData.priceUnder60cm, configData.priceOver60cm, configData.packingThickness,
         configData.weightConstant, configData.minShippingWeight, configData.pickupCost,
-        configData.insuranceCost, configData.warehouseName, configData.warehouseAddress,
+        configData.insuranceCost, configData.packingCost, configData.warehouseName, configData.warehouseAddress,
         configData.warehouseCity, configData.warehouseProvince, configData.warehousePostalCode,
         configData.warehousePhone
       )

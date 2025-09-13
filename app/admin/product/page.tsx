@@ -12,6 +12,7 @@ interface ProductConfig {
   minShippingWeight: number
   pickupCost: number
   insuranceCost: number
+  packingCost: number
   warehouseName: string
   warehouseAddress: string
   warehouseCity: string
@@ -254,6 +255,23 @@ export default function ProductConfigPage() {
           <div className="bg-white p-6 rounded-lg shadow">
             <h2 className="text-lg font-semibold mb-4">Biaya Tambahan</h2>
             <div className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Biaya Packing (Rp)
+                </label>
+                <input
+                  type="number"
+                  value={config.packingCost}
+                  onChange={(e) => updateConfig('packingCost', parseFloat(e.target.value) || 0)}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500"
+                  min="0"
+                  step="0.01"
+                />
+                <p className="text-xs text-gray-500 mt-1">
+                  Biaya untuk kemasan dan packing produk
+                </p>
+              </div>
+              
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
                   Biaya Pickup (Rp)

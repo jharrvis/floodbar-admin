@@ -57,6 +57,13 @@ export async function POST(request: NextRequest) {
     let additionalCosts = 0
     const costs = []
 
+    // Packing cost is always included
+    const packingCost = Number(config.packingCost || 0)
+    if (packingCost > 0) {
+      additionalCosts += packingCost
+      costs.push({ type: 'packing', amount: packingCost, description: 'Biaya Packing' })
+    }
+
     if (includePickup) {
       const pickupCost = Number(config.pickupCost)
       additionalCosts += pickupCost
