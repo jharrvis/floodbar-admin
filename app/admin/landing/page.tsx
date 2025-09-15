@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { Save, Plus, Trash2, Eye } from 'lucide-react'
+import { Save, Plus, Trash2, Eye, Edit, ExternalLink, Newspaper } from 'lucide-react'
 import ImageUpload from '@/app/components/ImageUpload'
 
 interface LandingPageData {
@@ -45,6 +45,16 @@ interface LandingPageData {
       value: string
       label: string
     }>
+    news: Array<{
+      id: string
+      title: string
+      summary: string
+      imageUrl: string
+      sourceUrl: string
+      sourceName: string
+      publishedAt: string
+      isActive: boolean
+    }>
   }
   testimonials: Array<{
     name: string
@@ -65,10 +75,27 @@ export default function LandingPageEditor() {
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
   const [activeSection, setActiveSection] = useState('hero')
+  const [showNewsForm, setShowNewsForm] = useState(false)
+  const [editingNews, setEditingNews] = useState<any>(null)
+  const [newsFormData, setNewsFormData] = useState({
+    title: '',
+    summary: '',
+    imageUrl: '',
+    sourceUrl: '',
+    sourceName: '',
+    publishedAt: new Date().toISOString().split('T')[0],
+    isActive: true
+  })
 
   useEffect(() => {
     fetchData()
   }, [])
+
+  useEffect(() => {
+    if (data && activeSection === 'floodInfo' && (!data.floodInfo.news || data.floodInfo.news.length === 0)) {
+      fetchNews()
+    }
+  }, [data, activeSection])
 
   const fetchData = async () => {
     try {
@@ -260,6 +287,97 @@ export default function LandingPageEditor() {
       ...data,
       testimonials: data.testimonials.filter((_, i) => i !== index)
     })
+  }
+
+  // News management functions
+  const fetchNews = async () => {
+    try {
+      const response = await fetch('/api/news?active=false')
+      if (response.ok) {
+        const result = await response.json()
+        if (result.success && data) {
+          setData({
+            ...data,
+            floodInfo: {
+              ...data.floodInfo,
+              news: result.data
+            }
+          })
+        }
+      }
+    } catch (error) {
+      console.error('Error fetching news:', error)
+    }
+  }
+
+  const handleNewsSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
+    
+    try {
+      const url = editingNews ? `/api/news/${editingNews.id}` : '/api/news'
+      const method = editingNews ? 'PUT' : 'POST'
+
+      const response = await fetch(url, {
+        method,
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(newsFormData)
+      })
+
+      if (response.ok) {
+        await fetchNews()
+        resetNewsForm()
+        alert(editingNews ? 'Berita berhasil diperbarui!' : 'Berita berhasil ditambahkan!')
+      } else {
+        const error = await response.json()
+        alert(error.error || 'Terjadi kesalahan')
+      }
+    } catch (error) {
+      console.error('Error saving news:', error)
+      alert('Terjadi kesalahan server')
+    }
+  }
+
+  const handleEditNews = (newsItem: any) => {
+    setEditingNews(newsItem)
+    setNewsFormData({
+      title: newsItem.title,
+      summary: newsItem.summary,
+      imageUrl: newsItem.imageUrl,
+      sourceUrl: newsItem.sourceUrl,
+      sourceName: newsItem.sourceName,
+      publishedAt: new Date(newsItem.publishedAt).toISOString().split('T')[0],
+      isActive: newsItem.isActive
+    })
+    setShowNewsForm(true)
+  }
+
+  const handleDeleteNews = async (id: string) => {
+    if (!confirm('Apakah Anda yakin ingin menghapus berita ini?')) return
+
+    try {
+      const response = await fetch(`/api/news/${id}`, { method: 'DELETE' })
+      if (response.ok) {
+        await fetchNews()
+        alert('Berita berhasil dihapus!')
+      }
+    } catch (error) {
+      console.error('Error deleting news:', error)
+      alert('Terjadi kesalahan server')
+    }
+  }
+
+  const resetNewsForm = () => {
+    setNewsFormData({
+      title: '',
+      summary: '',
+      imageUrl: '',
+      sourceUrl: '',
+      sourceName: '',
+      publishedAt: new Date().toISOString().split('T')[0],
+      isActive: true
+    })
+    setEditingNews(null)
+    setShowNewsForm(false)
   }
 
   if (loading) {
@@ -896,6 +1014,94 @@ export default function LandingPageEditor() {
                     ))}
                   </div>
                 </div>
+                
+                {/* News Management Section */}
+                <div>
+                  <div className="flex justify-between items-center mb-2">
+                    <label className="block text-sm font-medium text-gray-700">
+                      <Newspaper className="inline mr-2" size={16} />
+                      Berita & Artikel
+                    </label>
+                    <button
+                      onClick={() => setShowNewsForm(true)}
+                      className="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded text-sm flex items-center gap-1"
+                    >
+                      <Plus size={14} />
+                      Tambah Berita
+                    </button>
+                  </div>
+                  
+                  <div className="bg-gray-50 p-4 rounded-lg">
+                    {data.floodInfo.news && data.floodInfo.news.length > 0 ? (
+                      <div className="space-y-3">
+                        {data.floodInfo.news.map((newsItem, index) => (
+                          <div key={newsItem.id} className="bg-white p-3 rounded border">
+                            <div className="flex items-start space-x-3">
+                              {newsItem.imageUrl && (
+                                <img 
+                                  src={newsItem.imageUrl} 
+                                  alt={newsItem.title}
+                                  className="w-16 h-16 object-cover rounded flex-shrink-0"
+                                />
+                              )}
+                              <div className="flex-1">
+                                <h4 className="font-medium text-sm text-gray-900 line-clamp-2">
+                                  {newsItem.title}
+                                </h4>
+                                <p className="text-xs text-gray-600 mt-1 line-clamp-2">
+                                  {newsItem.summary}
+                                </p>
+                                <div className="flex items-center mt-2 space-x-2">
+                                  <span className="text-xs text-gray-500">
+                                    {newsItem.sourceName} • {new Date(newsItem.publishedAt).toLocaleDateString('id-ID')}
+                                  </span>
+                                  <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${
+                                    newsItem.isActive 
+                                      ? 'bg-green-100 text-green-800' 
+                                      : 'bg-red-100 text-red-800'
+                                  }`}>
+                                    {newsItem.isActive ? 'Aktif' : 'Nonaktif'}
+                                  </span>
+                                </div>
+                              </div>
+                              <div className="flex space-x-1">
+                                <a
+                                  href={newsItem.sourceUrl}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="text-blue-600 hover:text-blue-800 p-1"
+                                  title="Lihat sumber"
+                                >
+                                  <ExternalLink size={14} />
+                                </a>
+                                <button
+                                  onClick={() => handleEditNews(newsItem)}
+                                  className="text-yellow-600 hover:text-yellow-800 p-1"
+                                  title="Edit"
+                                >
+                                  <Edit size={14} />
+                                </button>
+                                <button
+                                  onClick={() => handleDeleteNews(newsItem.id)}
+                                  className="text-red-600 hover:text-red-800 p-1"
+                                  title="Hapus"
+                                >
+                                  <Trash2 size={14} />
+                                </button>
+                              </div>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    ) : (
+                      <div className="text-center py-6">
+                        <Newspaper className="mx-auto h-12 w-12 text-gray-400" />
+                        <p className="text-gray-500 text-sm mt-2">Belum ada berita</p>
+                        <p className="text-gray-400 text-xs mt-1">Klik "Tambah Berita" untuk menambahkan berita pertama</p>
+                      </div>
+                    )}
+                  </div>
+                </div>
               </div>
             </div>
           )}
@@ -1068,6 +1274,126 @@ export default function LandingPageEditor() {
           )}
         </div>
       </div>
+      
+      {/* News Form Modal */}
+      {showNewsForm && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg p-6 w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+            <h2 className="text-xl font-bold mb-4">
+              {editingNews ? 'Edit Berita' : 'Tambah Berita Baru'}
+            </h2>
+            
+            <form onSubmit={handleNewsSubmit} className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Judul Berita
+                </label>
+                <input
+                  type="text"
+                  value={newsFormData.title}
+                  onChange={(e) => setNewsFormData({...newsFormData, title: e.target.value})}
+                  className="w-full p-3 border border-gray-300 rounded-lg"
+                  required
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Ringkasan Berita
+                </label>
+                <textarea
+                  value={newsFormData.summary}
+                  onChange={(e) => setNewsFormData({...newsFormData, summary: e.target.value})}
+                  className="w-full p-3 border border-gray-300 rounded-lg h-24"
+                  required
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  URL Gambar
+                </label>
+                <input
+                  type="url"
+                  value={newsFormData.imageUrl}
+                  onChange={(e) => setNewsFormData({...newsFormData, imageUrl: e.target.value})}
+                  className="w-full p-3 border border-gray-300 rounded-lg"
+                  placeholder="https://example.com/image.jpg"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  URL Sumber Berita
+                </label>
+                <input
+                  type="url"
+                  value={newsFormData.sourceUrl}
+                  onChange={(e) => setNewsFormData({...newsFormData, sourceUrl: e.target.value})}
+                  className="w-full p-3 border border-gray-300 rounded-lg"
+                  required
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Nama Sumber
+                </label>
+                <input
+                  type="text"
+                  value={newsFormData.sourceName}
+                  onChange={(e) => setNewsFormData({...newsFormData, sourceName: e.target.value})}
+                  className="w-full p-3 border border-gray-300 rounded-lg"
+                  placeholder="Contoh: Kompas.com, Detik.com"
+                  required
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Tanggal Publish
+                </label>
+                <input
+                  type="date"
+                  value={newsFormData.publishedAt}
+                  onChange={(e) => setNewsFormData({...newsFormData, publishedAt: e.target.value})}
+                  className="w-full p-3 border border-gray-300 rounded-lg"
+                  required
+                />
+              </div>
+
+              <div className="flex items-center">
+                <input
+                  type="checkbox"
+                  id="isActive"
+                  checked={newsFormData.isActive}
+                  onChange={(e) => setNewsFormData({...newsFormData, isActive: e.target.checked})}
+                  className="mr-2"
+                />
+                <label htmlFor="isActive" className="text-sm font-medium text-gray-700">
+                  Aktif (tampil di website)
+                </label>
+              </div>
+
+              <div className="flex space-x-4 pt-4">
+                <button
+                  type="submit"
+                  className="bg-blue-600 text-white px-6 py-2 rounded-lg font-semibold hover:bg-blue-700"
+                >
+                  {editingNews ? 'Perbarui' : 'Simpan'}
+                </button>
+                <button
+                  type="button"
+                  onClick={resetNewsForm}
+                  className="bg-gray-500 text-white px-6 py-2 rounded-lg font-semibold hover:bg-gray-600"
+                >
+                  Batal
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   )
 }
