@@ -101,6 +101,7 @@ function FAQAccordion({ question, answer }: { question: string; answer: string }
 export default function HomePage() {
   const [data, setData] = useState<LandingPageData | null>(null)
   const [settings, setSettings] = useState<any>(null)
+  const [news, setNews] = useState<any[]>([])
   const [loading, setLoading] = useState(true)
   const [currentTestimonial, setCurrentTestimonial] = useState(0)
   const [showScrollTop, setShowScrollTop] = useState(false)
@@ -109,6 +110,7 @@ export default function HomePage() {
   useEffect(() => {
     fetchData()
     fetchSettings()
+    fetchNews()
     
     // Scroll to top button visibility
     const handleScroll = () => {
@@ -164,6 +166,20 @@ export default function HomePage() {
       setSettings(result)
     } catch (error) {
       console.error('Error fetching settings:', error)
+    }
+  }
+
+  const fetchNews = async () => {
+    try {
+      const response = await fetch('/api/news')
+      if (response.ok) {
+        const result = await response.json()
+        if (result.success) {
+          setNews(result.data.slice(0, 4)) // Limit to 4 latest news
+        }
+      }
+    } catch (error) {
+      console.error('Error fetching news:', error)
     }
   }
 
@@ -619,96 +635,84 @@ export default function HomePage() {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center mb-16">
             {/* News Cards Section */}
             <div className="space-y-4">
-              {/* Latest Bali Flood News */}
-              <div className="bg-gray-800 rounded-lg p-4 border border-gray-700 hover:bg-gray-750 transition-colors">
-                <div className="flex space-x-4">
-                  <div className="w-20 h-20 bg-gray-700 rounded-lg flex-shrink-0 overflow-hidden">
-                    <img 
-                      src="https://cdn.pixabay.com/photo/2020/10/30/08/04/flood-5696948_1280.jpg"
-                      alt="Bali Flood" 
-                      className="w-full h-full object-cover"
-                    />
-                  </div>
-                  <div className="flex-1">
-                    <h4 className="font-semibold text-white text-sm mb-1">Dari Gelombang Rossby hingga Tata Ruang Bermasalah, Ini ...</h4>
-                    <p className="text-xs text-gray-400 mb-2">Sep 12, 2025 — 210 Peristiwa Bencana di Bali BPBD mencatat...</p>
-                    <div className="flex items-center text-xs text-gray-500">
-                      <div className="w-4 h-4 bg-orange-600 rounded-full mr-2 flex items-center justify-center">
-                        <span className="text-white text-xs">!</span>
+              {news.length > 0 ? (
+                news.map((newsItem, index) => {
+                  const colors = ['bg-orange-600', 'bg-blue-600', 'bg-green-600', 'bg-purple-600']
+                  const firstLetter = newsItem.sourceName?.charAt(0)?.toUpperCase() || 'N'
+                  
+                  return (
+                    <a
+                      key={newsItem.id}
+                      href={newsItem.sourceUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="block bg-gray-800 rounded-lg p-4 border border-gray-700 hover:bg-gray-750 transition-colors cursor-pointer"
+                    >
+                      <div className="flex space-x-4">
+                        <div className="w-20 h-20 bg-gray-700 rounded-lg flex-shrink-0 overflow-hidden">
+                          {newsItem.imageUrl ? (
+                            <img 
+                              src={newsItem.imageUrl}
+                              alt={newsItem.title}
+                              className="w-full h-full object-cover"
+                              onError={(e) => {
+                                (e.target as HTMLImageElement).src = "https://cdn.pixabay.com/photo/2020/10/30/08/04/flood-5696948_1280.jpg"
+                              }}
+                            />
+                          ) : (
+                            <div className="w-full h-full bg-gray-600 flex items-center justify-center">
+                              <span className="text-gray-400 text-xs">No Image</span>
+                            </div>
+                          )}
+                        </div>
+                        <div className="flex-1">
+                          <h4 className="font-semibold text-white text-sm mb-1 line-clamp-2">
+                            {newsItem.title}
+                          </h4>
+                          <p className="text-xs text-gray-400 mb-2 line-clamp-2">
+                            {new Date(newsItem.publishedAt).toLocaleDateString('id-ID', {
+                              year: 'numeric',
+                              month: 'short',
+                              day: 'numeric'
+                            })} — {newsItem.summary}
+                          </p>
+                          <div className="flex items-center text-xs text-gray-500">
+                            <div className={`w-4 h-4 ${colors[index % colors.length]} rounded-full mr-2 flex items-center justify-center`}>
+                              <span className="text-white text-xs">{firstLetter}</span>
+                            </div>
+                            <span>{newsItem.sourceName}</span>
+                          </div>
+                        </div>
                       </div>
-                      <span>Inilah.com</span>
+                    </a>
+                  )
+                })
+              ) : (
+                // Fallback news if no data from database
+                <>
+                  <div className="bg-gray-800 rounded-lg p-4 border border-gray-700">
+                    <div className="flex space-x-4">
+                      <div className="w-20 h-20 bg-gray-700 rounded-lg flex-shrink-0 overflow-hidden">
+                        <img 
+                          src="https://cdn.pixabay.com/photo/2020/10/30/08/04/flood-5696948_1280.jpg"
+                          alt="Banjir" 
+                          className="w-full h-full object-cover"
+                        />
+                      </div>
+                      <div className="flex-1">
+                        <h4 className="font-semibold text-white text-sm mb-1">Banjir di Indonesia Semakin Sering Terjadi</h4>
+                        <p className="text-xs text-gray-400 mb-2">Data menunjukkan peningkatan kejadian banjir di berbagai daerah...</p>
+                        <div className="flex items-center text-xs text-gray-500">
+                          <div className="w-4 h-4 bg-blue-600 rounded-full mr-2 flex items-center justify-center">
+                            <span className="text-white text-xs">N</span>
+                          </div>
+                          <span>FloodBar News</span>
+                        </div>
+                      </div>
                     </div>
                   </div>
-                </div>
-              </div>
-
-              {/* Jakarta Flood News */}
-              <div className="bg-gray-800 rounded-lg p-4 border border-gray-700 hover:bg-gray-750 transition-colors">
-                <div className="flex space-x-4">
-                  <div className="w-20 h-20 bg-gray-700 rounded-lg flex-shrink-0 overflow-hidden">
-                    <img 
-                      src="https://cdn.pixabay.com/photo/2017/11/09/21/41/hurricane-2934719_1280.jpg"
-                      alt="Jakarta Flood" 
-                      className="w-full h-full object-cover"
-                    />
-                  </div>
-                  <div className="flex-1">
-                    <h4 className="font-semibold text-white text-sm mb-1">Seberapa Titik Banjir Jakarta (6 Juli 2025 Pukul 07.00 WIB)</h4>
-                    <p className="text-xs text-gray-400 mb-2">Jul 8, 2025 — Hujan deras mengguyur Jakarta pada Senin, 7...</p>
-                    <div className="flex items-center text-xs text-gray-500">
-                      <div className="w-4 h-4 bg-blue-600 rounded-full mr-2 flex items-center justify-center">
-                        <span className="text-white text-xs">D</span>
-                      </div>
-                      <span>Databoks</span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              {/* Additional News Cards */}
-              <div className="bg-gray-800 rounded-lg p-4 border border-gray-700 hover:bg-gray-750 transition-colors">
-                <div className="flex space-x-4">
-                  <div className="w-20 h-20 bg-gray-700 rounded-lg flex-shrink-0 overflow-hidden">
-                    <img 
-                      src="https://cdn.pixabay.com/photo/2018/08/31/15/20/living-room-3645325_1280.jpg"
-                      alt="Semarang Flood" 
-                      className="w-full h-full object-cover"
-                    />
-                  </div>
-                  <div className="flex-1">
-                    <h4 className="font-semibold text-white text-sm mb-1">Banjir Rob Semarang Makin Parah</h4>
-                    <p className="text-xs text-gray-400 mb-2">Sep 10, 2025 — Banjir rob di pesisir utara Semarang...</p>
-                    <div className="flex items-center text-xs text-gray-500">
-                      <div className="w-4 h-4 bg-green-600 rounded-full mr-2 flex items-center justify-center">
-                        <span className="text-white text-xs">N</span>
-                      </div>
-                      <span>News Portal</span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              <div className="bg-gray-800 rounded-lg p-4 border border-gray-700 hover:bg-gray-750 transition-colors">
-                <div className="flex space-x-4">
-                  <div className="w-20 h-20 bg-gray-700 rounded-lg flex-shrink-0 overflow-hidden">
-                    <img 
-                      src="https://cdn.pixabay.com/photo/2017/10/20/10/58/elephant-2870777_1280.jpg"
-                      alt="Bekasi Flood" 
-                      className="w-full h-full object-cover"
-                    />
-                  </div>
-                  <div className="flex-1">
-                    <h4 className="font-semibold text-white text-sm mb-1">Bekasi & Tangerang Terendam Banjir</h4>
-                    <p className="text-xs text-gray-400 mb-2">Sep 15, 2025 — Daerah satelit Jakarta kembali terendam...</p>
-                    <div className="flex items-center text-xs text-gray-500">
-                      <div className="w-4 h-4 bg-purple-600 rounded-full mr-2 flex items-center justify-center">
-                        <span className="text-white text-xs">M</span>
-                      </div>
-                      <span>Media Online</span>
-                    </div>
-                  </div>
-                </div>
-              </div>
+                </>
+              )}
             </div>
             
             <div>

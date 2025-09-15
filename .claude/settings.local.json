@@ -61,7 +61,8 @@
       "WebFetch(domain:floodbar-d6s2dtfsq-jharrvis-projects.vercel.app)",
       "WebFetch(domain:floodbar-ligsbk0i9-jharrvis-projects.vercel.app)",
       "WebFetch(domain:floodbar-iu16u1uqh-jharrvis-projects.vercel.app)",
-      "WebFetch(domain:localhost)"
+      "WebFetch(domain:localhost)",
+      "WebFetch(domain:floodbar-ntey1bgb2-jharrvis-projects.vercel.app)"
     ],
     "deny": [],
     "ask": []

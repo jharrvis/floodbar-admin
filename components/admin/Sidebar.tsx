@@ -14,6 +14,7 @@ import {
   CreditCard,
   ShoppingBag,
   Image,
+  Newspaper,
   LogOut 
 } from 'lucide-react'
 
@@ -32,6 +33,11 @@ const menuItems = [
     label: 'Media',
     href: '/admin/media',
     icon: Image
+  },
+  {
+    label: 'Kelola Berita',
+    href: '/admin/news',
+    icon: Newspaper
   },
   {
     label: 'Produk & Pengiriman',
