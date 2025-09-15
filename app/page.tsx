@@ -206,9 +206,9 @@ export default function HomePage() {
                 Cek Status Pesanan
               </button>
             </Link>
-            <button className="bg-green-600 px-4 py-2 rounded text-sm font-semibold hover:bg-green-700">
+            {/* <button className="bg-green-600 px-4 py-2 rounded text-sm font-semibold hover:bg-green-700">
               Hubungi Kami
-            </button>
+            </button> */}
           </div>
         </div>
       </nav>
@@ -255,11 +255,11 @@ export default function HomePage() {
 
       {/* Service Section */}
       <section className="py-16 px-4 bg-white">
-        <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-          <div>
-            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-6">
+            <h2 className="text-3xl md:text-4xl font-bold text-center w-2/3 mx-auto text-gray-900 mb-6">
               {data.service?.title || "FloodBar - Sekat Pintu Anti Banjir Custom"}
             </h2>
+        <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+          <div>
             <p className="text-lg text-gray-600 mb-8 leading-relaxed">
               {data.service?.description || "FloodBar adalah solusi sekat pintu anti banjir yang dibuat custom sesuai lebar pintu rumah Anda. Dengan sistem pre-order, setiap FloodBar diproduksi khusus untuk memastikan fit yang sempurna dan perlindungan maksimal saat banjir datang."}
             </p>
@@ -268,7 +268,7 @@ export default function HomePage() {
             </p>
             <Link href="/order">
               <button className="bg-blue-600 text-white px-8 py-4 rounded-lg font-semibold hover:bg-blue-700 transition-colors">
-                Pre-Order Sekarang
+                Pesan Sekarang
               </button>
             </Link>
           </div>
@@ -293,7 +293,7 @@ export default function HomePage() {
             </h2>
           </div>
           
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-16">
             {data.features.map((feature, index) => {
               const IconComponent = iconMap[feature.icon] || Star
               return (
@@ -310,6 +310,89 @@ export default function HomePage() {
                 </div>
               )
             })}
+          </div>
+
+          {/* Comparison Table */}
+          <div className="bg-gradient-to-br from-gray-800 to-gray-900 rounded-2xl p-8 shadow-2xl border border-gray-700">
+            <div className="text-center mb-8">
+              <h3 className="text-2xl font-bold text-white mb-2">Tabel Perbandingan Biaya Perlindungan Rumah</h3>
+              <p className="text-gray-400">Mengapa FloodBar.id adalah pilihan yang tepat</p>
+            </div>
+            
+            <div className="overflow-x-auto">
+              <table className="w-full rounded-xl overflow-hidden shadow-lg">
+                <thead>
+                  <tr className="bg-gradient-to-r from-blue-600 to-blue-700">
+                    <th className="px-6 py-4 text-left text-sm font-semibold text-white">Fitur</th>
+                    <th className="px-6 py-4 text-center text-sm font-semibold text-white bg-green-600">
+                      <div className="flex items-center justify-center space-x-2">
+                        <CheckCircle className="w-5 h-5" />
+                        <span>FloodBar.id</span>
+                      </div>
+                    </th>
+                    <th className="px-6 py-4 text-center text-sm font-semibold text-white">Kompetitor Jutaan</th>
+                  </tr>
+                </thead>
+                <tbody className="bg-white">
+                  <tr className="border-b border-gray-200 hover:bg-gray-50 transition-colors">
+                    <td className="px-6 py-5 text-sm font-medium text-gray-900">Harga</td>
+                    <td className="px-6 py-5 text-center bg-green-50">
+                      <div className="text-sm font-bold text-green-700">Rp 300.000–Rp 600.000</div>
+                      <div className="text-xs text-green-600">(disesuaikan)</div>
+                    </td>
+                    <td className="px-6 py-5 text-center">
+                      <div className="text-sm font-bold text-red-600">Rp 1.500.000 ke atas</div>
+                    </td>
+                  </tr>
+                  <tr className="border-b border-gray-200 hover:bg-gray-50 transition-colors">
+                    <td className="px-6 py-5 text-sm font-medium text-gray-900">Bahan</td>
+                    <td className="px-6 py-5 text-center bg-green-50">
+                      <div className="text-sm font-semibold text-green-700">PVC berkualitas tinggi</div>
+                    </td>
+                    <td className="px-6 py-5 text-center">
+                      <div className="text-sm text-gray-700">Bahan premium tapi mahal</div>
+                    </td>
+                  </tr>
+                  <tr className="border-b border-gray-200 hover:bg-gray-50 transition-colors">
+                    <td className="px-6 py-5 text-sm font-medium text-gray-900">Durabilitas</td>
+                    <td className="px-6 py-5 text-center bg-green-50">
+                      <div className="text-sm font-semibold text-green-700">Bertahan-tahun, tahan cuaca ekstrem</div>
+                    </td>
+                    <td className="px-6 py-5 text-center">
+                      <div className="text-sm text-gray-700">Tergantung produk, sering mahal</div>
+                    </td>
+                  </tr>
+                  <tr className="hover:bg-gray-50 transition-colors">
+                    <td className="px-6 py-5 text-sm font-medium text-gray-900">Pemasangan</td>
+                    <td className="px-6 py-5 text-center bg-green-50">
+                      <div className="text-sm font-semibold text-green-700">Mudah, sendiri</div>
+                    </td>
+                    <td className="px-6 py-5 text-center">
+                      <div className="text-sm text-gray-700">Biasanya memerlukan jasa profesional</div>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            <div className="mt-8 bg-gradient-to-r from-blue-50 to-green-50 rounded-xl p-6 border border-blue-200">
+              <div className="flex items-center justify-center mb-4">
+                <div className="w-12 h-12 bg-green-600 rounded-full flex items-center justify-center mr-4">
+                  <CheckCircle className="w-6 h-6 text-white" />
+                </div>
+                <h4 className="text-xl font-bold text-gray-900">Kesimpulan: FloodBar.id Lebih Unggul!</h4>
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="bg-white rounded-lg p-4 border border-green-200">
+                  <h5 className="font-semibold text-green-700 mb-2">💰 Harga Terjangkau</h5>
+                  <p className="text-sm text-gray-700">Hemat hingga 60% dibanding kompetitor tanpa mengorbankan kualitas</p>
+                </div>
+                <div className="bg-white rounded-lg p-4 border border-blue-200">
+                  <h5 className="font-semibold text-blue-700 mb-2">🛠️ Mudah Dipasang</h5>
+                  <p className="text-sm text-gray-700">Tidak perlu teknisi profesional, bisa dipasang sendiri dengan mudah</p>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </section>
@@ -689,7 +772,7 @@ export default function HomePage() {
             </button>
           </div>
           
-          <div className="mt-12 grid grid-cols-1 md:grid-cols-3 gap-6 max-w-4xl mx-auto">
+          {/* <div className="mt-12 grid grid-cols-1 md:grid-cols-3 gap-6 max-w-4xl mx-auto">
             <div className="bg-gray-800 p-6 rounded-lg">
               <h3 className="font-bold text-lg mb-2">✅ Custom Fit</h3>
               <p className="text-gray-300 text-sm">Dibuat sesuai ukuran pintu Anda</p>
@@ -702,7 +785,7 @@ export default function HomePage() {
               <h3 className="font-bold text-lg mb-2">🛡️ Perlindungan</h3>
               <p className="text-gray-300 text-sm">Tahan air hingga 50-70cm</p>
             </div>
-          </div>
+          </div> */}
         </div>
       </section>
 
@@ -765,7 +848,7 @@ export default function HomePage() {
             )}
             
             <p className="text-gray-400">
-              © 2024 {settings?.siteName || 'FloodBar.id'} - Semua hak dilindungi undang-undang.
+              © 2025 {settings?.siteName || 'FloodBar.id'} - Semua hak dilindungi undang-undang.
             </p>
           </div>
         </div>

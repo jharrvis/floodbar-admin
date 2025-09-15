@@ -189,6 +189,10 @@ model Order {
   xenditInvoiceId      String?  @db.VarChar(255)
   xenditInvoiceUrl     String?  @db.VarChar(500)
   paymentStatus        String?  @db.VarChar(50)
+  isChecked            Boolean  @default(false)
+  trackingNumber       String?  @db.VarChar(255)
+  shippedAt            DateTime?
+  paidAt               DateTime?
   
   createdAt            DateTime @default(now())
   updatedAt            DateTime @updatedAt

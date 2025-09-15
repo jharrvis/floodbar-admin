@@ -137,8 +137,8 @@ async function main() {
         maintenanceMode, allowRegistration, emailNotifications
       ) VALUES (
         'settings-1',
-        'Floodbar Admin Panel',
-        'Admin panel untuk mengelola halaman penjualan floodbar',
+        'FloodBar.id',
+        'Sekat pintu anti banjir custom untuk rumah Anda. Pre-order sekarang sebelum musim hujan!',
         'admin@floodbar.com',
         false,
         false,

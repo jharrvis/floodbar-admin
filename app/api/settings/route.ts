@@ -41,8 +41,8 @@ export async function GET() {
       // Return default settings if none exists
       const defaultSettings = {
         id: null,
-        siteName: 'Floodbar Admin Panel',
-        siteDescription: 'Admin panel untuk mengelola halaman penjualan floodbar',
+        siteName: 'FloodBar.id',
+        siteDescription: 'Sekat pintu anti banjir custom untuk rumah Anda. Pre-order sekarang sebelum musim hujan!',
         adminEmail: 'admin@floodbar.com',
         timezone: 'Asia/Jakarta',
         language: 'id',
