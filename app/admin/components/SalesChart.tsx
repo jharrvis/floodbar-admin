@@ -211,7 +211,7 @@ export default function SalesChart({ onDateRangeChange }: SalesChartProps) {
         labels: {
           font: {
             size: 12,
-            weight: '500'
+            weight: 'normal' as const
           },
           color: '#374151'
         }
@@ -261,7 +261,7 @@ export default function SalesChart({ onDateRangeChange }: SalesChartProps) {
           color: '#6B7280',
           font: {
             size: 11,
-            weight: '500'
+            weight: 'normal' as const
           }
         }
       },
