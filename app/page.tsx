@@ -725,6 +725,17 @@ export default function HomePage() {
               <p className="text-gray-300 mb-8">
                 {data.floodInfo?.description2 || "FloodBar.id hadir dengan solusi sekat pintu anti banjir yang dibuat custom untuk setiap rumah. Sistem pre-order memastikan FloodBar fit sempurna di pintu Anda. Investasi ratusan ribu untuk melindungi aset jutaan rupiah."}
               </p>
+              
+              {/* Flood Statistics Iframe */}
+              <div className="mb-8 rounded-lg overflow-hidden">
+                <iframe 
+                  src="https://data.goodstats.id/statistic/embed/jateng-jabar-dan-jatim-jadi-provinsi-langganan-banjir-awal-2025-NLKMk" 
+                  frameBorder="0" 
+                  style={{height: '500px', width: '100%'}}
+                  title="Statistik Banjir Provinsi Indonesia"
+                />
+              </div>
+              
               <div className="flex items-center space-x-4">
                 {data.floodInfo?.stats?.map((stat, index) => (
                   <div key={index} className="text-center">
