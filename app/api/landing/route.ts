@@ -58,6 +58,12 @@ interface LandingPageData {
     email: string
     address: string
   }
+  videos: Array<{
+    id: string
+    title: string
+    embedUrl: string
+    isActive: boolean
+  }>
 }
 
 export async function GET() {
@@ -224,7 +230,8 @@ export async function GET() {
           phone: '+62 821-1234-5678',
           email: 'info@floodbar.id',
           address: 'Jakarta, Indonesia - Pengiriman Seluruh Nusantara'
-        }
+        },
+        videos: []
       }
       return NextResponse.json(defaultData)
     }
@@ -364,7 +371,20 @@ export async function GET() {
         phone: landingPage.contactPhone || '+62 821-1234-5678',
         email: landingPage.contactEmail || 'info@floodbar.id',
         address: landingPage.contactAddress || 'Jakarta, Indonesia - Pengiriman Seluruh Nusantara'
-      }
+      },
+      videos: []
+    }
+
+    // Fetch videos
+    try {
+      const videos = await prisma.video.findMany({
+        where: { isActive: true },
+        orderBy: { createdAt: 'desc' }
+      })
+      formattedData.videos = videos
+    } catch (error) {
+      console.error('Error fetching videos:', error)
+      formattedData.videos = []
     }
 
     return NextResponse.json(formattedData)

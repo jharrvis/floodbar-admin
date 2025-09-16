@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { useSearchParams } from 'next/navigation'
-import { Calculator, ShoppingCart, User, MapPin, CreditCard, Send, Package, Truck } from 'lucide-react'
+import { Calculator, ShoppingCart, User, MapPin, CreditCard, Send, Package, Truck, Shield, MessageCircle } from 'lucide-react'
 
 interface OrderItem {
   id: string
@@ -75,6 +75,30 @@ export default function OrderPageClient() {
       setProductForm(prev => ({ ...prev, model }))
     }
   }, [searchParams])
+
+  // Auto-calculate when model changes (since Model A and B have same base price)
+  useEffect(() => {
+    if (productForm.model && productForm.width && productForm.height && productForm.quantity) {
+      calculateProductPrice()
+    }
+  }, [productForm.model, productForm.width, productForm.height, productForm.quantity])
+
+  // Fetch settings for logo
+  useEffect(() => {
+    const fetchSettings = async () => {
+      try {
+        const response = await fetch('/api/settings')
+        if (response.ok) {
+          const data = await response.json()
+          setSettings(data)
+        }
+      } catch (error) {
+        console.error('Error fetching settings:', error)
+      }
+    }
+    fetchSettings()
+  }, [])
+
   const [calculating, setCalculating] = useState(false)
 
   // Shipping form
@@ -91,6 +115,7 @@ export default function OrderPageClient() {
   const [shippingCalculating, setShippingCalculating] = useState(false)
 
   const [submitting, setSubmitting] = useState(false)
+  const [settings, setSettings] = useState<any>(null)
 
   // Calculate product price when form changes
   const calculateProductPrice = async () => {
@@ -358,12 +383,20 @@ export default function OrderPageClient() {
       {/* Navigation Bar */}
       <nav className="bg-gray-900 text-white px-4 py-3 border-b border-gray-800">
         <div className="max-w-7xl mx-auto flex items-center justify-between">
-          <div className="flex items-center space-x-2">
-            <div className="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center">
-              <Package className="w-5 h-5" />
-            </div>
-            <span className="font-bold text-xl">FloodBar.id</span>
-          </div>
+          <a href="https://floodbar.id" className="flex items-center space-x-2 hover:opacity-80 transition-opacity">
+            {settings?.logoUrl ? (
+              <img 
+                src={settings.logoUrl} 
+                alt={settings?.siteName || 'FloodBar.id'} 
+                className="w-8 h-8 object-contain rounded"
+              />
+            ) : (
+              <div className="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center">
+                <Shield className="w-5 h-5" />
+              </div>
+            )}
+            <span className="font-bold text-xl">{settings?.siteName || 'FloodBar.id'}</span>
+          </a>
           <div className="hidden md:flex items-center space-x-6">
             <span className="text-sm">Pre-Order: ★★★★★</span>
             <span className="text-sm">Custom Fit: ★★★★★</span>
@@ -830,6 +863,16 @@ export default function OrderPageClient() {
         </div>
       </div>
       </div>
+
+      {/* WhatsApp Button */}
+      <a
+        href={`https://wa.me/${settings?.contact?.phone?.replace(/[^0-9]/g, '') || '6281234567890'}?text=Halo,%20saya%20butuh%20bantuan%20dengan%20order%20FloodBar%20custom`}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="fixed top-20 right-4 bg-green-500 text-white p-3 rounded-full shadow-lg hover:bg-green-600 transition-all duration-300 hover:shadow-xl z-50"
+      >
+        <MessageCircle size={20} />
+      </a>
     </div>
   )
 }

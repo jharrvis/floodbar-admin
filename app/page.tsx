@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { Phone, Mail, MapPin, Star, Shield, Wrench, Droplets, CheckCircle, AlertTriangle, Home, ChevronLeft, ChevronRight, ArrowUp, Instagram, Facebook, Play, ChevronDown } from 'lucide-react'
+import { Phone, Mail, MapPin, Star, Shield, Wrench, Droplets, CheckCircle, AlertTriangle, Home, ChevronLeft, ChevronRight, ArrowUp, Instagram, Facebook, Play, ChevronDown, MessageCircle } from 'lucide-react'
 import Link from 'next/link'
 
 interface LandingPageData {
@@ -58,6 +58,12 @@ interface LandingPageData {
     email: string
     address: string
   }
+  videos: Array<{
+    id: string
+    title: string
+    embedUrl: string
+    isActive: boolean
+  }>
 }
 
 const iconMap: { [key: string]: any } = {
@@ -175,7 +181,7 @@ export default function HomePage() {
       if (response.ok) {
         const result = await response.json()
         if (result.success) {
-          setNews(result.data.slice(0, 6)) // Limit to 6 latest news
+          setNews(result.data.slice(0, 10)) // Limit to 10 latest news
         }
       }
     } catch (error) {
@@ -727,7 +733,7 @@ export default function HomePage() {
               </p>
               
               {/* Flood Statistics Iframe */}
-              <div className="mb-8 rounded-lg overflow-hidden">
+              <div className="mb-8 rounded-lg overflow-hidden bg-white p-4">
                 <iframe 
                   src="https://data.goodstats.id/statistic/embed/jateng-jabar-dan-jatim-jadi-provinsi-langganan-banjir-awal-2025-NLKMk" 
                   frameBorder="0" 
@@ -766,6 +772,42 @@ export default function HomePage() {
         </div>
       </section>
 
+      {/* TikTok Videos Section */}
+      {data && data.videos && data.videos.length > 0 && (
+        <section className="py-16 px-4 bg-gray-50">
+          <div className="max-w-7xl mx-auto">
+            <div className="text-center mb-12">
+              <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+                Video FloodBar
+              </h2>
+              <p className="text-lg text-gray-600 max-w-3xl mx-auto">
+                Lihat bagaimana FloodBar bekerja melindungi rumah Anda dari banjir
+              </p>
+            </div>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+              {data.videos.filter(video => video.isActive).map((video) => (
+                <div key={video.id} className="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow">
+                  <div className="aspect-[9/16] relative">
+                    <iframe
+                      src={video.embedUrl}
+                      className="w-full h-full"
+                      frameBorder="0"
+                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                      allowFullScreen
+                      title={video.title}
+                    />
+                  </div>
+                  <div className="p-4">
+                    <h3 className="font-semibold text-gray-900 text-center">{video.title}</h3>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
+
       {/* CTA Section */}
       <section className="py-16 px-4 bg-gray-900 text-white">
         <div className="max-w-7xl mx-auto text-center">
@@ -782,9 +824,6 @@ export default function HomePage() {
                 🚨 Pre-Order FloodBar Sekarang
               </button>
             </Link>
-            <button className="border border-white text-white px-8 py-4 rounded-lg font-semibold hover:bg-gray-800 transition-colors">
-              Konsultasi Custom Gratis
-            </button>
           </div>
           
           {/* <div className="mt-12 grid grid-cols-1 md:grid-cols-3 gap-6 max-w-4xl mx-auto">
@@ -825,6 +864,30 @@ export default function HomePage() {
             <p className="text-gray-400 mb-6 max-w-2xl mx-auto">
               {settings?.siteDescription || 'Sekat pintu anti banjir custom untuk rumah Anda. Pre-order sekarang sebelum musim hujan!'}
             </p>
+            
+            {/* Contact Information */}
+            {data && data.contact && (
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6 max-w-4xl mx-auto">
+                {data.contact.phone && (
+                  <div className="flex items-center justify-center space-x-2 text-gray-300">
+                    <Phone size={16} />
+                    <span className="text-sm">{data.contact.phone}</span>
+                  </div>
+                )}
+                {data.contact.email && (
+                  <div className="flex items-center justify-center space-x-2 text-gray-300">
+                    <Mail size={16} />
+                    <span className="text-sm">{data.contact.email}</span>
+                  </div>
+                )}
+                {data.contact.address && (
+                  <div className="flex items-center justify-center space-x-2 text-gray-300">
+                    <MapPin size={16} />
+                    <span className="text-sm">{data.contact.address}</span>
+                  </div>
+                )}
+              </div>
+            )}
             
             {/* Social Media Links */}
             {(settings?.instagramUrl || settings?.facebookUrl || settings?.tiktokUrl) && (
@@ -868,6 +931,16 @@ export default function HomePage() {
           </div>
         </div>
       </footer>
+
+      {/* WhatsApp Button */}
+      <a
+        href={`https://wa.me/${data?.contact?.phone?.replace(/[^0-9]/g, '') || '6281234567890'}?text=Halo,%20saya%20tertarik%20dengan%20FloodBar%20custom%20untuk%20rumah%20saya`}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="fixed top-20 right-4 bg-green-500 text-white p-3 rounded-full shadow-lg hover:bg-green-600 transition-all duration-300 hover:shadow-xl z-50"
+      >
+        <MessageCircle size={20} />
+      </a>
 
       {/* Scroll to Top Button */}
       {showScrollTop && (

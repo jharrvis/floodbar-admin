@@ -63,7 +63,10 @@
       "WebFetch(domain:floodbar-iu16u1uqh-jharrvis-projects.vercel.app)",
       "WebFetch(domain:localhost)",
       "WebFetch(domain:floodbar-ntey1bgb2-jharrvis-projects.vercel.app)",
-      "Bash(npx tsc:*)"
+      "Bash(npx tsc:*)",
+      "WebFetch(domain:floodbar-l4a3fbufc-jharrvis-projects.vercel.app)",
+      "WebFetch(domain:floodbar-29ah0avf0-jharrvis-projects.vercel.app)",
+      "WebFetch(domain:floodbar-6bxrktrkh-jharrvis-projects.vercel.app)"
     ],
     "deny": [],
     "ask": []

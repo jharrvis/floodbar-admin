@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { Save, Plus, Trash2, Eye, Edit, ExternalLink, Newspaper } from 'lucide-react'
+import { Save, Plus, Trash2, Eye, Edit, ExternalLink, Newspaper, Video } from 'lucide-react'
 import ImageUpload from '@/app/components/ImageUpload'
 
 interface LandingPageData {
@@ -68,6 +68,12 @@ interface LandingPageData {
     email: string
     address: string
   }
+  videos: Array<{
+    id: string
+    title: string
+    embedUrl: string
+    isActive: boolean
+  }>
 }
 
 export default function LandingPageEditor() {
@@ -84,6 +90,13 @@ export default function LandingPageEditor() {
     sourceUrl: '',
     sourceName: '',
     publishedAt: new Date().toISOString().split('T')[0],
+    isActive: true
+  })
+  const [showVideoForm, setShowVideoForm] = useState(false)
+  const [editingVideo, setEditingVideo] = useState<any>(null)
+  const [videoFormData, setVideoFormData] = useState({
+    title: '',
+    embedUrl: '',
     isActive: true
   })
 
@@ -378,6 +391,67 @@ export default function LandingPageEditor() {
     })
     setEditingNews(null)
     setShowNewsForm(false)
+  }
+
+  const handleVideoSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
+    
+    try {
+      const url = editingVideo ? `/api/videos/${editingVideo.id}` : '/api/videos'
+      const method = editingVideo ? 'PUT' : 'POST'
+      
+      const response = await fetch(url, {
+        method,
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(videoFormData)
+      })
+      
+      if (response.ok) {
+        await fetchData()
+        resetVideoForm()
+        alert(editingVideo ? 'Video berhasil diupdate!' : 'Video berhasil ditambahkan!')
+      } else {
+        alert('Terjadi kesalahan')
+      }
+    } catch (error) {
+      console.error('Error saving video:', error)
+      alert('Terjadi kesalahan server')
+    }
+  }
+
+  const handleEditVideo = (video: any) => {
+    setVideoFormData({
+      title: video.title,
+      embedUrl: video.embedUrl,
+      isActive: video.isActive
+    })
+    setEditingVideo(video)
+    setShowVideoForm(true)
+  }
+
+  const handleDeleteVideo = async (id: string) => {
+    if (!confirm('Yakin ingin menghapus video ini?')) return
+    
+    try {
+      const response = await fetch(`/api/videos/${id}`, { method: 'DELETE' })
+      if (response.ok) {
+        await fetchData()
+        alert('Video berhasil dihapus!')
+      }
+    } catch (error) {
+      console.error('Error deleting video:', error)
+      alert('Terjadi kesalahan server')
+    }
+  }
+
+  const resetVideoForm = () => {
+    setVideoFormData({
+      title: '',
+      embedUrl: '',
+      isActive: true
+    })
+    setEditingVideo(null)
+    setShowVideoForm(false)
   }
 
   if (loading) {
@@ -1015,6 +1089,87 @@ export default function LandingPageEditor() {
                   </div>
                 </div>
                 
+                {/* Video Management Section */}
+                <div>
+                  <div className="flex justify-between items-center mb-2">
+                    <label className="block text-sm font-medium text-gray-700">
+                      <Video className="inline mr-2" size={16} />
+                      Video TikTok
+                    </label>
+                    <button
+                      onClick={() => setShowVideoForm(true)}
+                      className="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded text-sm flex items-center gap-1"
+                    >
+                      <Plus size={14} />
+                      Tambah Video
+                    </button>
+                  </div>
+                  
+                  <div className="bg-gray-50 p-4 rounded-lg">
+                    {data.videos && data.videos.length > 0 ? (
+                      <div className="space-y-3">
+                        {data.videos.map((video, index) => (
+                          <div key={video.id} className="bg-white p-3 rounded border">
+                            <div className="flex items-start space-x-3">
+                              <div className="w-16 h-16 bg-gray-200 rounded flex items-center justify-center flex-shrink-0">
+                                <Video size={24} className="text-gray-400" />
+                              </div>
+                              <div className="flex-1">
+                                <h4 className="font-medium text-sm text-gray-900 line-clamp-2">
+                                  {video.title}
+                                </h4>
+                                <p className="text-xs text-gray-600 mt-1 truncate">
+                                  {video.embedUrl}
+                                </p>
+                                <div className="flex items-center mt-2 space-x-2">
+                                  <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${
+                                    video.isActive 
+                                      ? 'bg-green-100 text-green-800' 
+                                      : 'bg-red-100 text-red-800'
+                                  }`}>
+                                    {video.isActive ? 'Aktif' : 'Nonaktif'}
+                                  </span>
+                                </div>
+                              </div>
+                              <div className="flex space-x-1">
+                                <a
+                                  href={video.embedUrl}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="text-blue-600 hover:text-blue-800 p-1"
+                                  title="Lihat video"
+                                >
+                                  <ExternalLink size={14} />
+                                </a>
+                                <button
+                                  onClick={() => handleEditVideo(video)}
+                                  className="text-yellow-600 hover:text-yellow-800 p-1"
+                                  title="Edit"
+                                >
+                                  <Edit size={14} />
+                                </button>
+                                <button
+                                  onClick={() => handleDeleteVideo(video.id)}
+                                  className="text-red-600 hover:text-red-800 p-1"
+                                  title="Hapus"
+                                >
+                                  <Trash2 size={14} />
+                                </button>
+                              </div>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    ) : (
+                      <div className="text-center py-6">
+                        <Video className="mx-auto h-12 w-12 text-gray-400" />
+                        <p className="text-gray-500 text-sm mt-2">Belum ada video</p>
+                        <p className="text-gray-400 text-xs mt-1">Klik "Tambah Video" untuk menambahkan video TikTok pertama</p>
+                      </div>
+                    )}
+                  </div>
+                </div>
+                
                 {/* News Management Section */}
                 <div>
                   <div className="flex justify-between items-center mb-2">
@@ -1385,6 +1540,79 @@ export default function LandingPageEditor() {
                 <button
                   type="button"
                   onClick={resetNewsForm}
+                  className="bg-gray-500 text-white px-6 py-2 rounded-lg font-semibold hover:bg-gray-600"
+                >
+                  Batal
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* Video Form Modal */}
+      {showVideoForm && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg p-6 w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+            <h2 className="text-xl font-bold mb-4">
+              {editingVideo ? 'Edit Video' : 'Tambah Video TikTok Baru'}
+            </h2>
+            
+            <form onSubmit={handleVideoSubmit} className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Judul Video
+                </label>
+                <input
+                  type="text"
+                  value={videoFormData.title}
+                  onChange={(e) => setVideoFormData({...videoFormData, title: e.target.value})}
+                  className="w-full p-3 border border-gray-300 rounded-lg"
+                  placeholder="Contoh: FloodBar Melindungi Rumah Dari Banjir"
+                  required
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  URL Embed TikTok
+                </label>
+                <input
+                  type="url"
+                  value={videoFormData.embedUrl}
+                  onChange={(e) => setVideoFormData({...videoFormData, embedUrl: e.target.value})}
+                  className="w-full p-3 border border-gray-300 rounded-lg"
+                  placeholder="https://www.tiktok.com/embed/video_id"
+                  required
+                />
+                <p className="text-xs text-gray-500 mt-1">
+                  Masukkan URL embed TikTok, bukan URL share biasa. Format: https://www.tiktok.com/embed/video_id
+                </p>
+              </div>
+
+              <div className="flex items-center">
+                <input
+                  type="checkbox"
+                  id="videoIsActive"
+                  checked={videoFormData.isActive}
+                  onChange={(e) => setVideoFormData({...videoFormData, isActive: e.target.checked})}
+                  className="mr-2"
+                />
+                <label htmlFor="videoIsActive" className="text-sm font-medium text-gray-700">
+                  Aktif (tampil di website)
+                </label>
+              </div>
+
+              <div className="flex space-x-4 pt-4">
+                <button
+                  type="submit"
+                  className="bg-blue-600 text-white px-6 py-2 rounded-lg font-semibold hover:bg-blue-700"
+                >
+                  {editingVideo ? 'Perbarui' : 'Simpan'}
+                </button>
+                <button
+                  type="button"
+                  onClick={resetVideoForm}
                   className="bg-gray-500 text-white px-6 py-2 rounded-lg font-semibold hover:bg-gray-600"
                 >
                   Batal

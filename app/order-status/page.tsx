@@ -1,7 +1,7 @@
 'use client'
 
-import { useState } from 'react'
-import { Search, Package, Clock, CheckCircle, Truck, Shield, ArrowLeft } from 'lucide-react'
+import { useState, useEffect } from 'react'
+import { Search, Package, Clock, CheckCircle, Truck, Shield, ArrowLeft, MessageCircle } from 'lucide-react'
 import Link from 'next/link'
 
 interface OrderStatus {
@@ -41,6 +41,23 @@ export default function OrderStatusPage() {
   const [orderStatus, setOrderStatus] = useState<OrderStatus | null>(null)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
+  const [settings, setSettings] = useState<any>(null)
+
+  // Fetch settings for logo
+  useEffect(() => {
+    const fetchSettings = async () => {
+      try {
+        const response = await fetch('/api/settings')
+        if (response.ok) {
+          const data = await response.json()
+          setSettings(data)
+        }
+      } catch (error) {
+        console.error('Error fetching settings:', error)
+      }
+    }
+    fetchSettings()
+  }, [])
 
   const searchOrder = async () => {
     if (!orderCode.trim()) {
@@ -160,12 +177,20 @@ export default function OrderStatusPage() {
       {/* Navigation Bar */}
       <nav className="bg-gray-900 text-white px-4 py-3 border-b border-gray-800">
         <div className="max-w-7xl mx-auto flex items-center justify-between">
-          <div className="flex items-center space-x-2">
-            <div className="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center">
-              <Shield className="w-5 h-5" />
-            </div>
-            <span className="font-bold text-xl">FloodBar.id</span>
-          </div>
+          <a href="https://floodbar.id" className="flex items-center space-x-2 hover:opacity-80 transition-opacity">
+            {settings?.logoUrl ? (
+              <img 
+                src={settings.logoUrl} 
+                alt={settings?.siteName || 'FloodBar.id'} 
+                className="w-8 h-8 object-contain rounded"
+              />
+            ) : (
+              <div className="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center">
+                <Shield className="w-5 h-5" />
+              </div>
+            )}
+            <span className="font-bold text-xl">{settings?.siteName || 'FloodBar.id'}</span>
+          </a>
           <Link href="/">
             <button className="flex items-center gap-2 bg-gray-800 px-4 py-2 rounded-lg hover:bg-gray-700 transition-colors">
               <ArrowLeft size={16} />
@@ -330,6 +355,16 @@ export default function OrderStatusPage() {
           )}
         </div>
       </div>
+
+      {/* WhatsApp Button */}
+      <a
+        href={`https://wa.me/${settings?.contact?.phone?.replace(/[^0-9]/g, '') || '6281234567890'}?text=Halo,%20saya%20ingin%20bertanya%20tentang%20status%20order%20FloodBar%20saya`}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="fixed top-20 right-4 bg-green-500 text-white p-3 rounded-full shadow-lg hover:bg-green-600 transition-all duration-300 hover:shadow-xl z-50"
+      >
+        <MessageCircle size={20} />
+      </a>
     </div>
   )
 }

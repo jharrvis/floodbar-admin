@@ -215,3 +215,15 @@ model News {
 
   @@map("news")
 }
+
+model Video {
+  id          String   @id @default(cuid())
+  title       String   @db.VarChar(255)
+  embedUrl    String   @db.VarChar(500)
+  isActive    Boolean  @default(true)
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("videos")
+}
