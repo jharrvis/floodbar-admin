@@ -77,13 +77,13 @@ export default function OrderStatusPage() {
             completed: true
           },
           {
-            date: result.order.paidAt || '',
+            date: result.order.paymentStatus === 'paid' ? result.order.createdAt : '',
             status: 'Payment Confirmed',
             description: 'Pembayaran berhasil dikonfirmasi',
             completed: result.order.status !== 'pending'
           },
           {
-            date: result.order.processingAt || '',
+            date: result.order.status === 'processing' ? result.order.updatedAt : '',
             status: 'Production Started',
             description: 'Produksi FloodBar custom dimulai',
             completed: ['processing', 'shipped', 'delivered'].includes(result.order.status)
@@ -95,7 +95,7 @@ export default function OrderStatusPage() {
             completed: ['shipped', 'delivered'].includes(result.order.status)
           },
           {
-            date: result.order.deliveredAt || '',
+            date: result.order.status === 'delivered' ? result.order.updatedAt : '',
             status: 'Delivered',
             description: 'Pesanan telah diterima',
             completed: result.order.status === 'delivered'

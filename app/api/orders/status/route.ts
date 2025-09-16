@@ -16,51 +16,52 @@ export async function GET(request: NextRequest) {
       )
     }
 
-    // Find order by id (which contains the orderId)
-    const order = await prisma.order.findFirst({
-      where: {
-        id: orderId
-      }
-    })
+    // Find order by id (which contains the orderId) - use raw query to avoid schema issues
+    const order = await prisma.$queryRaw`
+      SELECT * FROM orders WHERE id = ${orderId} LIMIT 1
+    `
 
-    if (!order) {
+    if (!order || !Array.isArray(order) || order.length === 0) {
       return NextResponse.json(
         { success: false, error: 'Order not found' },
         { status: 404 }
       )
     }
 
+    const orderRecord = order[0] // Get first result from array
+    
     // Return order with actual schema fields only
     const orderData = {
-      orderId: order.id,
-      status: order.status,
-      createdAt: order.createdAt,
-      updatedAt: order.updatedAt,
-      paymentStatus: order.paymentStatus,
+      orderId: orderRecord.id,
+      status: orderRecord.status || 'pending',
+      createdAt: orderRecord.createdAt,
+      updatedAt: orderRecord.updatedAt,
+      paymentStatus: orderRecord.paymentStatus || 'pending',
       productConfig: {
-        model: 'Custom', // No productModel field in current schema
-        width: order.productWidth,
-        height: order.productHeight,
-        quantity: order.productQuantity
+        model: orderRecord.productModel || 'Custom',
+        width: orderRecord.productWidth,
+        height: orderRecord.productHeight,
+        quantity: orderRecord.productQuantity
       },
       shipping: {
-        destination: order.shippingDestination,
-        weight: order.shippingWeight,
-        cost: order.shippingCost
+        destination: orderRecord.shippingDestination,
+        weight: orderRecord.shippingWeight,
+        cost: orderRecord.shippingCost
       },
       customer: {
-        name: order.customerName,
-        email: order.customerEmail,
-        city: order.customerCity
+        name: orderRecord.customerName,
+        email: orderRecord.customerEmail,
+        city: orderRecord.customerCity
       },
       orderSummary: {
-        grandTotal: order.grandTotal
+        grandTotal: orderRecord.grandTotal
       },
-      paymentMethod: order.paymentMethod,
-      customerName: order.customerName,
-      customerEmail: order.customerEmail,
-      customerCity: order.customerCity,
-      xenditInvoiceUrl: order.xenditInvoiceUrl
+      paymentMethod: orderRecord.paymentMethod,
+      customerName: orderRecord.customerName,
+      customerEmail: orderRecord.customerEmail,
+      customerCity: orderRecord.customerCity,
+      trackingNumber: orderRecord.trackingNumber,
+      shippedAt: orderRecord.shippedAt
     }
 
     return NextResponse.json({
