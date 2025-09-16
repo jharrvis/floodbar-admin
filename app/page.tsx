@@ -175,7 +175,7 @@ export default function HomePage() {
       if (response.ok) {
         const result = await response.json()
         if (result.success) {
-          setNews(result.data.slice(0, 4)) // Limit to 4 latest news
+          setNews(result.data.slice(0, 6)) // Limit to 6 latest news
         }
       }
     } catch (error) {
