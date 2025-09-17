@@ -341,7 +341,8 @@ export default function HomePage() {
               <p className="text-gray-400">Mengapa FloodBar.id adalah pilihan yang tepat</p>
             </div>
             
-            <div className="overflow-x-auto">
+            {/* Desktop Table View */}
+            <div className="hidden md:block overflow-x-auto">
               <table className="w-full rounded-xl overflow-hidden shadow-lg">
                 <thead>
                   <tr className="bg-gradient-to-r from-blue-600 to-blue-700">
@@ -352,7 +353,7 @@ export default function HomePage() {
                         <span>FloodBar.id</span>
                       </div>
                     </th>
-                    <th className="px-6 py-4 text-center text-sm font-semibold text-white">Kompetitor Jutaan</th>
+                    <th className="px-6 py-4 text-center text-sm font-semibold text-white">BRAND LAIN</th>
                   </tr>
                 </thead>
                 <tbody className="bg-white">
@@ -381,7 +382,7 @@ export default function HomePage() {
                       <div className="text-sm font-semibold text-green-700">Bertahan-tahun, tahan cuaca ekstrem</div>
                     </td>
                     <td className="px-6 py-5 text-center">
-                      <div className="text-sm text-gray-700">Tergantung produk, sering mahal</div>
+                      <div className="text-sm text-gray-700">Tergantung produk</div>
                     </td>
                   </tr>
                   <tr className="hover:bg-gray-50 transition-colors">
@@ -395,6 +396,88 @@ export default function HomePage() {
                   </tr>
                 </tbody>
               </table>
+            </div>
+
+            {/* Mobile Card View */}
+            <div className="md:hidden space-y-6">
+              {/* Header Cards */}
+              <div className="grid grid-cols-2 gap-4 mb-6">
+                <div className="bg-gradient-to-br from-green-600 to-green-700 rounded-xl p-4 text-white text-center">
+                  <div className="flex items-center justify-center space-x-2 mb-2">
+                    <CheckCircle className="w-5 h-5" />
+                    <span className="font-bold">FloodBar.id</span>
+                  </div>
+                  <p className="text-xs text-green-100">Pilihan Terbaik</p>
+                </div>
+                <div className="bg-gradient-to-br from-gray-600 to-gray-700 rounded-xl p-4 text-white text-center">
+                  <div className="font-bold mb-2">BRAND LAIN</div>
+                  <p className="text-xs text-gray-300">Kompetitor</p>
+                </div>
+              </div>
+
+              {/* Comparison Cards */}
+              <div className="space-y-4">
+                {/* Harga */}
+                <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+                  <div className="bg-gray-100 px-4 py-3 border-b">
+                    <h4 className="font-semibold text-gray-900">💰 Harga</h4>
+                  </div>
+                  <div className="grid grid-cols-2 divide-x-2 divide-gray-300">
+                    <div className="p-4 bg-green-50">
+                      <div className="text-sm font-bold text-green-700">Rp 300.000–Rp 600.000</div>
+                      <div className="text-xs text-green-600">(disesuaikan)</div>
+                    </div>
+                    <div className="p-4">
+                      <div className="text-sm font-bold text-red-600">Rp 1.500.000 ke atas</div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Bahan */}
+                <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+                  <div className="bg-gray-100 px-4 py-3 border-b">
+                    <h4 className="font-semibold text-gray-900">🔧 Bahan</h4>
+                  </div>
+                  <div className="grid grid-cols-2 divide-x-2 divide-gray-300">
+                    <div className="p-4 bg-green-50">
+                      <div className="text-sm font-semibold text-green-700">PVC berkualitas tinggi</div>
+                    </div>
+                    <div className="p-4">
+                      <div className="text-sm text-gray-700">Bahan premium tapi mahal</div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Durabilitas */}
+                <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+                  <div className="bg-gray-100 px-4 py-3 border-b">
+                    <h4 className="font-semibold text-gray-900">⚡ Durabilitas</h4>
+                  </div>
+                  <div className="grid grid-cols-2 divide-x-2 divide-gray-300">
+                    <div className="p-4 bg-green-50">
+                      <div className="text-sm font-semibold text-green-700">Bertahan-tahun, tahan cuaca ekstrem</div>
+                    </div>
+                    <div className="p-4">
+                      <div className="text-sm text-gray-700">Tergantung produk</div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Pemasangan */}
+                <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+                  <div className="bg-gray-100 px-4 py-3 border-b">
+                    <h4 className="font-semibold text-gray-900">🔨 Pemasangan</h4>
+                  </div>
+                  <div className="grid grid-cols-2 divide-x-2 divide-gray-300">
+                    <div className="p-4 bg-green-50">
+                      <div className="text-sm font-semibold text-green-700">Mudah, sendiri</div>
+                    </div>
+                    <div className="p-4">
+                      <div className="text-sm text-gray-700">Biasanya memerlukan jasa profesional</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
 
             <div className="mt-8 bg-gradient-to-r from-blue-50 to-green-50 rounded-xl p-6 border border-blue-200">
@@ -438,7 +521,7 @@ export default function HomePage() {
                   <img 
                     src={`${product.image}${product.image ? `?t=${Date.now()}` : ''}`}
                     alt={product.name}
-                    className="w-full h-80 md:h-96 object-cover rounded-lg"
+                    className="w-full h-80 md:h-96 object-contain rounded-lg bg-white"
                     key={product.image}
                   />
                 </div>
@@ -937,9 +1020,9 @@ export default function HomePage() {
         href={`https://wa.me/${data?.contact?.phone?.replace(/[^0-9]/g, '') || '6281234567890'}?text=Halo,%20saya%20tertarik%20dengan%20FloodBar%20custom%20untuk%20rumah%20saya`}
         target="_blank"
         rel="noopener noreferrer"
-        className="fixed top-20 right-4 bg-green-500 text-white p-3 rounded-full shadow-lg hover:bg-green-600 transition-all duration-300 hover:shadow-xl z-50"
+        className="fixed bottom-24 right-8 bg-green-500 text-white p-4 rounded-full shadow-lg hover:bg-green-600 transition-all duration-300 hover:shadow-xl z-50"
       >
-        <MessageCircle size={20} />
+        <MessageCircle size={24} />
       </a>
 
       {/* Scroll to Top Button */}

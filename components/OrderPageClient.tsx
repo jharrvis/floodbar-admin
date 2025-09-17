@@ -473,7 +473,7 @@ export default function OrderPageClient() {
                         <div className="flex-1">
                           <div className="font-medium text-lg">{model}</div>
                           <div className="text-sm text-gray-600">
-                            {model === 'Model A' ? 'Desain standar dengan fitur lengkap' : 'Desain premium dengan fitur advanced'}
+                            {model === 'Model A' ? 'Rel bracket dipasang di depan kusen pintu' : 'Rel bracket dipasang di antara kusen pintu (bagian dalam)'}
                           </div>
                         </div>
                       </label>
@@ -626,7 +626,7 @@ export default function OrderPageClient() {
                     )}
                     <p className="text-sm text-gray-600">Total: Rp {shippingData.cost.toLocaleString()}</p>
                     <p className="text-sm text-gray-600">Estimasi: {shippingData.estimatedDays}</p>
-                    <p className="text-sm text-gray-600">Berat: {shippingData.weight} kg (dibulatkan ke atas)</p>
+                    <p className="text-sm text-gray-600">Berat: {shippingData.weight} kg</p>
                   </div>
                 )}
               </div>
@@ -869,9 +869,9 @@ export default function OrderPageClient() {
         href={`https://wa.me/${settings?.contact?.phone?.replace(/[^0-9]/g, '') || '6281234567890'}?text=Halo,%20saya%20butuh%20bantuan%20dengan%20order%20FloodBar%20custom`}
         target="_blank"
         rel="noopener noreferrer"
-        className="fixed top-20 right-4 bg-green-500 text-white p-3 rounded-full shadow-lg hover:bg-green-600 transition-all duration-300 hover:shadow-xl z-50"
+        className="fixed bottom-24 right-8 bg-green-500 text-white p-4 rounded-full shadow-lg hover:bg-green-600 transition-all duration-300 hover:shadow-xl z-50"
       >
-        <MessageCircle size={20} />
+        <MessageCircle size={24} />
       </a>
     </div>
   )

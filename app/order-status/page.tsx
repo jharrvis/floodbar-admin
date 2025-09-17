@@ -361,9 +361,9 @@ export default function OrderStatusPage() {
         href={`https://wa.me/${settings?.contact?.phone?.replace(/[^0-9]/g, '') || '6281234567890'}?text=Halo,%20saya%20ingin%20bertanya%20tentang%20status%20order%20FloodBar%20saya`}
         target="_blank"
         rel="noopener noreferrer"
-        className="fixed top-20 right-4 bg-green-500 text-white p-3 rounded-full shadow-lg hover:bg-green-600 transition-all duration-300 hover:shadow-xl z-50"
+        className="fixed bottom-24 right-8 bg-green-500 text-white p-4 rounded-full shadow-lg hover:bg-green-600 transition-all duration-300 hover:shadow-xl z-50"
       >
-        <MessageCircle size={20} />
+        <MessageCircle size={24} />
       </a>
     </div>
   )
