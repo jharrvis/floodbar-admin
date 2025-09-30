@@ -370,7 +370,7 @@ export default function HomePage() {
                   <tr className="border-b border-gray-200 hover:bg-gray-50 transition-colors">
                     <td className="px-6 py-5 text-sm font-medium text-gray-900">Bahan</td>
                     <td className="px-6 py-5 text-center bg-green-50">
-                      <div className="text-sm font-semibold text-green-700">PVC berkualitas tinggi</div>
+                      <div className="text-sm font-semibold text-green-700">Besi berkualitas tinggi, kuat & ringan</div>
                     </td>
                     <td className="px-6 py-5 text-center">
                       <div className="text-sm text-gray-700">Bahan premium tapi mahal</div>
@@ -379,7 +379,7 @@ export default function HomePage() {
                   <tr className="border-b border-gray-200 hover:bg-gray-50 transition-colors">
                     <td className="px-6 py-5 text-sm font-medium text-gray-900">Durabilitas</td>
                     <td className="px-6 py-5 text-center bg-green-50">
-                      <div className="text-sm font-semibold text-green-700">Bertahan-tahun, tahan cuaca ekstrem</div>
+                      <div className="text-sm font-semibold text-green-700">Tahan bertahun-tahun, kuat menghadapi cuaca ekstrem</div>
                     </td>
                     <td className="px-6 py-5 text-center">
                       <div className="text-sm text-gray-700">Tergantung produk</div>
@@ -388,7 +388,7 @@ export default function HomePage() {
                   <tr className="hover:bg-gray-50 transition-colors">
                     <td className="px-6 py-5 text-sm font-medium text-gray-900">Pemasangan</td>
                     <td className="px-6 py-5 text-center bg-green-50">
-                      <div className="text-sm font-semibold text-green-700">Mudah, sendiri</div>
+                      <div className="text-sm font-semibold text-green-700">Praktis, bisa dipasang sendiri</div>
                     </td>
                     <td className="px-6 py-5 text-center">
                       <div className="text-sm text-gray-700">Biasanya memerlukan jasa profesional</div>
@@ -440,7 +440,7 @@ export default function HomePage() {
                   </div>
                   <div className="grid grid-cols-2 divide-x-2 divide-gray-300">
                     <div className="p-4 bg-green-50">
-                      <div className="text-sm font-semibold text-green-700">PVC berkualitas tinggi</div>
+                      <div className="text-sm font-semibold text-green-700">Besi berkualitas tinggi, kuat & ringan</div>
                     </div>
                     <div className="p-4">
                       <div className="text-sm text-gray-700">Bahan premium tapi mahal</div>
@@ -455,7 +455,7 @@ export default function HomePage() {
                   </div>
                   <div className="grid grid-cols-2 divide-x-2 divide-gray-300">
                     <div className="p-4 bg-green-50">
-                      <div className="text-sm font-semibold text-green-700">Bertahan-tahun, tahan cuaca ekstrem</div>
+                      <div className="text-sm font-semibold text-green-700">Tahan bertahun-tahun, kuat menghadapi cuaca ekstrem</div>
                     </div>
                     <div className="p-4">
                       <div className="text-sm text-gray-700">Tergantung produk</div>
@@ -470,7 +470,7 @@ export default function HomePage() {
                   </div>
                   <div className="grid grid-cols-2 divide-x-2 divide-gray-300">
                     <div className="p-4 bg-green-50">
-                      <div className="text-sm font-semibold text-green-700">Mudah, sendiri</div>
+                      <div className="text-sm font-semibold text-green-700">Praktis, bisa dipasang sendiri</div>
                     </div>
                     <div className="p-4">
                       <div className="text-sm text-gray-700">Biasanya memerlukan jasa profesional</div>

@@ -100,37 +100,10 @@ export async function PUT(request: NextRequest) {
          logoUrl, instagramUrl, tiktokUrl, facebookUrl, facebookPixel, googleAnalytics)
     }
 
-    // Also update landing page hero title and subtitle if they changed
-    if (siteName || siteDescription) {
-      try {
-        // Get current landing page data
-        const landingResult = await prisma.$queryRawUnsafe(`
-          SELECT * FROM landing_pages ORDER BY createdAt DESC LIMIT 1
-        `) as any[]
-
-        if (landingResult.length > 0) {
-          const landingPage = landingResult[0]
-          
-          // Update hero title and subtitle to match site settings
-          await prisma.$executeRawUnsafe(`
-            UPDATE landing_pages
-            SET heroTitle = ?, heroSubtitle = ?, updatedAt = NOW()
-            WHERE id = ?
-          `, siteName, siteDescription, landingPage.id)
-          
-          console.log('Landing page hero updated to match site settings')
-        }
-      } catch (landingUpdateError) {
-        console.error('Failed to update landing page:', landingUpdateError)
-        // Don't fail the entire operation if landing page update fails
-      }
-    }
-
-    return NextResponse.json({ 
-      success: true, 
+    return NextResponse.json({
+      success: true,
       message: 'System settings saved successfully',
-      data,
-      landingPageUpdated: !!(siteName || siteDescription)
+      data
     })
   } catch (error) {
     console.error('Error saving system settings:', error)
