@@ -526,22 +526,19 @@ export default function HomePage() {
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-12">
             <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-              Pilihan Model FloodBar
+              FloodBar - Sekat Pintu Anti Banjir Custom
             </h2>
             <p className="text-lg text-gray-600">
-              Dua model berbeda dengan spesifikasi dan bentuk yang disesuaikan kebutuhan Anda
+              Perlindungan maksimal untuk rumah Anda dengan desain custom sesuai ukuran pintu
             </p>
           </div>
-          
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-stretch">
-            {data.products.map((product, index) => {
-              // Determine fallback image based on product name
-              const fallbackImage = product.name.toLowerCase().includes('model a')
-                ? '/images/product-a.webp'
-                : '/images/product-b.webp'
+
+          <div className="max-w-4xl mx-auto">
+            {data.products.filter(product => product.name.toLowerCase().includes('model a')).map((product, index) => {
+              const fallbackImage = '/images/product-a.webp'
 
               return (
-              <div key={index} className="bg-gray-50 rounded-xl p-6 shadow-sm hover:shadow-lg transition-shadow flex flex-col">
+              <div key={index} className="bg-gray-50 rounded-xl p-8 shadow-sm hover:shadow-lg transition-shadow flex flex-col">
                 <div className="relative mb-6">
                   <img
                     src={`${product.image || fallbackImage}${product.image ? `?t=${Date.now()}` : ''}`}
@@ -555,7 +552,7 @@ export default function HomePage() {
                 </div>
                 
                 <div className="text-center mb-6">
-                  <h3 className="text-2xl font-bold text-gray-900 mb-3">{product.name}</h3>
+                  <h3 className="text-2xl font-bold text-gray-900 mb-3">FloodBar Premium</h3>
                   <p className="text-gray-600 mb-4">{product.description}</p>
                 </div>
                 
@@ -577,9 +574,9 @@ export default function HomePage() {
                 </div>
                 
                 <div className="mt-6 text-center">
-                  <Link href={`/order?model=${encodeURIComponent(product.name)}`}>
-                    <button className="bg-blue-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-blue-700 transition-colors w-full">
-                      Pesan {product.name}
+                  <Link href="/order">
+                    <button className="bg-blue-600 text-white px-8 py-4 rounded-lg font-bold text-lg hover:bg-blue-700 transition-colors w-full">
+                      🛡️ Pesan FloodBar Sekarang
                     </button>
                   </Link>
                 </div>
@@ -594,11 +591,11 @@ export default function HomePage() {
                 <div className="inline-flex items-center justify-center w-16 h-16 bg-blue-600 rounded-full mb-4">
                   <CheckCircle className="w-8 h-8 text-white" />
                 </div>
-                <h3 className="text-2xl font-bold text-gray-900 mb-2">Panduan Memilih Model</h3>
-                <p className="text-gray-600">Pilih model yang sesuai dengan kebutuhan spesifik Anda</p>
+                <h3 className="text-2xl font-bold text-gray-900 mb-2">Panduan Mengukur Pintu untuk FloodBar</h3>
+                <p className="text-gray-600">Pelajari cara mengukur pintu dengan tepat sebelum memesan FloodBar custom Anda</p>
               </div>
 
-              {/* Video Demo Section */}
+              {/* Video Tutorial Section */}
               <div className="mb-8">
                 <div className="max-w-md mx-auto bg-white rounded-xl shadow-lg overflow-hidden">
                   <div className="aspect-[9/16] relative">
@@ -618,50 +615,41 @@ export default function HomePage() {
                 </div>
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-                <div className="bg-white rounded-xl p-6 border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
-                  <div className="flex items-center mb-4">
-                    <div className="w-10 h-10 bg-green-600 rounded-full flex items-center justify-center mr-3">
-                      <span className="text-white font-bold text-sm">A</span>
+              <div className="bg-white rounded-xl p-8 border border-gray-200 shadow-sm">
+                <h4 className="text-xl font-bold text-gray-900 mb-6 text-center">Langkah-langkah Mengukur Pintu</h4>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                  <div className="text-center">
+                    <div className="w-16 h-16 bg-blue-600 rounded-full flex items-center justify-center mx-auto mb-4">
+                      <span className="text-white font-bold text-2xl">1</span>
                     </div>
-                    <h4 className="text-lg font-semibold text-gray-900">Model A - Perlindungan Maksimal</h4>
+                    <h5 className="font-semibold text-gray-900 mb-2">Ukur Lebar Pintu</h5>
+                    <p className="text-gray-600 text-sm">Ukur lebar dari ujung luar daun pintu kiri ke ujung daun pintu kanan, ukur di kedua sisi yaitu bagian atas dan bawah supaya lebih presisi</p>
                   </div>
-                  <p className="text-gray-700 leading-relaxed">
-                    Dirancang untuk perlindungan maksimal di luar pintu. Ideal untuk <span className="font-medium">garasi dan pintu depan rumah</span> yang membutuhkan ketahanan ekstra.
-                  </p>
-                  <div className="mt-4 flex items-center text-sm text-green-700">
-                    <CheckCircle className="w-4 h-4 mr-2" />
-                    <span>Cocok untuk area dengan risiko banjir tinggi</span>
+
+                  <div className="text-center">
+                    <div className="w-16 h-16 bg-green-600 rounded-full flex items-center justify-center mx-auto mb-4">
+                      <span className="text-white font-bold text-2xl">2</span>
+                    </div>
+                    <h5 className="font-semibold text-gray-900 mb-2">Ukur Tinggi</h5>
+                    <p className="text-gray-600 text-sm">Ukur tinggi yang dibutuhkan, minimal 50cm untuk perlindungan optimal</p>
+                  </div>
+
+                  <div className="text-center">
+                    <div className="w-16 h-16 bg-purple-600 rounded-full flex items-center justify-center mx-auto mb-4">
+                      <span className="text-white font-bold text-2xl">3</span>
+                    </div>
+                    <h5 className="font-semibold text-gray-900 mb-2">Catat Ukuran</h5>
+                    <p className="text-gray-600 text-sm">Catat ukuran dengan akurat dan masukkan saat pemesanan</p>
                   </div>
                 </div>
-                
-                <div className="bg-white rounded-xl p-6 border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
-                  <div className="flex items-center mb-4">
-                    <div className="w-10 h-10 bg-blue-600 rounded-full flex items-center justify-center mr-3">
-                      <span className="text-white font-bold text-sm">B</span>
-                    </div>
-                    <h4 className="text-lg font-semibold text-gray-900">Model B - Estetika & Fungsi</h4>
-                  </div>
-                  <p className="text-gray-700 leading-relaxed">
-                    Mengutamakan <span className="font-medium">kerapian dan estetika</span> tanpa mengorbankan keamanan. Tetap memberikan perlindungan optimal dari banjir.
-                  </p>
-                  <div className="mt-4 flex items-center text-sm text-blue-700">
-                    <CheckCircle className="w-4 h-4 mr-2" />
-                    <span>Desain minimalis yang elegan</span>
-                  </div>
+
+                <div className="mt-8 text-center">
+                  <Link href="/order">
+                    <button className="bg-gradient-to-r from-blue-600 to-blue-700 text-white px-10 py-4 rounded-xl font-semibold hover:from-blue-700 hover:to-blue-800 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5">
+                      🛡️ Pesan FloodBar Sekarang
+                    </button>
+                  </Link>
                 </div>
-              </div>
-              
-              <div className="text-center bg-white rounded-lg p-6 border border-gray-200">
-                <p className="text-gray-700 text-lg mb-4">
-                  <span className="font-semibold text-gray-900">Sudah menentukan pilihan?</span><br/>
-                  Klik tombol di bawah untuk memulai pemesanan sesuai kebutuhan Anda
-                </p>
-                <Link href="/order">
-                  <button className="bg-gradient-to-r from-blue-600 to-blue-700 text-white px-10 py-4 rounded-xl font-semibold hover:from-blue-700 hover:to-blue-800 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5">
-                    🛡️ Pesan FloodBar Sekarang
-                  </button>
-                </Link>
               </div>
             </div>
           </div>

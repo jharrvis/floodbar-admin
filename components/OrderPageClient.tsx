@@ -62,26 +62,17 @@ export default function OrderPageClient() {
 
   // Product configuration form
   const [productForm, setProductForm] = useState({
-    model: '',
     width: '',
     height: '',
     quantity: 1
   })
-  
-  // Check for model parameter from URL on component mount
-  useEffect(() => {
-    const model = searchParams.get('model')
-    if (model && (model === 'Model A' || model === 'Model B')) {
-      setProductForm(prev => ({ ...prev, model }))
-    }
-  }, [searchParams])
 
-  // Auto-calculate when model changes (since Model A and B have same base price)
+  // Auto-calculate when dimensions change
   useEffect(() => {
-    if (productForm.model && productForm.width && productForm.height && productForm.quantity) {
+    if (productForm.width && productForm.height && productForm.quantity) {
       calculateProductPrice()
     }
-  }, [productForm.model, productForm.width, productForm.height, productForm.quantity])
+  }, [productForm.width, productForm.height, productForm.quantity])
 
   // Fetch settings for logo
   useEffect(() => {
@@ -139,7 +130,7 @@ export default function OrderPageClient() {
         
         const newItem: OrderItem = {
           id: '1',
-          name: `FloodBar ${productForm.model} ${productForm.width}cm x ${productForm.height}cm`,
+          name: `FloodBar Premium ${productForm.width}cm x ${productForm.height}cm`,
           width: parseFloat(productForm.width),
           height: parseFloat(productForm.height),
           quantity: productForm.quantity,
@@ -260,7 +251,7 @@ export default function OrderPageClient() {
       const firstItem = orderItems[0] // Assuming single product for now
       const orderData = {
         productConfig: {
-          model: productForm.model,
+          model: 'FloodBar Premium',
           width: firstItem?.width || 0,
           height: firstItem?.height || 0,
           thickness: 5,
@@ -385,15 +376,28 @@ export default function OrderPageClient() {
         <div className="max-w-7xl mx-auto flex items-center justify-between">
           <a href="https://floodbar.id" className="flex items-center space-x-2 hover:opacity-80 transition-opacity">
             {settings?.logoUrl ? (
-              <img 
-                src={settings.logoUrl} 
-                alt={settings?.siteName || 'FloodBar.id'} 
+              <img
+                src={settings.logoUrl}
+                alt={settings?.siteName || 'FloodBar.id'}
                 className="w-8 h-8 object-contain rounded"
+                onError={(e) => {
+                  (e.target as HTMLImageElement).src = '/images/logo-floodbar.webp'
+                }}
               />
             ) : (
-              <div className="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center">
-                <Shield className="w-5 h-5" />
-              </div>
+              <img
+                src="/images/logo-floodbar.webp"
+                alt={settings?.siteName || 'FloodBar.id'}
+                className="w-8 h-8 object-contain rounded"
+                onError={(e) => {
+                  const target = e.target as HTMLImageElement
+                  target.style.display = 'none'
+                  const parent = target.parentElement
+                  if (parent) {
+                    parent.innerHTML = '<div class="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center"><svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path></svg></div>'
+                  }
+                }}
+              />
             )}
             <span className="font-bold text-xl">{settings?.siteName || 'FloodBar.id'}</span>
           </a>
@@ -454,33 +458,6 @@ export default function OrderPageClient() {
                   Konfigurasi Produk
                 </h2>
                 
-                {/* Model Selection */}
-                <div className="mb-6">
-                  <label className="block text-sm font-medium text-gray-700 mb-3">
-                    Pilih Model FloodBar *
-                  </label>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    {['Model A', 'Model B'].map((model) => (
-                      <label key={model} className="flex items-center space-x-3 cursor-pointer p-4 border rounded-lg hover:bg-gray-50 transition-colors">
-                        <input
-                          type="radio"
-                          name="model"
-                          value={model}
-                          checked={productForm.model === model}
-                          onChange={(e) => setProductForm({ ...productForm, model: e.target.value })}
-                          className="w-4 h-4 text-blue-600"
-                        />
-                        <div className="flex-1">
-                          <div className="font-medium text-lg">{model}</div>
-                          <div className="text-sm text-gray-600">
-                            {model === 'Model A' ? 'Rel bracket dipasang di depan kusen pintu' : 'Rel bracket dipasang di antara kusen pintu (bagian dalam)'}
-                          </div>
-                        </div>
-                      </label>
-                    ))}
-                  </div>
-                </div>
-                
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -522,7 +499,7 @@ export default function OrderPageClient() {
                 <div className="flex gap-4">
                   <button
                     onClick={calculateProductPrice}
-                    disabled={calculating || !productForm.model || !productForm.width || !productForm.height}
+                    disabled={calculating || !productForm.width || !productForm.height}
                     className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md flex items-center gap-2 disabled:opacity-50"
                   >
                     <Calculator size={16} />
@@ -537,12 +514,6 @@ export default function OrderPageClient() {
                     </button>
                   )}
                 </div>
-                
-                {!productForm.model && (
-                  <div className="mt-2 text-sm text-red-600">
-                    Silakan pilih model terlebih dahulu
-                  </div>
-                )}
               </div>
             )}
 
