@@ -208,15 +208,28 @@ export default function HomePage() {
         <div className="max-w-7xl mx-auto flex items-center justify-between">
           <div className="flex items-center space-x-2">
             {settings?.logoUrl ? (
-              <img 
-                src={settings.logoUrl} 
-                alt={settings?.siteName || 'FloodBar.id'} 
+              <img
+                src={settings.logoUrl}
+                alt={settings?.siteName || 'FloodBar.id'}
                 className="w-8 h-8 object-contain rounded"
+                onError={(e) => {
+                  (e.target as HTMLImageElement).src = '/images/logo-floodbar.webp'
+                }}
               />
             ) : (
-              <div className="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center">
-                <Shield className="w-5 h-5" />
-              </div>
+              <img
+                src="/images/logo-floodbar.webp"
+                alt={settings?.siteName || 'FloodBar.id'}
+                className="w-8 h-8 object-contain rounded"
+                onError={(e) => {
+                  const target = e.target as HTMLImageElement
+                  target.style.display = 'none'
+                  const parent = target.parentElement
+                  if (parent) {
+                    parent.innerHTML = '<div class="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center"><svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path></svg></div>'
+                  }
+                }}
+              />
             )}
             <span className="font-bold text-xl">{settings?.siteName || 'FloodBar.id'}</span>
           </div>
@@ -264,11 +277,14 @@ export default function HomePage() {
           
           <div className="relative">
             <div className="bg-white p-6 rounded-lg shadow-2xl">
-              <img 
-                src={`${data.hero.heroImage || "https://cdn.pixabay.com/photo/2017/10/20/10/58/elephant-2870777_1280.jpg"}${data.hero.heroImage ? `?t=${Date.now()}` : ''}`}
-                alt="FloodBar Sekat Pintu Anti Banjir" 
+              <img
+                src={`${data.hero.heroImage || "/images/hero-section.webp"}${data.hero.heroImage ? `?t=${Date.now()}` : ''}`}
+                alt="FloodBar Sekat Pintu Anti Banjir"
                 className="w-full h-80 md:h-96 object-cover rounded-lg"
                 key={data.hero.heroImage}
+                onError={(e) => {
+                  (e.target as HTMLImageElement).src = '/images/hero-section.webp'
+                }}
               />
             </div>
           </div>
@@ -296,11 +312,14 @@ export default function HomePage() {
           </div>
           
           <div className="relative">
-            <img 
-              src={`${data.service?.image || "https://cdn.pixabay.com/photo/2020/04/18/08/33/house-5058226_1280.jpg"}${data.service?.image ? `?t=${Date.now()}` : ''}`}
-              alt="FloodBar Installation" 
+            <img
+              src={`${data.service?.image || "/images/product-about.webp"}${data.service?.image ? `?t=${Date.now()}` : ''}`}
+              alt="FloodBar Installation"
               className="w-full h-96 object-cover rounded-lg shadow-lg"
               key={data.service?.image}
+              onError={(e) => {
+                (e.target as HTMLImageElement).src = '/images/product-about.webp'
+              }}
             />
           </div>
         </div>
@@ -515,14 +534,23 @@ export default function HomePage() {
           </div>
           
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-stretch">
-            {data.products.map((product, index) => (
+            {data.products.map((product, index) => {
+              // Determine fallback image based on product name
+              const fallbackImage = product.name.toLowerCase().includes('model a')
+                ? '/images/product-a.webp'
+                : '/images/product-b.webp'
+
+              return (
               <div key={index} className="bg-gray-50 rounded-xl p-6 shadow-sm hover:shadow-lg transition-shadow flex flex-col">
                 <div className="relative mb-6">
-                  <img 
-                    src={`${product.image}${product.image ? `?t=${Date.now()}` : ''}`}
+                  <img
+                    src={`${product.image || fallbackImage}${product.image ? `?t=${Date.now()}` : ''}`}
                     alt={product.name}
                     className="w-full h-80 md:h-96 object-contain rounded-lg bg-white"
                     key={product.image}
+                    onError={(e) => {
+                      (e.target as HTMLImageElement).src = fallbackImage
+                    }}
                   />
                 </div>
                 
@@ -532,13 +560,20 @@ export default function HomePage() {
                 </div>
                 
                 <div className="space-y-3 flex-grow">
-                  <h4 className="text-lg font-semibold text-gray-900 mb-3">Spesifikasi:</h4>
+                  <h4 className="text-lg font-semibold text-gray-900 mb-3">✨ Keunggulan:</h4>
                   {product.features.map((feature, featureIndex) => (
                     <div key={featureIndex} className="flex items-start space-x-3">
                       <CheckCircle className="w-5 h-5 text-green-600 mt-0.5 flex-shrink-0" />
                       <span className="text-gray-700">{feature}</span>
                     </div>
                   ))}
+
+                  <div className="mt-6 pt-6 border-t border-gray-200">
+                    <h4 className="text-lg font-semibold text-gray-900 mb-3">💰 Contoh Harga:</h4>
+                    <div className="bg-blue-50 rounded-lg p-4 border border-blue-200">
+                      <p className="text-gray-800 font-medium">Ukuran 60 × 40 = <span className="text-blue-700 font-bold">Rp 448.000</span></p>
+                    </div>
+                  </div>
                 </div>
                 
                 <div className="mt-6 text-center">
@@ -549,7 +584,8 @@ export default function HomePage() {
                   </Link>
                 </div>
               </div>
-            ))}
+              )
+            })}
           </div>
           
           <div className="mt-16">
@@ -561,7 +597,27 @@ export default function HomePage() {
                 <h3 className="text-2xl font-bold text-gray-900 mb-2">Panduan Memilih Model</h3>
                 <p className="text-gray-600">Pilih model yang sesuai dengan kebutuhan spesifik Anda</p>
               </div>
-              
+
+              {/* Video Demo Section */}
+              <div className="mb-8">
+                <div className="max-w-md mx-auto bg-white rounded-xl shadow-lg overflow-hidden">
+                  <div className="aspect-[9/16] relative">
+                    <iframe
+                      src="https://www.youtube.com/embed/wOHYxURCmrw"
+                      className="w-full h-full"
+                      frameBorder="0"
+                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                      allowFullScreen
+                      title="Tutorial Cara Mengukur Pintu untuk FloodBar"
+                    />
+                  </div>
+                  <div className="p-4 text-center bg-gradient-to-r from-blue-600 to-blue-700">
+                    <h4 className="font-semibold text-white">Tutorial Cara Mengukur Pintu untuk FloodBar</h4>
+                    <p className="text-sm text-blue-100 mt-1">Pelajari cara mengukur pintu dengan tepat sebelum memesan</p>
+                  </div>
+                </div>
+              </div>
+
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
                 <div className="bg-white rounded-xl p-6 border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
                   <div className="flex items-center mb-4">
@@ -932,15 +988,28 @@ export default function HomePage() {
           <div className="text-center">
             <div className="flex items-center justify-center space-x-2 mb-4">
               {settings?.logoUrl ? (
-                <img 
-                  src={settings.logoUrl} 
-                  alt={settings?.siteName || 'FloodBar.id'} 
+                <img
+                  src={settings.logoUrl}
+                  alt={settings?.siteName || 'FloodBar.id'}
                   className="w-8 h-8 object-contain rounded"
+                  onError={(e) => {
+                    (e.target as HTMLImageElement).src = '/images/logo-floodbar.webp'
+                  }}
                 />
               ) : (
-                <div className="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center">
-                  <Shield className="w-5 h-5" />
-                </div>
+                <img
+                  src="/images/logo-floodbar.webp"
+                  alt={settings?.siteName || 'FloodBar.id'}
+                  className="w-8 h-8 object-contain rounded"
+                  onError={(e) => {
+                    const target = e.target as HTMLImageElement
+                    target.style.display = 'none'
+                    const parent = target.parentElement
+                    if (parent) {
+                      parent.innerHTML = '<div class="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center"><svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path></svg></div>'
+                    }
+                  }}
+                />
               )}
               <span className="font-bold text-xl">{settings?.siteName || 'FloodBar.id'}</span>
             </div>

@@ -1,0 +1,3 @@
+# This file ensures the images directory is tracked by git
+# Place your image files (JPG, PNG, GIF, WebP, etc.) here
+# Images will be publicly accessible at /images/filename.jpg
