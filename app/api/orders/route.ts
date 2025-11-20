@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { PrismaClient } from '@prisma/client'
+import { sendOrderCreatedToCustomer, sendOrderCreatedToAdmin } from '@/lib/fonnte'
 
 export const runtime = 'nodejs'
 export const dynamic = 'force-dynamic'
@@ -215,7 +216,7 @@ export async function POST(request: NextRequest) {
         console.error('Admin email notification failed:', adminEmailError)
       }
 
-      // Send WhatsApp notification  
+      // Send WhatsApp notification
       try {
         await fetch(`${process.env.NEXTAUTH_URL || 'https://floodbar.id'}/api/notifications/whatsapp`, {
           method: 'POST',
@@ -229,11 +230,19 @@ export async function POST(request: NextRequest) {
       } catch (whatsappError) {
         console.error('WhatsApp notification failed:', whatsappError)
       }
-    } else {
-      console.log('Development mode: Email and WhatsApp notifications skipped')
-      console.log(`Customer email would be sent to: ${orderData.customer.email}`)
-      console.log(`Admin email would be sent to admin`)
-      console.log(`WhatsApp would be sent to: ${orderData.customer.phone}`)
+    }
+
+    // Send WhatsApp notifications via Fonnte (works in both dev and production)
+    try {
+      // Send to customer
+      const customerResult = await sendOrderCreatedToCustomer(orderId, orderData)
+      console.log('Fonnte customer notification:', customerResult.status ? 'sent' : 'failed')
+
+      // Send to admin
+      await sendOrderCreatedToAdmin(orderId, orderData)
+      console.log('Fonnte admin notifications sent')
+    } catch (fonnteError) {
+      console.error('Fonnte WhatsApp notification failed:', fonnteError)
     }
 
     return NextResponse.json({

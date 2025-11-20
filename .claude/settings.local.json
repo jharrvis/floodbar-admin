@@ -70,7 +70,9 @@
       "Bash(tree:*)",
       "Bash(git fetch:*)",
       "WebFetch(domain:floodbar-ih5z0rsyo-jharrvis-projects.vercel.app)",
-      "Bash(git log:*)"
+      "Bash(git log:*)",
+      "WebFetch(domain:docs.fonnte.com)",
+      "Bash(timeout:*)"
     ],
     "deny": [],
     "ask": []

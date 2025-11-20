@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { PrismaClient } from '@prisma/client'
 import crypto from 'crypto'
+import { sendPaymentSuccessToCustomer, sendPaymentSuccessToAdmin } from '@/lib/fonnte'
 
 export const runtime = 'nodejs'
 export const dynamic = 'force-dynamic'
@@ -170,10 +171,55 @@ export async function POST(request: NextRequest) {
               })
             })
           }
-          
+
           console.log('📧 Payment confirmation email triggered for:', order.customerEmail)
         } catch (emailError) {
           console.error('❌ Failed to send payment confirmation email:', emailError)
+        }
+
+        // Send WhatsApp notification via Fonnte
+        try {
+          // Construct orderData from order record
+          const orderData = {
+            productConfig: {
+              model: order.productModel,
+              width: order.productWidth,
+              height: order.productHeight,
+              thickness: order.productThickness,
+              quantity: order.productQuantity,
+              finish: order.productFinish
+            },
+            shipping: {
+              origin: order.shippingOrigin,
+              destination: order.shippingDestination,
+              weight: order.shippingWeight,
+              service: order.shippingService,
+              cost: order.shippingCost
+            },
+            customer: {
+              name: order.customerName,
+              email: order.customerEmail,
+              phone: order.customerPhone,
+              address: order.customerAddress,
+              city: order.customerCity,
+              postalCode: order.customerPostalCode
+            },
+            orderSummary: {
+              subtotal: order.subtotal,
+              shippingCost: order.shippingCost,
+              grandTotal: order.grandTotal
+            }
+          }
+
+          // Send to customer
+          const customerResult = await sendPaymentSuccessToCustomer(orderId, orderData)
+          console.log('📱 Fonnte payment notification to customer:', customerResult.status ? 'sent' : 'failed')
+
+          // Send to admin
+          await sendPaymentSuccessToAdmin(orderId, orderData)
+          console.log('📱 Fonnte payment notification to admin: sent')
+        } catch (fonnteError) {
+          console.error('❌ Failed to send Fonnte WhatsApp notification:', fonnteError)
         }
       }
     } else {
