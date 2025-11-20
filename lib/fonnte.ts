@@ -43,6 +43,14 @@ interface OrderData {
 // Admin phone numbers for notifications
 const ADMIN_PHONES = ['089504656116', '085326483431']
 
+// Delay between messages to avoid spam detection (in milliseconds)
+const MESSAGE_DELAY_MS = 5000 // 5 seconds between each message
+
+// Helper function to delay execution
+function delay(ms: number): Promise<void> {
+  return new Promise(resolve => setTimeout(resolve, ms))
+}
+
 // Send WhatsApp message via Fonnte API
 export async function sendWhatsAppMessage(target: string, message: string): Promise<FonnteResponse> {
   const token = process.env.FONNTE_TOKEN
@@ -84,7 +92,13 @@ function formatCurrency(amount: number): string {
 }
 
 // Send notification to customer when order is created
+// TEMPORARILY DISABLED - Only admin notifications active
 export async function sendOrderCreatedToCustomer(orderId: string, orderData: OrderData): Promise<FonnteResponse> {
+  // Temporarily disabled - only sending to admin
+  console.log(`Customer notification disabled for order ${orderId}`)
+  return { status: true, detail: 'Customer notification disabled' }
+
+  /* Original code - uncomment to enable customer notifications
   const message = `*FloodBar - Pesanan Baru*
 
 Halo ${orderData.customer.name},
@@ -116,6 +130,7 @@ Terima kasih!
 FloodBar.id`
 
   return sendWhatsAppMessage(orderData.customer.phone, message)
+  */
 }
 
 // Send notification to admin when new order is created
@@ -126,8 +141,6 @@ No. Order: ${orderId}
 
 *Data Pelanggan:*
 Nama: ${orderData.customer.name}
-HP: ${orderData.customer.phone}
-Email: ${orderData.customer.email}
 Alamat: ${orderData.customer.address}
 Kota: ${orderData.customer.city} ${orderData.customer.postalCode}
 
@@ -151,9 +164,16 @@ Ongkir: ${formatCurrency(orderData.orderSummary.shippingCost)}
 
 Status: Menunggu Pembayaran`
 
-  // Send to all admin phones
-  for (const phone of ADMIN_PHONES) {
+  // Send to all admin phones with delay between each
+  for (let i = 0; i < ADMIN_PHONES.length; i++) {
+    const phone = ADMIN_PHONES[i]
     try {
+      // Add delay before sending (except for the first message)
+      if (i > 0) {
+        console.log(`Waiting ${MESSAGE_DELAY_MS/1000}s before sending to next admin...`)
+        await delay(MESSAGE_DELAY_MS)
+      }
+
       await sendWhatsAppMessage(phone, message)
       console.log(`Admin notification sent to ${phone}`)
     } catch (error) {
@@ -163,7 +183,13 @@ Status: Menunggu Pembayaran`
 }
 
 // Send notification when payment is successful
+// TEMPORARILY DISABLED - Only admin notifications active
 export async function sendPaymentSuccessToCustomer(orderId: string, orderData: OrderData): Promise<FonnteResponse> {
+  // Temporarily disabled - only sending to admin
+  console.log(`Customer payment notification disabled for order ${orderId}`)
+  return { status: true, detail: 'Customer notification disabled' }
+
+  /* Original code - uncomment to enable customer notifications
   const message = `*FloodBar - Pembayaran Berhasil*
 
 Halo ${orderData.customer.name},
@@ -189,6 +215,7 @@ Cek status: https://floodbar.id/order-status?orderId=${orderId}
 Terima kasih telah berbelanja di FloodBar.id!`
 
   return sendWhatsAppMessage(orderData.customer.phone, message)
+  */
 }
 
 // Send notification to admin when payment is successful
@@ -197,7 +224,6 @@ export async function sendPaymentSuccessToAdmin(orderId: string, orderData: Orde
 
 No. Order: ${orderId}
 Pelanggan: ${orderData.customer.name}
-HP: ${orderData.customer.phone}
 
 *Produk:*
 FloodBar ${orderData.productConfig.model || 'Custom'}
@@ -210,9 +236,16 @@ Status: LUNAS - Siap Produksi
 
 Segera proses pesanan ini!`
 
-  // Send to all admin phones
-  for (const phone of ADMIN_PHONES) {
+  // Send to all admin phones with delay between each
+  for (let i = 0; i < ADMIN_PHONES.length; i++) {
+    const phone = ADMIN_PHONES[i]
     try {
+      // Add delay before sending (except for the first message)
+      if (i > 0) {
+        console.log(`Waiting ${MESSAGE_DELAY_MS/1000}s before sending to next admin...`)
+        await delay(MESSAGE_DELAY_MS)
+      }
+
       await sendWhatsAppMessage(phone, message)
       console.log(`Payment success notification sent to admin ${phone}`)
     } catch (error) {
