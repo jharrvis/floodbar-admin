@@ -296,12 +296,12 @@ export default function HomePage() {
             <h2 className="text-3xl md:text-4xl font-bold text-center w-2/3 mx-auto text-gray-900 mb-6">
               {data.service?.title || "FloodBar - Sekat Pintu Anti Banjir Custom"}
             </h2>
-        <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-          <div>
-            <p className="text-lg text-gray-600 mb-8 leading-relaxed">
+        <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-12 items-stretch">
+          <div className="flex flex-col justify-center">
+            <p className="text-lg text-gray-600 mb-8 leading-relaxed whitespace-pre-line">
               {data.service?.description || "FloodBar adalah solusi sekat pintu anti banjir yang dibuat custom sesuai lebar pintu rumah Anda. Dengan sistem pre-order, setiap FloodBar diproduksi khusus untuk memastikan fit yang sempurna dan perlindungan maksimal saat banjir datang."}
             </p>
-            <p className="text-gray-600 mb-8">
+            <p className="text-gray-600 mb-8 whitespace-pre-line">
               {data.service?.process || "Cara Pesan: Ukur lebar pintu → Pre-order FloodBar → Proses produksi 5-7 hari → Terima FloodBar yang pas sempurna. Material aluminium premium dengan rubber seal memastikan tidak ada air yang bisa masuk melalui pintu Anda."}
             </p>
             <Link href="/order">
@@ -310,12 +310,12 @@ export default function HomePage() {
               </button>
             </Link>
           </div>
-          
-          <div className="relative">
+
+          <div className="relative min-h-[300px]">
             <img
               src={`${data.service?.image || "/images/product-about.webp"}${data.service?.image ? `?t=${Date.now()}` : ''}`}
               alt="FloodBar Installation"
-              className="w-full h-96 object-cover rounded-lg shadow-lg"
+              className="w-full h-full object-cover rounded-lg shadow-lg"
               key={data.service?.image}
               onError={(e) => {
                 (e.target as HTMLImageElement).src = '/images/product-about.webp'

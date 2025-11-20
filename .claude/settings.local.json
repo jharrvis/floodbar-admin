@@ -66,7 +66,11 @@
       "Bash(npx tsc:*)",
       "WebFetch(domain:floodbar-l4a3fbufc-jharrvis-projects.vercel.app)",
       "WebFetch(domain:floodbar-29ah0avf0-jharrvis-projects.vercel.app)",
-      "WebFetch(domain:floodbar-6bxrktrkh-jharrvis-projects.vercel.app)"
+      "WebFetch(domain:floodbar-6bxrktrkh-jharrvis-projects.vercel.app)",
+      "Bash(tree:*)",
+      "Bash(git fetch:*)",
+      "WebFetch(domain:floodbar-ih5z0rsyo-jharrvis-projects.vercel.app)",
+      "Bash(git log:*)"
     ],
     "deny": [],
     "ask": []
