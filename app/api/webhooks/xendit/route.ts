@@ -177,7 +177,9 @@ export async function POST(request: NextRequest) {
           console.error('❌ Failed to send payment confirmation email:', emailError)
         }
 
-        // Send WhatsApp notification via Fonnte
+        // Send WhatsApp notification via Fonnte - TEMPORARILY DISABLED
+        // Uncomment the code below to re-enable WhatsApp notifications
+        /*
         try {
           // Construct orderData from order record
           const orderData = {
@@ -221,6 +223,8 @@ export async function POST(request: NextRequest) {
         } catch (fonnteError) {
           console.error('❌ Failed to send Fonnte WhatsApp notification:', fonnteError)
         }
+        */
+        console.log('📱 WhatsApp notifications via Fonnte: DISABLED')
       }
     } else {
       console.log('ℹ️ No status update needed for order:', orderId, `(current: ${order.status}, webhook: ${webhookData.status})`)

@@ -232,7 +232,9 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    // Send WhatsApp notifications via Fonnte (works in both dev and production)
+    // Send WhatsApp notifications via Fonnte - TEMPORARILY DISABLED
+    // Uncomment the code below to re-enable WhatsApp notifications
+    /*
     try {
       // Send to customer
       const customerResult = await sendOrderCreatedToCustomer(orderId, orderData)
@@ -244,6 +246,8 @@ export async function POST(request: NextRequest) {
     } catch (fonnteError) {
       console.error('Fonnte WhatsApp notification failed:', fonnteError)
     }
+    */
+    console.log('WhatsApp notifications via Fonnte: DISABLED')
 
     return NextResponse.json({
       success: true,
