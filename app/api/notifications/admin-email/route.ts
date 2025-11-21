@@ -295,7 +295,7 @@ export async function POST(request: NextRequest) {
       if (settingsResult.length && settingsResult[0].isEmailEnabled) {
         emailSettings = {
           gmailUser: settingsResult[0].gmailUser,
-          gmailAppPassword: settingsResult[0].gmailAppPassword ? '***CONFIGURED***' : 'NOT SET',
+          gmailAppPassword: settingsResult[0].gmailAppPassword,
           emailFrom: settingsResult[0].emailFrom || 'FloodBar Admin',
           isEnabled: true
         }
