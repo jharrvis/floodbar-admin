@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { PrismaClient } from '@prisma/client'
 import { sendOrderCreatedToCustomer, sendOrderCreatedToAdmin } from '@/lib/fonnte'
+import { sendOrderEmailToCustomer, sendOrderEmailToAdmin } from '@/lib/email'
 
 export const runtime = 'nodejs'
 export const dynamic = 'force-dynamic'
@@ -185,51 +186,17 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    // Send email notification (skip for development to avoid ECONNREFUSED)
-    if (process.env.NODE_ENV === 'production') {
+    // Send email notifications directly (no HTTP fetch, more reliable)
+    try {
       // Send email to customer
-      try {
-        await fetch(`${process.env.NEXTAUTH_URL || 'https://floodbar.id'}/api/notifications/email`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            to: orderData.customer.email,
-            orderId,
-            orderData
-          })
-        })
-      } catch (emailError) {
-        console.error('Customer email notification failed:', emailError)
-      }
+      const customerEmailSent = await sendOrderEmailToCustomer(orderId, orderData)
+      console.log('Customer email:', customerEmailSent ? 'sent' : 'failed')
 
       // Send email to admin
-      try {
-        await fetch(`${process.env.NEXTAUTH_URL || 'https://floodbar.id'}/api/notifications/admin-email`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            orderId,
-            orderData
-          })
-        })
-      } catch (adminEmailError) {
-        console.error('Admin email notification failed:', adminEmailError)
-      }
-
-      // Send WhatsApp notification
-      try {
-        await fetch(`${process.env.NEXTAUTH_URL || 'https://floodbar.id'}/api/notifications/whatsapp`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            to: orderData.customer.phone,
-            orderId,
-            orderData
-          })
-        })
-      } catch (whatsappError) {
-        console.error('WhatsApp notification failed:', whatsappError)
-      }
+      const adminEmailSent = await sendOrderEmailToAdmin(orderId, orderData)
+      console.log('Admin email:', adminEmailSent ? 'sent' : 'failed')
+    } catch (emailError) {
+      console.error('Email notification failed:', emailError)
     }
 
     // Send WhatsApp notifications via Fonnte - TEMPORARILY DISABLED
