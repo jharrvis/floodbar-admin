@@ -4,11 +4,11 @@ import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { signOut } from 'next-auth/react'
 import { useState, useEffect } from 'react'
-import { 
-  Home, 
-  Settings, 
-  Users, 
-  FileText, 
+import {
+  Home,
+  Settings,
+  Users,
+  FileText,
   Package,
   Truck,
   CreditCard,
@@ -16,7 +16,8 @@ import {
   Image,
   Newspaper,
   BookOpen,
-  LogOut 
+  Video,
+  LogOut
 } from 'lucide-react'
 
 const menuItems = [
@@ -44,6 +45,11 @@ const menuItems = [
     label: 'Kelola Artikel',
     href: '/admin/articles',
     icon: BookOpen
+  },
+  {
+    label: 'Kelola Video',
+    href: '/admin/videos',
+    icon: Video
   },
   {
     label: 'Produk & Pengiriman',
