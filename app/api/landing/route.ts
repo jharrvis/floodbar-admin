@@ -100,7 +100,7 @@ export async function GET() {
           title: 'FloodBar - Sekat Pintu Anti Banjir Custom untuk Rumah Anda',
           subtitle: 'Lindungi rumah dari banjir dengan FloodBar yang dibuat custom sesuai lebar pintu Anda. Sistem pre-order memastikan ukuran yang pas dan perlindungan maksimal saat musim hujan tiba.',
           backgroundImage: '/hero-bg.jpg',
-          heroImage: 'https://cdn.pixabay.com/photo/2017/10/20/10/58/elephant-2870777_1280.jpg'
+          heroImage: '/images/hero-section.webp'
         },
         service: {
           title: 'FloodBar - Sekat Pintu Anti Banjir Custom',
@@ -181,7 +181,7 @@ export async function GET() {
             'https://cdn.pixabay.com/photo/2017/11/09/21/41/hurricane-2934719_1280.jpg',
             'https://cdn.pixabay.com/photo/2017/08/30/12/45/girl-2693617_1280.jpg',
             'https://cdn.pixabay.com/photo/2018/08/31/15/20/living-room-3645325_1280.jpg',
-            'https://cdn.pixabay.com/photo/2017/10/20/10/58/elephant-2870777_1280.jpg'
+            '/images/hero-section.webp'
           ],
           stats: [
             { value: 'Custom', label: 'Ukuran Presisi' },
@@ -194,35 +194,35 @@ export async function GET() {
             name: 'Pak Budi Santoso',
             location: 'Jakarta Barat',
             text: 'FloodBar custom fit sempurna di pintu rumah saya. Waktu banjir kemarin, air tidak masuk sama sekali. Pre-order worth it banget!',
-            image: 'https://cdn.pixabay.com/photo/2016/03/23/04/01/woman-1274056_1280.jpg',
+            image: '/images/testimoni/Pak Budi Santoso.webp',
             rating: 5
           },
           {
             name: 'Ibu Sari Dewi',
             location: 'Bekasi',
             text: 'Pesan FloodBar 2 bulan sebelum musim hujan. Pas hujan deras kemarin, rumah aman total. Investasi terbaik!',
-            image: 'https://cdn.pixabay.com/photo/2016/11/29/13/14/attractive-1869761_1280.jpg',
+            image: '/images/testimoni/Ibu Sari Dewi.webp',
             rating: 5
           },
           {
             name: 'Pak Ahmad Rizki',
             location: 'Tangerang',
             text: 'Custom ukuran 1.2 meter pas banget dengan lebar pintu. Material kuat dan instalasi mudah. Recommended!',
-            image: 'https://cdn.pixabay.com/photo/2017/08/30/12/45/girl-2693617_1280.jpg',
+            image: '/images/testimoni/Pak Ahmad Rizki.webp',
             rating: 5
           },
           {
             name: 'Ibu Linda Pratiwi',
             location: 'Depok',
             text: 'Sudah 2 tahun pakai FloodBar, masih bagus dan efektif. Pre-order memang butuh sabar tapi hasilnya memuaskan.',
-            image: 'https://cdn.pixabay.com/photo/2018/01/21/14/16/woman-3096664_1280.jpg',
+            image: '/images/testimoni/Ibu Linda Pratiwi.webp',
             rating: 5
           },
           {
             name: 'Pak Hendro Wijaya',
             location: 'Bogor',
             text: 'FloodBar Premium tinggi 80cm melindungi rumah dengan sempurna. Meski mahal tapi kualitasnya sepadan.',
-            image: 'https://cdn.pixabay.com/photo/2016/03/23/04/01/woman-1274056_1280.jpg',
+            image: '/images/testimoni/Pak Hendro Wijaya.webp',
             rating: 5
           }
         ],
@@ -241,7 +241,7 @@ export async function GET() {
         title: landingPage.heroTitle,
         subtitle: landingPage.heroSubtitle,
         backgroundImage: landingPage.heroBackgroundImage || '/hero-bg.jpg',
-        heroImage: landingPage.heroImage || 'https://cdn.pixabay.com/photo/2017/10/20/10/58/elephant-2870777_1280.jpg'
+        heroImage: landingPage.heroImage || '/images/hero-section.webp'
       },
       service: JSON.parse(landingPage.serviceJson || JSON.stringify({
         title: 'FloodBar - Sekat Pintu Anti Banjir Custom',
@@ -322,7 +322,7 @@ export async function GET() {
           'https://cdn.pixabay.com/photo/2017/11/09/21/41/hurricane-2934719_1280.jpg',
           'https://cdn.pixabay.com/photo/2017/08/30/12/45/girl-2693617_1280.jpg',
           'https://cdn.pixabay.com/photo/2018/08/31/15/20/living-room-3645325_1280.jpg',
-          'https://cdn.pixabay.com/photo/2017/10/20/10/58/elephant-2870777_1280.jpg'
+          '/images/hero-section.webp'
         ],
         stats: [
           { value: 'Custom', label: 'Ukuran Presisi' },
@@ -335,35 +335,35 @@ export async function GET() {
           name: 'Pak Budi Santoso',
           location: 'Jakarta Barat',
           text: 'FloodBar custom fit sempurna di pintu rumah saya. Waktu banjir kemarin, air tidak masuk sama sekali. Pre-order worth it banget!',
-          image: 'https://cdn.pixabay.com/photo/2016/03/23/04/01/woman-1274056_1280.jpg',
+          image: '/images/testimoni/Pak Budi Santoso.webp',
           rating: 5
         },
         {
           name: 'Ibu Sari Dewi',
           location: 'Bekasi',
           text: 'Pesan FloodBar 2 bulan sebelum musim hujan. Pas hujan deras kemarin, rumah aman total. Investasi terbaik!',
-          image: 'https://cdn.pixabay.com/photo/2016/11/29/13/14/attractive-1869761_1280.jpg',
+          image: '/images/testimoni/Ibu Sari Dewi.webp',
           rating: 5
         },
         {
           name: 'Pak Ahmad Rizki',
           location: 'Tangerang',
           text: 'Custom ukuran 1.2 meter pas banget dengan lebar pintu. Material kuat dan instalasi mudah. Recommended!',
-          image: 'https://cdn.pixabay.com/photo/2017/08/30/12/45/girl-2693617_1280.jpg',
+          image: '/images/testimoni/Pak Ahmad Rizki.webp',
           rating: 5
         },
         {
           name: 'Ibu Linda Pratiwi',
           location: 'Depok',
           text: 'Sudah 2 tahun pakai FloodBar, masih bagus dan efektif. Pre-order memang butuh sabar tapi hasilnya memuaskan.',
-          image: 'https://cdn.pixabay.com/photo/2018/01/21/14/16/woman-3096664_1280.jpg',
+          image: '/images/testimoni/Ibu Linda Pratiwi.webp',
           rating: 5
         },
         {
           name: 'Pak Hendro Wijaya',
           location: 'Bogor',
           text: 'FloodBar Premium tinggi 80cm melindungi rumah dengan sempurna. Meski mahal tapi kualitasnya sepadan.',
-          image: 'https://cdn.pixabay.com/photo/2016/03/23/04/01/woman-1274056_1280.jpg',
+          image: '/images/testimoni/Pak Hendro Wijaya.webp',
           rating: 5
         }
       ])),

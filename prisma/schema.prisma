@@ -25,17 +25,22 @@ model User {
 }
 
 model LandingPage {
-  id        String   @id @default(cuid())
-  heroTitle String   @db.Text
-  heroSubtitle String @db.Text
+  id                  String   @id @default(cuid())
+  heroTitle           String   @db.Text
+  heroSubtitle        String   @db.Text
   heroBackgroundImage String?
-  featuresJson String @db.Text // JSON string for features array
-  productsJson String @db.Text // JSON string for products array
-  contactPhone String
-  contactEmail String
-  contactAddress String @db.Text
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  heroImage           String?  @db.VarChar(500)
+  serviceJson         String   @default("{}") @db.Text
+  featuresJson        String   @db.Text // JSON string for features array
+  productsJson        String   @db.Text // JSON string for products array
+  faqJson             String   @default("{}") @db.Text
+  floodInfoJson       String   @default("{}") @db.Text
+  testimonialsJson    String   @default("[]") @db.Text
+  contactPhone        String
+  contactEmail        String
+  contactAddress      String   @db.Text
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
 
   @@map("landing_pages")
 }
@@ -226,4 +231,20 @@ model Video {
   updatedAt   DateTime @updatedAt
 
   @@map("videos")
+}
+
+model Article {
+  id          String   @id @default(cuid())
+  title       String   @db.VarChar(255)
+  slug        String   @unique @db.VarChar(255)
+  content     String   @db.Text
+  excerpt     String   @db.Text
+  imageUrl    String?  @db.VarChar(500)
+  author      String   @db.VarChar(100)
+  isPublished Boolean  @default(false)
+  publishedAt DateTime?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("articles")
 }

@@ -244,9 +244,9 @@ export default function HomePage() {
           
           <div className="relative">
             <div className="bg-white p-6 rounded-lg shadow-2xl">
-              <img 
-                src={`${data.hero.heroImage || "https://cdn.pixabay.com/photo/2017/10/20/10/58/elephant-2870777_1280.jpg"}${data.hero.heroImage ? `?t=${Date.now()}` : ''}`}
-                alt="FloodBar Sekat Pintu Anti Banjir" 
+              <img
+                src={`${data.hero.heroImage || "/images/hero-section.webp"}${data.hero.heroImage ? `?t=${Date.now()}` : ''}`}
+                alt="FloodBar Sekat Pintu Anti Banjir"
                 className="w-full h-64 object-cover rounded-lg mb-4"
                 key={data.hero.heroImage}
               />

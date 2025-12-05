@@ -114,9 +114,20 @@ export default function LandingPageEditor() {
     try {
       const response = await fetch('/api/landing')
       const result = await response.json()
+
+      // Validate API response structure
+      if (!response.ok || !result.hero) {
+        console.error('Invalid API response:', result)
+        alert('Gagal memuat data landing page: ' + (result.error || 'Unknown error'))
+        setData(null)
+        return
+      }
+
       setData(result)
     } catch (error) {
       console.error('Error fetching data:', error)
+      alert('Terjadi kesalahan saat memuat data')
+      setData(null)
     } finally {
       setLoading(false)
     }

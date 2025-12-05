@@ -15,6 +15,7 @@ import {
   ShoppingBag,
   Image,
   Newspaper,
+  BookOpen,
   LogOut 
 } from 'lucide-react'
 
@@ -38,6 +39,11 @@ const menuItems = [
     label: 'Kelola Berita',
     href: '/admin/news',
     icon: Newspaper
+  },
+  {
+    label: 'Kelola Artikel',
+    href: '/admin/articles',
+    icon: BookOpen
   },
   {
     label: 'Produk & Pengiriman',

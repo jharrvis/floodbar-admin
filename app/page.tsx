@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { Phone, Mail, MapPin, Star, Shield, Wrench, Droplets, CheckCircle, AlertTriangle, Home, ChevronLeft, ChevronRight, ArrowUp, Instagram, Facebook, Play, ChevronDown, MessageCircle } from 'lucide-react'
+import { Phone, Mail, MapPin, Star, Shield, Wrench, Droplets, CheckCircle, AlertTriangle, Home, ChevronLeft, ChevronRight, ArrowUp, Instagram, Facebook, Play, ChevronDown, MessageCircle, BookOpen, ArrowRight } from 'lucide-react'
 import Link from 'next/link'
 
 interface LandingPageData {
@@ -108,6 +108,7 @@ export default function HomePage() {
   const [data, setData] = useState<LandingPageData | null>(null)
   const [settings, setSettings] = useState<any>(null)
   const [news, setNews] = useState<any[]>([])
+  const [articles, setArticles] = useState<any[]>([])
   const [loading, setLoading] = useState(true)
   const [currentTestimonial, setCurrentTestimonial] = useState(0)
   const [showScrollTop, setShowScrollTop] = useState(false)
@@ -117,6 +118,7 @@ export default function HomePage() {
     fetchData()
     fetchSettings()
     fetchNews()
+    fetchArticles()
     
     // Scroll to top button visibility
     const handleScroll = () => {
@@ -189,6 +191,20 @@ export default function HomePage() {
     }
   }
 
+  const fetchArticles = async () => {
+    try {
+      const response = await fetch('/api/articles?published=true')
+      if (response.ok) {
+        const result = await response.json()
+        if (result.success) {
+          setArticles(result.data.slice(0, 3)) // Limit to 3 latest articles
+        }
+      }
+    } catch (error) {
+      console.error('Error fetching articles:', error)
+    }
+  }
+
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50">
@@ -197,7 +213,7 @@ export default function HomePage() {
     )
   }
 
-  if (!data) {
+  if (!data || !data.hero) {
     return <div className="min-h-screen flex items-center justify-center">Error loading page</div>
   }
 
@@ -673,10 +689,10 @@ export default function HomePage() {
               <div className="overflow-hidden rounded-2xl bg-gradient-to-br from-blue-50 to-blue-100 shadow-xl">
                 <div className="p-8 md:p-12">
                   <div className="text-center">
-                    <div 
+                    <div
                       className="w-24 h-24 bg-gray-300 rounded-full mx-auto mb-6 bg-cover bg-center shadow-lg"
                       style={{
-                        backgroundImage: `url('${data.testimonials[currentTestimonial]?.image || "https://cdn.pixabay.com/photo/2016/03/23/04/01/woman-1274056_1280.jpg"}')`
+                        backgroundImage: `url('${data.testimonials[currentTestimonial]?.image || "/images/testimoni/Pak Budi Santoso.webp"}')`
                       }}
                     ></div>
                     
@@ -930,6 +946,69 @@ export default function HomePage() {
                   </div>
                 </div>
               ))}
+            </div>
+          </div>
+        </section>
+      )}
+
+      {/* Articles Section */}
+      {articles.length > 0 && (
+        <section className="py-16 px-4 bg-white">
+          <div className="max-w-7xl mx-auto">
+            <div className="text-center mb-12">
+              <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+                Artikel & Tips
+              </h2>
+              <p className="text-lg text-gray-600 max-w-3xl mx-auto">
+                Baca artikel terbaru seputar tips perlindungan banjir dan informasi berguna lainnya
+              </p>
+            </div>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+              {articles.map((article) => (
+                <Link 
+                  key={article.id} 
+                  href={`/artikel/${article.slug}`}
+                  className="bg-gray-50 rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow group"
+                >
+                  {article.imageUrl ? (
+                    <div className="w-full h-48 overflow-hidden">
+                      <img
+                        src={article.imageUrl}
+                        alt={article.title}
+                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                      />
+                    </div>
+                  ) : (
+                    <div className="w-full h-48 bg-gradient-to-br from-blue-500 to-blue-700 flex items-center justify-center">
+                      <BookOpen className="w-16 h-16 text-white opacity-50" />
+                    </div>
+                  )}
+                  
+                  <div className="p-6">
+                    <h3 className="text-xl font-bold text-gray-900 mb-3 line-clamp-2 group-hover:text-blue-600 transition-colors">
+                      {article.title}
+                    </h3>
+                    
+                    <p className="text-gray-600 mb-4 line-clamp-3">
+                      {article.excerpt}
+                    </p>
+
+                    <div className="flex items-center text-blue-600 font-medium group-hover:text-blue-800">
+                      Baca Selengkapnya
+                      <ArrowRight size={16} className="ml-2 group-hover:translate-x-1 transition-transform" />
+                    </div>
+                  </div>
+                </Link>
+              ))}
+            </div>
+
+            <div className="text-center mt-10">
+              <Link href="/artikel">
+                <button className="border-2 border-blue-600 text-blue-600 px-8 py-3 rounded-lg font-semibold hover:bg-blue-600 hover:text-white transition-colors">
+                  Lihat Semua Artikel
+                </button>
+              </Link>
             </div>
           </div>
         </section>
