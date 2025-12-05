@@ -43,8 +43,10 @@ export default async function ArticlesPage() {
   const articles = await getArticles()
   const settings = await getSettings()
 
-  const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('id-ID', {
+  const formatDate = (date: string | Date | null) => {
+    if (!date) return '-'
+    const dateObj = typeof date === 'string' ? new Date(date) : date
+    return dateObj.toLocaleDateString('id-ID', {
       year: 'numeric',
       month: 'long',
       day: 'numeric'
