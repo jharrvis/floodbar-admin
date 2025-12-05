@@ -1,26 +1,34 @@
 import Link from 'next/link'
 import { Calendar, User, ArrowRight } from 'lucide-react'
+import { prisma } from '@/lib/prisma'
 
 async function getArticles() {
-  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'
-  const res = await fetch(`${baseUrl}/api/articles?published=true`, {
-    cache: 'no-store'
-  })
-  
-  if (!res.ok) {
+  try {
+    const articles = await prisma.article.findMany({
+      where: { isPublished: true },
+      orderBy: { publishedAt: 'desc' },
+      select: {
+        id: true,
+        title: true,
+        slug: true,
+        excerpt: true,
+        imageUrl: true,
+        author: true,
+        publishedAt: true,
+        createdAt: true
+      }
+    })
+    return articles
+  } catch (error) {
+    console.error('Error fetching articles:', error)
     return []
   }
-  
-  const data = await res.json()
-  return data.success ? data.data : []
 }
 
 async function getSettings() {
   try {
-    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'
-    const res = await fetch(`${baseUrl}/api/settings`, { cache: 'no-store' })
-    if (!res.ok) return null
-    return await res.json()
+    const settings = await prisma.settings.findFirst()
+    return settings
   } catch {
     return null
   }

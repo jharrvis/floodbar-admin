@@ -2,27 +2,24 @@ import { Metadata } from 'next'
 import Link from 'next/link'
 import { ArrowLeft, Calendar, User } from 'lucide-react'
 import { notFound } from 'next/navigation'
+import { prisma } from '@/lib/prisma'
 
 async function getArticle(slug: string) {
-  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'
-  const res = await fetch(`${baseUrl}/api/articles/${slug}`, {
-    cache: 'no-store'
-  })
-  
-  if (!res.ok) {
+  try {
+    const article = await prisma.article.findUnique({
+      where: { slug }
+    })
+    return article
+  } catch (error) {
+    console.error('Error fetching article:', error)
     return null
   }
-  
-  const data = await res.json()
-  return data.success ? data.data : null
 }
 
 async function getSettings() {
   try {
-    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'
-    const res = await fetch(`${baseUrl}/api/settings`, { cache: 'no-store' })
-    if (!res.ok) return null
-    return await res.json()
+    const settings = await prisma.settings.findFirst()
+    return settings
   } catch {
     return null
   }
