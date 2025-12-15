@@ -145,7 +145,7 @@ export default function LandingPageEditor() {
         },
         body: JSON.stringify(data),
       })
-      
+
       if (response.ok) {
         alert('Data berhasil disimpan!')
       }
@@ -336,7 +336,7 @@ export default function LandingPageEditor() {
 
   const handleNewsSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    
+
     try {
       const url = editingNews ? `/api/news/${editingNews.id}` : '/api/news'
       const method = editingNews ? 'PUT' : 'POST'
@@ -406,17 +406,17 @@ export default function LandingPageEditor() {
 
   const handleVideoSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    
+
     try {
       const url = editingVideo ? `/api/videos/${editingVideo.id}` : '/api/videos'
       const method = editingVideo ? 'PUT' : 'POST'
-      
+
       const response = await fetch(url, {
         method,
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(videoFormData)
       })
-      
+
       if (response.ok) {
         await fetchData()
         resetVideoForm()
@@ -442,7 +442,7 @@ export default function LandingPageEditor() {
 
   const handleDeleteVideo = async (id: string) => {
     if (!confirm('Yakin ingin menghapus video ini?')) return
-    
+
     try {
       const response = await fetch(`/api/videos/${id}`, { method: 'DELETE' })
       if (response.ok) {
@@ -516,11 +516,10 @@ export default function LandingPageEditor() {
               <button
                 key={section.id}
                 onClick={() => setActiveSection(section.id)}
-                className={`w-full text-left px-3 py-2 rounded-md transition-colors ${
-                  activeSection === section.id
-                    ? 'bg-blue-100 text-blue-700'
-                    : 'hover:bg-gray-100'
-                }`}
+                className={`w-full text-left px-3 py-2 rounded-md transition-colors ${activeSection === section.id
+                  ? 'bg-blue-100 text-blue-700'
+                  : 'hover:bg-gray-100'
+                  }`}
               >
                 {section.label}
               </button>
@@ -878,7 +877,7 @@ export default function LandingPageEditor() {
                   </label>
                   <input
                     type="text"
-                    value={data.faq.title}
+                    value={data.faq?.title || ''}
                     onChange={(e) =>
                       setData({
                         ...data,
@@ -893,7 +892,7 @@ export default function LandingPageEditor() {
                     FAQ Image
                   </label>
                   <ImageUpload
-                    value={data.faq.image}
+                    value={data.faq?.image || ''}
                     onChange={(value) =>
                       setData({
                         ...data,
@@ -914,7 +913,7 @@ export default function LandingPageEditor() {
                     </button>
                   </div>
                   <div className="space-y-4">
-                    {data.faq.questions.map((faq, index) => (
+                    {(data.faq?.questions || []).map((faq, index) => (
                       <div key={index} className="border p-4 rounded relative">
                         <button
                           onClick={() => removeFAQ(index)}
@@ -973,7 +972,7 @@ export default function LandingPageEditor() {
                   </label>
                   <input
                     type="text"
-                    value={data.floodInfo.title}
+                    value={data.floodInfo?.title || ''}
                     onChange={(e) =>
                       setData({
                         ...data,
@@ -988,7 +987,7 @@ export default function LandingPageEditor() {
                     Description 1
                   </label>
                   <textarea
-                    value={data.floodInfo.description}
+                    value={data.floodInfo?.description || ''}
                     onChange={(e) =>
                       setData({
                         ...data,
@@ -1004,7 +1003,7 @@ export default function LandingPageEditor() {
                     Description 2
                   </label>
                   <textarea
-                    value={data.floodInfo.description2}
+                    value={data.floodInfo?.description2 || ''}
                     onChange={(e) =>
                       setData({
                         ...data,
@@ -1029,7 +1028,7 @@ export default function LandingPageEditor() {
                     </button>
                   </div>
                   <div className="space-y-3">
-                    {data.floodInfo.images.map((image, index) => (
+                    {(data.floodInfo?.images || []).map((image, index) => (
                       <div key={index} className="flex gap-2 items-start">
                         <div className="flex-1">
                           <ImageUpload
@@ -1065,7 +1064,7 @@ export default function LandingPageEditor() {
                     </button>
                   </div>
                   <div className="space-y-3">
-                    {data.floodInfo.stats.map((stat, index) => (
+                    {(data.floodInfo?.stats || []).map((stat, index) => (
                       <div key={index} className="flex gap-2 items-center">
                         <input
                           type="text"
@@ -1099,7 +1098,7 @@ export default function LandingPageEditor() {
                     ))}
                   </div>
                 </div>
-                
+
                 {/* Video Management Section */}
                 <div>
                   <div className="flex justify-between items-center mb-2">
@@ -1115,7 +1114,7 @@ export default function LandingPageEditor() {
                       Tambah Video
                     </button>
                   </div>
-                  
+
                   <div className="bg-gray-50 p-4 rounded-lg">
                     {data.videos && data.videos.length > 0 ? (
                       <div className="space-y-3">
@@ -1133,11 +1132,10 @@ export default function LandingPageEditor() {
                                   {video.embedUrl}
                                 </p>
                                 <div className="flex items-center mt-2 space-x-2">
-                                  <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${
-                                    video.isActive 
-                                      ? 'bg-green-100 text-green-800' 
-                                      : 'bg-red-100 text-red-800'
-                                  }`}>
+                                  <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${video.isActive
+                                    ? 'bg-green-100 text-green-800'
+                                    : 'bg-red-100 text-red-800'
+                                    }`}>
                                     {video.isActive ? 'Aktif' : 'Nonaktif'}
                                   </span>
                                 </div>
@@ -1180,7 +1178,7 @@ export default function LandingPageEditor() {
                     )}
                   </div>
                 </div>
-                
+
                 {/* News Management Section */}
                 <div>
                   <div className="flex justify-between items-center mb-2">
@@ -1196,7 +1194,7 @@ export default function LandingPageEditor() {
                       Tambah Berita
                     </button>
                   </div>
-                  
+
                   <div className="bg-gray-50 p-4 rounded-lg">
                     {data.floodInfo.news && data.floodInfo.news.length > 0 ? (
                       <div className="space-y-3">
@@ -1204,8 +1202,8 @@ export default function LandingPageEditor() {
                           <div key={newsItem.id} className="bg-white p-3 rounded border">
                             <div className="flex items-start space-x-3">
                               {newsItem.imageUrl && (
-                                <img 
-                                  src={newsItem.imageUrl} 
+                                <img
+                                  src={newsItem.imageUrl}
                                   alt={newsItem.title}
                                   className="w-16 h-16 object-cover rounded flex-shrink-0"
                                 />
@@ -1221,11 +1219,10 @@ export default function LandingPageEditor() {
                                   <span className="text-xs text-gray-500">
                                     {newsItem.sourceName} • {new Date(newsItem.publishedAt).toLocaleDateString('id-ID')}
                                   </span>
-                                  <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${
-                                    newsItem.isActive 
-                                      ? 'bg-green-100 text-green-800' 
-                                      : 'bg-red-100 text-red-800'
-                                  }`}>
+                                  <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${newsItem.isActive
+                                    ? 'bg-green-100 text-green-800'
+                                    : 'bg-red-100 text-red-800'
+                                    }`}>
                                     {newsItem.isActive ? 'Aktif' : 'Nonaktif'}
                                   </span>
                                 </div>
@@ -1440,7 +1437,7 @@ export default function LandingPageEditor() {
           )}
         </div>
       </div>
-      
+
       {/* News Form Modal */}
       {showNewsForm && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
@@ -1448,7 +1445,7 @@ export default function LandingPageEditor() {
             <h2 className="text-xl font-bold mb-4">
               {editingNews ? 'Edit Berita' : 'Tambah Berita Baru'}
             </h2>
-            
+
             <form onSubmit={handleNewsSubmit} className="space-y-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -1457,7 +1454,7 @@ export default function LandingPageEditor() {
                 <input
                   type="text"
                   value={newsFormData.title}
-                  onChange={(e) => setNewsFormData({...newsFormData, title: e.target.value})}
+                  onChange={(e) => setNewsFormData({ ...newsFormData, title: e.target.value })}
                   className="w-full p-3 border border-gray-300 rounded-lg"
                   required
                 />
@@ -1469,7 +1466,7 @@ export default function LandingPageEditor() {
                 </label>
                 <textarea
                   value={newsFormData.summary}
-                  onChange={(e) => setNewsFormData({...newsFormData, summary: e.target.value})}
+                  onChange={(e) => setNewsFormData({ ...newsFormData, summary: e.target.value })}
                   className="w-full p-3 border border-gray-300 rounded-lg h-24"
                   required
                 />
@@ -1482,7 +1479,7 @@ export default function LandingPageEditor() {
                 <input
                   type="url"
                   value={newsFormData.imageUrl}
-                  onChange={(e) => setNewsFormData({...newsFormData, imageUrl: e.target.value})}
+                  onChange={(e) => setNewsFormData({ ...newsFormData, imageUrl: e.target.value })}
                   className="w-full p-3 border border-gray-300 rounded-lg"
                   placeholder="https://example.com/image.jpg"
                 />
@@ -1495,7 +1492,7 @@ export default function LandingPageEditor() {
                 <input
                   type="url"
                   value={newsFormData.sourceUrl}
-                  onChange={(e) => setNewsFormData({...newsFormData, sourceUrl: e.target.value})}
+                  onChange={(e) => setNewsFormData({ ...newsFormData, sourceUrl: e.target.value })}
                   className="w-full p-3 border border-gray-300 rounded-lg"
                   required
                 />
@@ -1508,7 +1505,7 @@ export default function LandingPageEditor() {
                 <input
                   type="text"
                   value={newsFormData.sourceName}
-                  onChange={(e) => setNewsFormData({...newsFormData, sourceName: e.target.value})}
+                  onChange={(e) => setNewsFormData({ ...newsFormData, sourceName: e.target.value })}
                   className="w-full p-3 border border-gray-300 rounded-lg"
                   placeholder="Contoh: Kompas.com, Detik.com"
                   required
@@ -1522,7 +1519,7 @@ export default function LandingPageEditor() {
                 <input
                   type="date"
                   value={newsFormData.publishedAt}
-                  onChange={(e) => setNewsFormData({...newsFormData, publishedAt: e.target.value})}
+                  onChange={(e) => setNewsFormData({ ...newsFormData, publishedAt: e.target.value })}
                   className="w-full p-3 border border-gray-300 rounded-lg"
                   required
                 />
@@ -1533,7 +1530,7 @@ export default function LandingPageEditor() {
                   type="checkbox"
                   id="isActive"
                   checked={newsFormData.isActive}
-                  onChange={(e) => setNewsFormData({...newsFormData, isActive: e.target.checked})}
+                  onChange={(e) => setNewsFormData({ ...newsFormData, isActive: e.target.checked })}
                   className="mr-2"
                 />
                 <label htmlFor="isActive" className="text-sm font-medium text-gray-700">
@@ -1568,7 +1565,7 @@ export default function LandingPageEditor() {
             <h2 className="text-xl font-bold mb-4">
               {editingVideo ? 'Edit Video' : 'Tambah Video TikTok Baru'}
             </h2>
-            
+
             <form onSubmit={handleVideoSubmit} className="space-y-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -1577,7 +1574,7 @@ export default function LandingPageEditor() {
                 <input
                   type="text"
                   value={videoFormData.title}
-                  onChange={(e) => setVideoFormData({...videoFormData, title: e.target.value})}
+                  onChange={(e) => setVideoFormData({ ...videoFormData, title: e.target.value })}
                   className="w-full p-3 border border-gray-300 rounded-lg"
                   placeholder="Contoh: FloodBar Melindungi Rumah Dari Banjir"
                   required
@@ -1591,7 +1588,7 @@ export default function LandingPageEditor() {
                 <input
                   type="url"
                   value={videoFormData.embedUrl}
-                  onChange={(e) => setVideoFormData({...videoFormData, embedUrl: e.target.value})}
+                  onChange={(e) => setVideoFormData({ ...videoFormData, embedUrl: e.target.value })}
                   className="w-full p-3 border border-gray-300 rounded-lg"
                   placeholder="https://www.tiktok.com/embed/video_id"
                   required
@@ -1606,7 +1603,7 @@ export default function LandingPageEditor() {
                   type="checkbox"
                   id="videoIsActive"
                   checked={videoFormData.isActive}
-                  onChange={(e) => setVideoFormData({...videoFormData, isActive: e.target.checked})}
+                  onChange={(e) => setVideoFormData({ ...videoFormData, isActive: e.target.checked })}
                   className="mr-2"
                 />
                 <label htmlFor="videoIsActive" className="text-sm font-medium text-gray-700">

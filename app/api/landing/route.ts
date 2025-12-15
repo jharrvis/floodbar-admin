@@ -292,44 +292,61 @@ export async function GET() {
           ]
         }
       ])),
-      faq: JSON.parse(landingPage.faqJson || JSON.stringify({
-        title: 'FAQ FloodBar - Sekat Pintu Anti Banjir Custom',
-        questions: [
-          {
-            question: 'Berapa lama proses pre-order FloodBar custom?',
-            answer: 'FloodBar Standard: 5-7 hari kerja. FloodBar Premium: 7-10 hari kerja. Waktu produksi tergantung kompleksitas ukuran custom dan ketersediaan material.'
-          },
-          {
-            question: 'Bagaimana cara mengukur lebar pintu yang benar?',
-            answer: 'Ukur lebar dalam kusen pintu (dari dinding ke dinding). Tambahkan toleransi 2-3cm untuk pemasangan yang optimal. Tim kami akan membantu konfirmasi ukuran sebelum produksi.'
-          },
-          {
-            question: 'Berapa tinggi air yang bisa ditahan FloodBar?',
-            answer: 'FloodBar Standard (60cm): menahan air hinggi 50cm. FloodBar Premium (80cm): menahan air hingga 70cm. Efektivitas tergantung tekanan air dan kondisi pemasangan.'
-          },
-          {
-            question: 'Apakah bisa untuk pintu yang tidak standar?',
-            answer: 'Ya! FloodBar dibuat custom sesuai ukuran pintu Anda. Pintu lengkung, lebar, atau bentuk khusus lainnya bisa disesuaikan. Konsultasi gratis untuk desain custom.'
-          }
-        ],
-        image: 'https://cdn.pixabay.com/photo/2020/10/30/08/04/flood-5696948_1280.jpg'
-      })),
-      floodInfo: JSON.parse(landingPage.floodInfoJson || JSON.stringify({
-        title: 'Kenapa FloodBar.id Solusi Terbaik?',
-        description: 'Banjir di Indonesia semakin sering terjadi. Jakarta, Bekasi, Tangerang, Bogor, dan kota-kota lainnya rutin mengalami genangan setiap musim hujan. Kerugian mencapai jutaan rupiah karena kerusakan furniture, elektronik, dan renovasi rumah.',
-        description2: 'FloodBar.id hadir dengan solusi sekat pintu anti banjir yang dibuat custom untuk setiap rumah. Sistem pre-order memastikan FloodBar fit sempurna di pintu Anda. Investasi ratusan ribu untuk melindungi aset jutaan rupiah.',
-        images: [
-          'https://cdn.pixabay.com/photo/2017/11/09/21/41/hurricane-2934719_1280.jpg',
-          'https://cdn.pixabay.com/photo/2017/08/30/12/45/girl-2693617_1280.jpg',
-          'https://cdn.pixabay.com/photo/2018/08/31/15/20/living-room-3645325_1280.jpg',
-          '/images/hero-section.webp'
-        ],
-        stats: [
-          { value: 'Custom', label: 'Ukuran Presisi' },
-          { value: '500+', label: 'FloodBar Terpasang' },
-          { value: '5-10', label: 'Hari Pre-Order' }
-        ]
-      })),
+      faq: (() => {
+        const defaultFaq = {
+          title: 'FAQ FloodBar - Sekat Pintu Anti Banjir Custom',
+          questions: [
+            {
+              question: 'Berapa lama proses pre-order FloodBar custom?',
+              answer: 'FloodBar Standard: 5-7 hari kerja. FloodBar Premium: 7-10 hari kerja. Waktu produksi tergantung kompleksitas ukuran custom dan ketersediaan material.'
+            },
+            {
+              question: 'Bagaimana cara mengukur lebar pintu yang benar?',
+              answer: 'Ukur lebar dalam kusen pintu (dari dinding ke dinding). Tambahkan toleransi 2-3cm untuk pemasangan yang optimal. Tim kami akan membantu konfirmasi ukuran sebelum produksi.'
+            },
+            {
+              question: 'Berapa tinggi air yang bisa ditahan FloodBar?',
+              answer: 'FloodBar Standard (60cm): menahan air hinggi 50cm. FloodBar Premium (80cm): menahan air hingga 70cm. Efektivitas tergantung tekanan air dan kondisi pemasangan.'
+            },
+            {
+              question: 'Apakah bisa untuk pintu yang tidak standar?',
+              answer: 'Ya! FloodBar dibuat custom sesuai ukuran pintu Anda. Pintu lengkung, lebar, atau bentuk khusus lainnya bisa disesuaikan. Konsultasi gratis untuk desain custom.'
+            }
+          ],
+          image: 'https://cdn.pixabay.com/photo/2020/10/30/08/04/flood-5696948_1280.jpg'
+        };
+        const parsedFaq = landingPage.faqJson ? JSON.parse(landingPage.faqJson) : {};
+        return {
+          ...defaultFaq,
+          ...parsedFaq,
+          questions: parsedFaq.questions && parsedFaq.questions.length > 0 ? parsedFaq.questions : defaultFaq.questions
+        };
+      })(),
+      floodInfo: (() => {
+        const defaultFloodInfo = {
+          title: 'Kenapa FloodBar.id Solusi Terbaik?',
+          description: 'Banjir di Indonesia semakin sering terjadi. Jakarta, Bekasi, Tangerang, Bogor, dan kota-kota lainnya rutin mengalami genangan setiap musim hujan. Kerugian mencapai jutaan rupiah karena kerusakan furniture, elektronik, dan renovasi rumah.',
+          description2: 'FloodBar.id hadir dengan solusi sekat pintu anti banjir yang dibuat custom untuk setiap rumah. Sistem pre-order memastikan FloodBar fit sempurna di pintu Anda. Investasi ratusan ribu untuk melindungi aset jutaan rupiah.',
+          images: [
+            'https://cdn.pixabay.com/photo/2017/11/09/21/41/hurricane-2934719_1280.jpg',
+            'https://cdn.pixabay.com/photo/2017/08/30/12/45/girl-2693617_1280.jpg',
+            'https://cdn.pixabay.com/photo/2018/08/31/15/20/living-room-3645325_1280.jpg',
+            '/images/hero-section.webp'
+          ],
+          stats: [
+            { value: 'Custom', label: 'Ukuran Presisi' },
+            { value: '500+', label: 'FloodBar Terpasang' },
+            { value: '5-10', label: 'Hari Pre-Order' }
+          ]
+        };
+        const parsedFloodInfo = landingPage.floodInfoJson ? JSON.parse(landingPage.floodInfoJson) : {};
+        return {
+          ...defaultFloodInfo,
+          ...parsedFloodInfo,
+          images: parsedFloodInfo.images && parsedFloodInfo.images.length > 0 ? parsedFloodInfo.images : defaultFloodInfo.images,
+          stats: parsedFloodInfo.stats && parsedFloodInfo.stats.length > 0 ? parsedFloodInfo.stats : defaultFloodInfo.stats
+        };
+      })(),
       testimonials: JSON.parse(landingPage.testimonialsJson || JSON.stringify([
         {
           name: 'Pak Budi Santoso',
@@ -454,8 +471,8 @@ export async function PUT(request: NextRequest) {
       )
     }
 
-    return NextResponse.json({ 
-      success: true, 
+    return NextResponse.json({
+      success: true,
       data: {
         hero: {
           title: landingPageData.heroTitle,
