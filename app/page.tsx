@@ -278,7 +278,7 @@ export default function HomePage() {
             <div className="flex flex-col sm:flex-row gap-4">
               <Link href="/order">
                 <button className="bg-blue-600 text-white px-8 py-4 rounded-lg font-bold text-lg hover:bg-blue-700 transition-colors w-full sm:w-auto">
-                  Pesan Sekarang
+                  CEK HARGA
                 </button>
               </Link>
               <button
@@ -735,8 +735,8 @@ export default function HomePage() {
                     key={index}
                     onClick={() => setCurrentTestimonial(index)}
                     className={`w-3 h-3 rounded-full transition-all duration-200 ${index === currentTestimonial
-                        ? 'bg-blue-600 w-8'
-                        : 'bg-gray-300 hover:bg-gray-400'
+                      ? 'bg-blue-600 w-8'
+                      : 'bg-gray-300 hover:bg-gray-400'
                       }`}
                   />
                 ))}
