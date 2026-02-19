@@ -107,6 +107,23 @@ export default function OrderPageClient() {
 
   const [submitting, setSubmitting] = useState(false)
   const [settings, setSettings] = useState<any>(null)
+  const [emailError, setEmailError] = useState('')
+
+  // Validasi format email
+  const validateEmail = (email: string): boolean => {
+    if (!email) return false
+    const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/
+    return emailRegex.test(email.trim())
+  }
+
+  const handleEmailChange = (email: string) => {
+    setCustomerData({ ...customerData, email })
+    if (email && !validateEmail(email)) {
+      setEmailError('Format email tidak valid. Contoh: nama@gmail.com')
+    } else {
+      setEmailError('')
+    }
+  }
 
   // Calculate product price when form changes
   const calculateProductPrice = async () => {
@@ -627,10 +644,14 @@ export default function OrderPageClient() {
                       <input
                         type="email"
                         value={customerData.email}
-                        onChange={(e) => setCustomerData({ ...customerData, email: e.target.value })}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md"
+                        onChange={(e) => handleEmailChange(e.target.value)}
+                        className={`w-full px-3 py-2 border rounded-md ${emailError ? 'border-red-500 focus:ring-red-500' : 'border-gray-300'}`}
+                        placeholder="Contoh: nama@gmail.com"
                         required
                       />
+                      {emailError && (
+                        <p className="mt-1 text-sm text-red-600">{emailError}</p>
+                      )}
                     </div>
                   </div>
                   <div className="mb-4">
@@ -702,7 +723,7 @@ export default function OrderPageClient() {
                     </button>
                     <button
                       onClick={() => setStep(4)}
-                      disabled={!customerData.name || !customerData.email || !customerData.phone || !customerData.address}
+                      disabled={!customerData.name || !customerData.email || !validateEmail(customerData.email) || !customerData.phone || !customerData.address}
                       className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-md disabled:opacity-50"
                     >
                       Lanjut ke Pembayaran

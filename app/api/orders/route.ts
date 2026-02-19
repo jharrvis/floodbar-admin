@@ -55,6 +55,15 @@ export async function POST(request: NextRequest) {
       )
     }
 
+    // Validate email format (server-side defense against Xendit EMAIL_FORMAT_ERROR)
+    const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/
+    if (!emailRegex.test(orderData.customer.email.trim())) {
+      return NextResponse.json(
+        { success: false, error: 'Format email tidak valid. Silakan masukkan email yang benar, contoh: nama@gmail.com' },
+        { status: 400 }
+      )
+    }
+
     // Generate order ID
     const orderId = 'FLB-' + Date.now() + '-' + Math.random().toString(36).substr(2, 9).toUpperCase()
 
@@ -71,7 +80,7 @@ export async function POST(request: NextRequest) {
     `,
       orderId,
       orderData.customer.name,
-      orderData.customer.email, 
+      orderData.customer.email,
       orderData.customer.phone,
       orderData.customer.address,
       orderData.customer.city,
@@ -100,22 +109,22 @@ export async function POST(request: NextRequest) {
     console.log('Payment method:', orderData.payment.method)
     if (orderData.payment.method === 'xendit' || orderData.payment.method === 'online') {
       console.log('Creating Xendit invoice via API...')
-      
+
       // Call Xendit create-invoice API directly (no more mocking)
       try {
         // Import the create-invoice logic directly instead of HTTP call to avoid ECONNREFUSED
         const { PrismaClient } = require('@prisma/client')
         const prismaLocal = new PrismaClient()
-        
+
         // Get payment settings
         const settingsResult = await prismaLocal.$queryRawUnsafe(`
           SELECT * FROM payment_settings ORDER BY createdAt DESC LIMIT 1
         `) as any[]
-        
+
         if (settingsResult.length && settingsResult[0].isXenditEnabled && settingsResult[0].xenditApiKey) {
           const settings = settingsResult[0]
-          const xenditUrl = settings.environment === 'sandbox' 
-            ? 'https://api.xendit.co/v2/invoices' 
+          const xenditUrl = settings.environment === 'sandbox'
+            ? 'https://api.xendit.co/v2/invoices'
             : 'https://api.xendit.co/v2/invoices'
 
           // Prepare invoice data for Xendit
@@ -169,7 +178,7 @@ export async function POST(request: NextRequest) {
               status: xenditResponse.status,
               response: xenditResult
             })
-            
+
             // Check if it's an IP allowlist error
             if (xenditResult.error_code === 'UNAUTHORIZED_SENDER_IP') {
               console.error('🚨 IP ALLOWLIST ERROR: Server IP needs to be added to Xendit dashboard')
@@ -179,7 +188,7 @@ export async function POST(request: NextRequest) {
         } else {
           console.log('Xendit not enabled or API key not configured')
         }
-        
+
         await prismaLocal.$disconnect()
       } catch (invoiceError) {
         console.error('Error creating Xendit invoice:', invoiceError)
