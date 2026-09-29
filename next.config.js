@@ -57,6 +57,11 @@ const nextConfig = {
   generateEtags: false,
   // Force static paths to be included
   trailingSlash: false,
+  async rewrites() {
+    return [
+      { source: '/lp1', destination: '/lp1/index.html' },
+    ]
+  },
 }
 
 module.exports = nextConfig
