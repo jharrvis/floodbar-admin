@@ -57,13 +57,9 @@ const nextConfig = {
   generateEtags: false,
   // Force static paths to be included
   trailingSlash: false,
-  async redirects() {
-    return [
-      { source: '/lp1', destination: '/lp1/', permanent: false },
-    ]
-  },
   async rewrites() {
     return [
+      { source: '/lp1', destination: '/lp1/index.html' },
       { source: '/lp1/', destination: '/lp1/index.html' },
     ]
   },
