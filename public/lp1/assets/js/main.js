@@ -1,4 +1,30 @@
 (function () {
+  var trackingKeys = ["oppref", "utm_source", "utm_medium", "utm_campaign", "utm_term", "utm_content"];
+
+  function trackWhatsAppClick(link) {
+    var url = new URL(link.href, window.location.href);
+    var query = new URLSearchParams(window.location.search);
+    trackingKeys.forEach(function (key) {
+      var value = query.get(key);
+      if (value) url.searchParams.set(key, value);
+    });
+    link.href = url.toString();
+
+    var params = { link_url: link.href, page_location: window.location.href, page_title: document.title };
+    trackingKeys.forEach(function (key) {
+      var value = query.get(key);
+      if (value) params[key] = value;
+    });
+    window.dataLayer = window.dataLayer || [];
+    window.dataLayer.push({ event: "whatsapp_click", ...params });
+    if (typeof window.gtag === "function") window.gtag("event", "whatsapp_click", params);
+    if (typeof window.oaiq === "function") window.oaiq("track", "lead_created", params);
+  }
+
+  document.querySelectorAll('a[href*="wa.me"]').forEach(function (link) {
+    link.addEventListener("click", function () { trackWhatsAppClick(link); });
+  });
+
   var menu = document.querySelector(".menu");
   var mobile = document.querySelector(".mobile-menu");
 
