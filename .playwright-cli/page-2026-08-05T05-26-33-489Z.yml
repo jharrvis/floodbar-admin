@@ -1,0 +1,585 @@
+- generic [active] [ref=e1]:
+  - generic [ref=e2]:
+    - navigation [ref=e3]:
+      - generic [ref=e4]:
+        - generic [ref=e5]:
+          - img "FloodBar - Solusi Cerdas Hadapi Banjir - Paling Murah dan Berkualitas" [ref=e6]
+          - generic [ref=e7]: FloodBar - Solusi Cerdas Hadapi Banjir - Paling Murah dan Berkualitas
+        - generic [ref=e8]:
+          - generic [ref=e9]: "Layanan: ★★★★★"
+          - generic [ref=e10]: "Kualitas: ★★★★★"
+          - link [ref=e11] [cursor=pointer]:
+            - /url: /order-status
+            - button "Cek Status Pesanan" [ref=e12]
+    - generic [ref=e15]:
+      - generic [ref=e16]:
+        - heading "FloodBar - Solusi Cerdas Hadapi Banjir - Paling Murah dan Berkualitas" [level=1] [ref=e17]
+        - paragraph [ref=e18]: Solusi Cerdas Hadapi Banjir – Floodbar, Sekat Banjir Praktis & Tahan Lama Paling Murah dan Berkualitas. Lindungi rumah, toko, gudang, atau kantor dari banjir tanpa ribet!
+        - generic [ref=e19]:
+          - link [ref=e20] [cursor=pointer]:
+            - /url: /order
+            - button "CEK HARGA" [ref=e21]
+          - button "Pelajari Lebih Lanjut" [ref=e22] [cursor=pointer]
+      - img "FloodBar Sekat Pintu Anti Banjir" [ref=e25]
+    - generic [ref=e26]:
+      - heading "FloodBar - Sekat Pintu Anti Banjir Custom" [level=2] [ref=e27]
+      - generic [ref=e28]:
+        - generic [ref=e29]:
+          - paragraph [ref=e30]: FloodBar adalah solusi sekat pintu anti banjir yang dibuat custom sesuai lebar pintu rumah Anda. Dengan sistem pre-order, setiap FloodBar diproduksi khusus untuk memastikan fit yang sempurna dan perlindungan maksimal saat banjir datang.
+          - paragraph [ref=e31]: "Cara Pesan: Ukur lebar pintu → Pre-order FloodBar → Proses produksi 5-7 hari → Terima FloodBar yang pas sempurna. Material aluminium premium dengan rubber seal memastikan tidak ada air yang bisa masuk melalui pintu Anda."
+          - link [ref=e32] [cursor=pointer]:
+            - /url: /order
+            - button "Pesan Sekarang" [ref=e33]
+        - img "FloodBar Installation" [ref=e35]
+    - generic [ref=e37]:
+      - heading "Mengapa Memilih FloodBar.id?" [level=2] [ref=e39]
+      - generic [ref=e40]:
+        - generic [ref=e47]:
+          - heading "Ukuran Custom" [level=3] [ref=e48]
+          - paragraph [ref=e49]: Setiap FloodBar dibuat khusus sesuai lebar pintu rumah Anda. Ukur, pesan, pasang - sempurna!
+        - generic [ref=e56]:
+          - heading "Pre-Order System" [level=3] [ref=e57]
+          - paragraph [ref=e58]: Pesan sekarang sebelum musim hujan. Proses produksi 5-7 hari kerja untuk hasil yang optimal.
+        - generic [ref=e65]:
+          - heading "Mudah Dipasang" [level=3] [ref=e66]
+          - paragraph [ref=e67]: Instalasi cepat tanpa alat khusus. Dalam 5 menit FloodBar siap melindungi rumah Anda.
+      - generic [ref=e68]:
+        - generic [ref=e69]:
+          - heading "Tabel Perbandingan Biaya Perlindungan Rumah" [level=3] [ref=e70]
+          - paragraph [ref=e71]: Mengapa FloodBar.id adalah pilihan yang tepat
+        - table [ref=e73]:
+          - rowgroup [ref=e74]:
+            - row [ref=e75]:
+              - columnheader "Fitur" [ref=e76]
+              - columnheader "FloodBar.id" [ref=e77]
+              - columnheader "BRAND LAIN" [ref=e83]
+          - rowgroup [ref=e84]:
+            - row [ref=e85]:
+              - cell "Harga" [ref=e86]
+              - cell "Rp 300.000–Rp 600.000 (disesuaikan)" [ref=e87]:
+                - generic [ref=e88]: Rp 300.000–Rp 600.000
+                - generic [ref=e89]: (disesuaikan)
+              - cell "Rp 1.500.000 ke atas" [ref=e90]
+            - row [ref=e92]:
+              - cell "Bahan" [ref=e93]
+              - cell "Besi berkualitas tinggi, kuat & ringan" [ref=e94]
+              - cell "Bahan premium tapi mahal" [ref=e96]
+            - row [ref=e98]:
+              - cell "Durabilitas" [ref=e99]
+              - cell "Tahan bertahun-tahun, kuat menghadapi cuaca ekstrem" [ref=e100]
+              - cell "Tergantung produk" [ref=e102]
+            - row [ref=e104]:
+              - cell "Pemasangan" [ref=e105]
+              - cell "Praktis, bisa dipasang sendiri" [ref=e106]
+              - cell "Biasanya memerlukan jasa profesional" [ref=e108]
+        - generic [ref=e110]:
+          - 'heading "Kesimpulan: FloodBar.id Lebih Unggul!" [level=4] [ref=e116]'
+          - generic [ref=e117]:
+            - generic [ref=e118]:
+              - heading "💰 Harga Terjangkau" [level=5] [ref=e119]
+              - paragraph [ref=e120]: Hemat hingga 60% dibanding kompetitor tanpa mengorbankan kualitas
+            - generic [ref=e121]:
+              - heading "🛠️ Mudah Dipasang" [level=5] [ref=e122]
+              - paragraph [ref=e123]: Tidak perlu teknisi profesional, bisa dipasang sendiri dengan mudah
+    - generic [ref=e125]:
+      - generic [ref=e126]:
+        - heading "FloodBar - Sekat Pintu Anti Banjir Custom" [level=2] [ref=e127]
+        - paragraph [ref=e128]: Perlindungan maksimal untuk rumah Anda dengan desain custom sesuai ukuran pintu
+      - generic [ref=e130]:
+        - img "Model A – Dipasang di Depan Kusen" [ref=e132]
+        - generic [ref=e133]:
+          - heading "FloodBar Premium" [level=3] [ref=e134]
+          - paragraph [ref=e135]: "Posisi: Rel bracket dipasang di depan kusen pintu"
+        - generic [ref=e136]:
+          - heading "✨ Keunggulan:" [level=4] [ref=e137]
+          - generic [ref=e138]: Memberi perlindungan lebih karena menutup bagian luar pintu
+          - generic [ref=e143]: Cocok untuk pintu utama, garasi, atau area dengan risiko banjir tinggi
+          - generic [ref=e148]: Lebih aman untuk mencegah air rembes dari sela pintu
+          - generic [ref=e153]: "Tampilan: Sekat terlihat dari luar, sehingga lebih “protektif”"
+          - generic [ref=e158]: "Contoh Harga : Ukuran 60 x 40 = Rp 448,000"
+          - generic [ref=e163]:
+            - heading "💰 Contoh Harga:" [level=4] [ref=e164]
+            - paragraph [ref=e166]: Ukuran 60 × 40 = Rp 448.000
+        - link [ref=e168] [cursor=pointer]:
+          - /url: /order
+          - button "🛡️ Pesan FloodBar Sekarang" [ref=e169]
+      - generic [ref=e171]:
+        - generic [ref=e172]:
+          - heading "Panduan Mengukur Pintu untuk FloodBar" [level=3] [ref=e177]
+          - paragraph [ref=e178]: Pelajari cara mengukur pintu dengan tepat sebelum memesan FloodBar custom Anda
+        - generic [ref=e180]:
+          - iframe [ref=e182]:
+            - generic [ref=f1e1]:
+              - generic "YouTube Video Player" [ref=f1e3]
+              - generic [ref=f1e5]:
+                - generic:
+                  - generic:
+                    - button "Play video" [ref=f1e10] [cursor=pointer]
+                    - button "Hide player controls" [ref=f1e14] [cursor=pointer]
+                    - generic [ref=f1e16]:
+                      - generic [ref=f1e21]:
+                        - generic [ref=f1e22]:
+                          - link "Tutorial Cara mengukur produk Floodbar" [ref=f1e23] [cursor=pointer]:
+                            - /url: https://www.youtube.com/shorts/wOHYxURCmrw
+                          - link "Wood Working Project" [ref=f1e24] [cursor=pointer]:
+                            - /url: /channel/UCfvIwzKmHwz1BEh-6kZAHkg
+                        - generic [ref=f1e26]:
+                          - button [ref=f1e27] [cursor=pointer]
+                          - generic [ref=f1e29]:
+                            - generic: Wood Working Project
+                            - generic: 1 subscriber
+                      - button "Share" [ref=f1e33] [cursor=pointer]
+          - generic [ref=e183]:
+            - heading "Tutorial Cara Mengukur Pintu untuk FloodBar" [level=4] [ref=e184]
+            - paragraph [ref=e185]: Pelajari cara mengukur pintu dengan tepat sebelum memesan
+        - generic [ref=e186]:
+          - heading "Langkah-langkah Mengukur Pintu" [level=4] [ref=e187]
+          - generic [ref=e188]:
+            - generic [ref=e189]:
+              - generic [ref=e190]: "1"
+              - heading "Ukur Lebar Pintu" [level=5] [ref=e192]
+              - paragraph [ref=e193]: Ukur lebar dari ujung luar daun pintu kiri ke ujung daun pintu kanan, ukur di kedua sisi yaitu bagian atas dan bawah supaya lebih presisi
+            - generic [ref=e194]:
+              - generic [ref=e195]: "2"
+              - heading "Ukur Tinggi" [level=5] [ref=e197]
+              - paragraph [ref=e198]: Ukur tinggi yang dibutuhkan, minimal 50cm untuk perlindungan optimal
+            - generic [ref=e199]:
+              - generic [ref=e200]: "3"
+              - heading "Catat Ukuran" [level=5] [ref=e202]
+              - paragraph [ref=e203]: Catat ukuran dengan akurat dan masukkan saat pemesanan
+          - link [ref=e205] [cursor=pointer]:
+            - /url: /order
+            - button "🛡️ Pesan FloodBar Sekarang" [ref=e206]
+    - generic [ref=e208]:
+      - generic [ref=e209]:
+        - heading "Testimoni Pelanggan FloodBar.id" [level=2] [ref=e210]
+        - paragraph [ref=e211]: Dengarkan pengalaman nyata pelanggan yang telah menggunakan FloodBar custom
+      - generic [ref=e212]:
+        - generic [ref=e215]:
+          - blockquote [ref=e228]: "\"FloodBar custom fit sempurna di pintu rumah saya. Waktu banjir kemarin, air tidak masuk sama sekali. Pre-order worth it banget!\""
+          - generic [ref=e229]:
+            - paragraph [ref=e230]: Pak Budi Santoso
+            - paragraph [ref=e231]: Jakarta Barat
+        - button [ref=e232] [cursor=pointer]
+        - button [ref=e235] [cursor=pointer]
+        - generic [ref=e238]:
+          - button [ref=e239] [cursor=pointer]
+          - button [ref=e240] [cursor=pointer]
+          - button [ref=e241] [cursor=pointer]
+          - button [ref=e242] [cursor=pointer]
+          - button [ref=e243] [cursor=pointer]
+    - generic [ref=e245]:
+      - heading "FAQ FloodBar - Sekat Pintu Anti Banjir Custom" [level=2] [ref=e247]
+      - generic [ref=e248]:
+        - button [ref=e250] [cursor=pointer]:
+          - heading "Berapa lama proses pre-order FloodBar custom?" [level=3] [ref=e251]
+        - button [ref=e255] [cursor=pointer]:
+          - heading "Bagaimana cara mengukur lebar pintu yang benar?" [level=3] [ref=e256]
+        - button [ref=e260] [cursor=pointer]:
+          - heading "Berapa tinggi air yang bisa ditahan FloodBar?" [level=3] [ref=e261]
+        - button [ref=e265] [cursor=pointer]:
+          - heading "Apakah bisa untuk pintu yang tidak standar?" [level=3] [ref=e266]
+    - generic [ref=e271]:
+      - generic [ref=e272]:
+        - link "BMKG Prediksi Hujan Turun di Bandung Raya Sepekan ke Depan, Waspadai Banjir BMKG Prediksi Hujan Turun di Bandung Raya Sepekan ke Depan, Waspadai Banjir 15 Sep 2025 — BANDUNG, KOMPAS.com - Badan Meteorologi Klimatologi dan Geofisika (BMKG) memprakirakan bahwa hujan masih berpotensi turun di wilayah Bandung Raya dalam sepekan ke depan, 13-20 September 2025. Kepala BMKG Stasiun Bandung, Teguh Rahayu menjelaskan, kondisi cuaca saat ini dipengaruhi sejumlah faktor dinamika atmosfer. \"Di antaranya suhu muka laut yang relatif hangat di sekitar perairan Indonesia, nilai Dipole Mode Index (DMI) sebesar -1,27, serta aktivitas gelombang atmosfer Rossby Equatorial,\" ujar Teguh dalam keterangan tertulisnya, Senin (15/9/2025). K Kompas.com" [ref=e273] [cursor=pointer]:
+          - /url: https://bandung.kompas.com/read/2025/09/15/091335078/bmkg-prediksi-hujan-turun-di-bandung-raya-sepekan-ke-depan-waspadai-banjir
+          - generic [ref=e274]:
+            - img "BMKG Prediksi Hujan Turun di Bandung Raya Sepekan ke Depan, Waspadai Banjir" [ref=e276]
+            - generic [ref=e277]:
+              - heading "BMKG Prediksi Hujan Turun di Bandung Raya Sepekan ke Depan, Waspadai Banjir" [level=4] [ref=e278]
+              - paragraph [ref=e279]: 15 Sep 2025 — BANDUNG, KOMPAS.com - Badan Meteorologi Klimatologi dan Geofisika (BMKG) memprakirakan bahwa hujan masih berpotensi turun di wilayah Bandung Raya dalam sepekan ke depan, 13-20 September 2025. Kepala BMKG Stasiun Bandung, Teguh Rahayu menjelaskan, kondisi cuaca saat ini dipengaruhi sejumlah faktor dinamika atmosfer. "Di antaranya suhu muka laut yang relatif hangat di sekitar perairan Indonesia, nilai Dipole Mode Index (DMI) sebesar -1,27, serta aktivitas gelombang atmosfer Rossby Equatorial," ujar Teguh dalam keterangan tertulisnya, Senin (15/9/2025).
+              - generic [ref=e280]:
+                - generic [ref=e281]: K
+                - generic [ref=e283]: Kompas.com
+        - 'link "Banjir Terparah di Bali: Jalan Lumpuh, Bangunan Roboh, Korban Jiwa Berjatuhan Banjir Terparah di Bali: Jalan Lumpuh, Bangunan Roboh, Korban Jiwa Berjatuhan 14 Sep 2025 — Denpasar - Hujan deras mengguyur Bali sejak Selasa (9/9/2025) malam hingga Rabu (10/9/2025) pagi. Curah hujan ekstrem membuat sejumlah sungai meluap dan sistem drainase tak mampu menampung air. Akibatnya, banjir besar melanda enam kabupaten/kota di Bali. D detik.com" [ref=e284] [cursor=pointer]':
+          - /url: https://www.detik.com/bali/berita/d-8111638/banjir-terparah-di-bali-jalan-lumpuh-bangunan-roboh-korban-jiwa-berjatuhan
+          - generic [ref=e285]:
+            - 'img "Banjir Terparah di Bali: Jalan Lumpuh, Bangunan Roboh, Korban Jiwa Berjatuhan" [ref=e287]'
+            - generic [ref=e288]:
+              - 'heading "Banjir Terparah di Bali: Jalan Lumpuh, Bangunan Roboh, Korban Jiwa Berjatuhan" [level=4] [ref=e289]'
+              - paragraph [ref=e290]: 14 Sep 2025 — Denpasar - Hujan deras mengguyur Bali sejak Selasa (9/9/2025) malam hingga Rabu (10/9/2025) pagi. Curah hujan ekstrem membuat sejumlah sungai meluap dan sistem drainase tak mampu menampung air. Akibatnya, banjir besar melanda enam kabupaten/kota di Bali.
+              - generic [ref=e291]:
+                - generic [ref=e292]: D
+                - generic [ref=e294]: detik.com
+        - 'link "Info Banjir Jakarta Hari Ini: 2 RT Terendam, 150 Warga Mengungsi Info Banjir Jakarta Hari Ini: 2 RT Terendam, 150 Warga Mengungsi 12 Sep 2025 — JAKARTA, KOMPAS.com - Hujan deras yang mengguyur Jakarta pada Jumat sore (12/9/2025) menyebabkan dua RT terendam banjir. Kepala Pusat Data dan Informasi Badan Penanggulangan Bencana Daerah (BPBD) DKI Jakarta, Mohamad Yohan, mencatat genangan terjadi di wilayah Jakarta Selatan dan Jakarta Timur. K kompas.com" [ref=e295] [cursor=pointer]':
+          - /url: https://megapolitan.kompas.com/read/2025/09/12/18414241/info-banjir-jakarta-hari-ini-2-rt-terendam-150-warga-mengungsi?lgn_method=google&google_btn=onetap
+          - generic [ref=e296]:
+            - 'img "Info Banjir Jakarta Hari Ini: 2 RT Terendam, 150 Warga Mengungsi" [ref=e298]'
+            - generic [ref=e299]:
+              - 'heading "Info Banjir Jakarta Hari Ini: 2 RT Terendam, 150 Warga Mengungsi" [level=4] [ref=e300]'
+              - paragraph [ref=e301]: 12 Sep 2025 — JAKARTA, KOMPAS.com - Hujan deras yang mengguyur Jakarta pada Jumat sore (12/9/2025) menyebabkan dua RT terendam banjir. Kepala Pusat Data dan Informasi Badan Penanggulangan Bencana Daerah (BPBD) DKI Jakarta, Mohamad Yohan, mencatat genangan terjadi di wilayah Jakarta Selatan dan Jakarta Timur.
+              - generic [ref=e302]:
+                - generic [ref=e303]: K
+                - generic [ref=e305]: kompas.com
+        - link "BMKG Prediksi Musim Hujan 2025 Datang Lebih Awal, Waspada Banjir dan Longsor BMKG Prediksi Musim Hujan 2025 Datang Lebih Awal, Waspada Banjir dan Longsor 12 Sep 2025 — HARIANBANTEN.CO.ID – Badan Meteorologi, Klimatologi, dan Geofisika (BMKG) memprediksi musim hujan 2025/2026 akan datang lebih cepat dari biasanya. Sebagian wilayah Indonesia bahkan sudah memasuki musim hujan sejak Agustus 2025. “Awal musim hujan tahun ini cenderung maju di sebagian besar wilayah Indonesia. Musim hujan diprediksi berlangsung dari Agustus 2025 hingga April 2026,” kata Kepala BMKG, Dwikorita Karnawati dalam konferensi pers di Jakarta, Jumat (12/9/2025). H Harian Banten" [ref=e306] [cursor=pointer]:
+          - /url: https://www.harianbanten.co.id/bmkg-prediksi-musim-hujan-2025-datang-lebih-awal-waspada-banjir-dan-longsor/
+          - generic [ref=e307]:
+            - img "BMKG Prediksi Musim Hujan 2025 Datang Lebih Awal, Waspada Banjir dan Longsor" [ref=e309]
+            - generic [ref=e310]:
+              - heading "BMKG Prediksi Musim Hujan 2025 Datang Lebih Awal, Waspada Banjir dan Longsor" [level=4] [ref=e311]
+              - paragraph [ref=e312]: 12 Sep 2025 — HARIANBANTEN.CO.ID – Badan Meteorologi, Klimatologi, dan Geofisika (BMKG) memprediksi musim hujan 2025/2026 akan datang lebih cepat dari biasanya. Sebagian wilayah Indonesia bahkan sudah memasuki musim hujan sejak Agustus 2025. “Awal musim hujan tahun ini cenderung maju di sebagian besar wilayah Indonesia. Musim hujan diprediksi berlangsung dari Agustus 2025 hingga April 2026,” kata Kepala BMKG, Dwikorita Karnawati dalam konferensi pers di Jakarta, Jumat (12/9/2025).
+              - generic [ref=e313]:
+                - generic [ref=e314]: H
+                - generic [ref=e316]: Harian Banten
+        - link "1.600 Rumah di 10 Kecamatan Blora Jateng Terendam Banjir 1.600 Rumah di 10 Kecamatan Blora Jateng Terendam Banjir 21 Mei 2025 — Jakarta - Badan Penanggulangan Bencana Daerah (BPBD) Kabupaten Blora, Jawa Tengah, mencatat 10 kecamatan terdampak banjir. Tercatat ada 1.600 rumah warga terdampak banjir. \"Dampak banjir juga mengakibatkan salah satu jembatan penghubung di Kecamatan Ngawen terputus, karena tingginya debit air sungai menyusul curah hujan tinggi sejak Senin (19/5) sore hingga malam hari,\" kata Tim Reaksi Cepat (TRC) BPBD Blora Agung Triyono di Blora, dilansir Antara, Rabu (21/5/2025). D detik.com" [ref=e317] [cursor=pointer]:
+          - /url: https://news.detik.com/berita/d-7924311/1-600-rumah-di-10-kecamatan-blora-jateng-terendam-banjir
+          - generic [ref=e318]:
+            - img "1.600 Rumah di 10 Kecamatan Blora Jateng Terendam Banjir" [ref=e320]
+            - generic [ref=e321]:
+              - heading "1.600 Rumah di 10 Kecamatan Blora Jateng Terendam Banjir" [level=4] [ref=e322]
+              - paragraph [ref=e323]: 21 Mei 2025 — Jakarta - Badan Penanggulangan Bencana Daerah (BPBD) Kabupaten Blora, Jawa Tengah, mencatat 10 kecamatan terdampak banjir. Tercatat ada 1.600 rumah warga terdampak banjir. "Dampak banjir juga mengakibatkan salah satu jembatan penghubung di Kecamatan Ngawen terputus, karena tingginya debit air sungai menyusul curah hujan tinggi sejak Senin (19/5) sore hingga malam hari," kata Tim Reaksi Cepat (TRC) BPBD Blora Agung Triyono di Blora, dilansir Antara, Rabu (21/5/2025).
+              - generic [ref=e324]:
+                - generic [ref=e325]: D
+                - generic [ref=e327]: detik.com
+        - link "Jateng, Jabar, dan Jatim Jadi Provinsi Langganan Banjir Awal 2025 Jateng, Jabar, dan Jatim Jadi Provinsi Langganan Banjir Awal 2025 7 Mar 2025 — Awal tahun 2025 diwarnai dengan tingginya intensitas banjir di berbagai wilayah Indonesia. Berdasarkan laporan Geoportal Data Bencana Indonesia, sejak 1 Januari hingga 6 Maret 2025, tercatat 405 kejadian banjir di seluruh negeri. Fenomena ini sebagian besar dipicu oleh curah hujan yang tinggi dan berkepanjangan, sehingga menyebabkan luapan air yang tak dapat terbendung. D data.goodstats.id" [ref=e328] [cursor=pointer]:
+          - /url: https://data.goodstats.id/statistic/jateng-jabar-dan-jatim-jadi-provinsi-langganan-banjir-awal-2025-NLKMk
+          - generic [ref=e329]:
+            - img "Jateng, Jabar, dan Jatim Jadi Provinsi Langganan Banjir Awal 2025" [ref=e331]
+            - generic [ref=e332]:
+              - heading "Jateng, Jabar, dan Jatim Jadi Provinsi Langganan Banjir Awal 2025" [level=4] [ref=e333]
+              - paragraph [ref=e334]: 7 Mar 2025 — Awal tahun 2025 diwarnai dengan tingginya intensitas banjir di berbagai wilayah Indonesia. Berdasarkan laporan Geoportal Data Bencana Indonesia, sejak 1 Januari hingga 6 Maret 2025, tercatat 405 kejadian banjir di seluruh negeri. Fenomena ini sebagian besar dipicu oleh curah hujan yang tinggi dan berkepanjangan, sehingga menyebabkan luapan air yang tak dapat terbendung.
+              - generic [ref=e335]:
+                - generic [ref=e336]: D
+                - generic [ref=e338]: data.goodstats.id
+        - 'link "Jawa Tengah Kena Peringatan BMKG: Potensi Banjir Kategori Tinggi Jawa Tengah Kena Peringatan BMKG: Potensi Banjir Kategori Tinggi 4 Mar 2025 — Jakarta, CNBC Indonesia - Badan Meteorologi, Klimatologi, dan Geofisika (BMKG) mengeluarkan peringatan dini potensi curah hujan tinggi dan banjir yang mengancam sejumlah wilayah di Indonesia. Salah satu wilayah yang mendapat sorotan adalah Jawa Tengah. Menurut BMKG, saat ini sekitar 80% wilayah Zona Musim (ZOM) di Indonesia telah memasuki musim hujan. C CNBC" [ref=e339] [cursor=pointer]':
+          - /url: https://www.cnbcindonesia.com/news/20250303192607-4-615240/jawa-tengah-kena-peringatan-bmkg-potensi-banjir-kategori-tinggi
+          - generic [ref=e340]:
+            - 'img "Jawa Tengah Kena Peringatan BMKG: Potensi Banjir Kategori Tinggi" [ref=e342]'
+            - generic [ref=e343]:
+              - 'heading "Jawa Tengah Kena Peringatan BMKG: Potensi Banjir Kategori Tinggi" [level=4] [ref=e344]'
+              - paragraph [ref=e345]: 4 Mar 2025 — Jakarta, CNBC Indonesia - Badan Meteorologi, Klimatologi, dan Geofisika (BMKG) mengeluarkan peringatan dini potensi curah hujan tinggi dan banjir yang mengancam sejumlah wilayah di Indonesia. Salah satu wilayah yang mendapat sorotan adalah Jawa Tengah. Menurut BMKG, saat ini sekitar 80% wilayah Zona Musim (ZOM) di Indonesia telah memasuki musim hujan.
+              - generic [ref=e346]:
+                - generic [ref=e347]: C
+                - generic [ref=e349]: CNBC
+      - generic [ref=e350]:
+        - heading "Kenapa FloodBar.id Solusi Terbaik?" [level=2] [ref=e351]
+        - paragraph [ref=e352]: Banjir di Indonesia semakin sering terjadi. Jakarta, Bekasi, Tangerang, Bogor, dan kota-kota lainnya rutin mengalami genangan setiap musim hujan. Kerugian mencapai jutaan rupiah karena kerusakan furniture, elektronik, dan renovasi rumah.
+        - paragraph [ref=e353]: FloodBar.id hadir dengan solusi sekat pintu anti banjir yang dibuat custom untuk setiap rumah. Sistem pre-order memastikan FloodBar fit sempurna di pintu Anda. Investasi ratusan ribu untuk melindungi aset jutaan rupiah.
+        - iframe [ref=e355]:
+          - heading "10 Provinsi Paling Rawan Banjir di Indonesia (1 Januari-6 Maret 2025)" [level=3] [ref=f2e3]
+        - generic [ref=e356]:
+          - generic [ref=e357]:
+            - generic [ref=e358]: Custom
+            - generic [ref=e359]: Ukuran Presisi
+          - generic [ref=e360]:
+            - generic [ref=e361]: 500+
+            - generic [ref=e362]: FloodBar Terpasang
+          - generic [ref=e363]:
+            - generic [ref=e364]: 5-10
+            - generic [ref=e365]: Hari Pre-Order
+    - generic [ref=e367]:
+      - generic [ref=e368]:
+        - heading "Video FloodBar" [level=2] [ref=e369]
+        - paragraph [ref=e370]: Lihat bagaimana FloodBar bekerja melindungi rumah Anda dari banjir
+      - generic [ref=e371]:
+        - generic [ref=e372]:
+          - iframe [ref=e374]:
+            - main [ref=f3e3]:
+              - generic [ref=f3e5]:
+                - generic [ref=f3e9]:
+                  - generic:
+                    - link [ref=f3e10] [cursor=pointer]:
+                      - /url: https://www.tiktok.com?referer_url=www.floodbar.id%2F&refer=embed&embed_source=null%3Bnull%3Bembed_logo&referer_video_id=7578725013520469269
+                    - generic [ref=f3e23]:
+                      - link [ref=f3e24] [cursor=pointer]:
+                        - /url: https://www.tiktok.com/@floodbar.id?referer_url=www.floodbar.id%2F&refer=embed&embed_source=null%3Bnull%3Bembed_head&referer_video_id=7578725013520469269
+                      - link:
+                        - /url: https://www.tiktok.com/@floodbar.id?referer_url=www.floodbar.id%2F&refer=embed&embed_source=null%3Bnull%3Bembed_head&referer_video_id=7578725013520469269
+                      - link "56.2K" [ref=f3e32] [cursor=pointer]:
+                        - /url: https://www.tiktok.com/@floodbar.id/video/7578725013520469269?referer_url=www.floodbar.id%2F&refer=embed&embed_source=null%3Bnull%3Bembed_like&referer_video_id=7578725013520469269
+                      - link "517" [ref=f3e39] [cursor=pointer]:
+                        - /url: https://www.tiktok.com/@floodbar.id/video/7578725013520469269?referer_url=www.floodbar.id%2F&refer=embed&embed_source=null%3Bnull%3Bembed_comment_button&referer_video_id=7578725013520469269
+                      - link "7323" [ref=f3e46] [cursor=pointer]:
+                        - /url: https://www.tiktok.com/@floodbar.id/video/7578725013520469269?referer_url=www.floodbar.id%2F&refer=embed&embed_source=null%3Bnull%3Bembed_share&referer_video_id=7578725013520469269
+                - generic [ref=f3e54]:
+                  - link "Watch more exciting videos on TikTok Watch more exciting videos on TikTokWatch more exciting videos on TikTok Watch now" [ref=f3e56] [cursor=pointer]:
+                    - /url: https://www.tiktok.com?referer_url=www.floodbar.id%2F&refer=embed&embed_source=null%3Bnull%3Bembed_discover_button
+                    - generic [ref=f3e58]:
+                      - text: Watch more exciting videos on TikTok
+                      - generic [ref=f3e59]: Watch more exciting videos on TikTokWatch more exciting videos on TikTok
+                    - button "Watch now" [ref=f3e60]
+                  - generic [ref=f3e61]:
+                    - link:
+                      - /url: https://www.tiktok.com/@floodbar.id/video/7578725013520469269?referer_url=www.floodbar.id%2F&refer=embed&embed_source=null%3Bnull%3Bembed_blank&referer_video_id=7578725013520469269
+                    - generic [ref=f3e62] [cursor=pointer]:
+                      - link:
+                        - /url: https://www.tiktok.com/@floodbar.id/video/7578725013520469269?referer_url=www.floodbar.id%2F&refer=embed&embed_source=null%3Bnull%3Bembed_blank&referer_video_id=7578725013520469269
+                      - link "@floodbar.id" [ref=f3e63]:
+                        - /url: https://www.tiktok.com/@floodbar.id?referer_url=www.floodbar.id%2F&refer=embed&embed_source=null%3Bnull%3Bembed_name&referer_video_id=7578725013520469269
+                      - generic [ref=f3e66]:
+                        - link "Ternyata ini toh fungsi sekat anti banjir 🤏 Gaperlu pusing lagi kalau ada banjir, pasang ini beres 🤩" [ref=f3e67]:
+                          - /url: https://www.tiktok.com/@floodbar.id/video/7578725013520469269?referer_url=www.floodbar.id%2F&refer=embed&embed_source=null%3Bnull%3Bembed_blank&referer_video_id=7578725013520469269
+                        - link "#floodbar" [ref=f3e68]:
+                          - /url: https://www.tiktok.com/tag/floodbar?referer_url=www.floodbar.id%2F&refer=embed&embed_source=null%3Bnull%3Bembed_hashtag&referer_video_id=7578725013520469269
+                        - link [ref=f3e70]:
+                          - /url: https://www.tiktok.com/@floodbar.id/video/7578725013520469269?referer_url=www.floodbar.id%2F&refer=embed&embed_source=null%3Bnull%3Bembed_blank&referer_video_id=7578725013520469269
+                        - link "#sekatantibanjir" [ref=f3e71]:
+                          - /url: https://www.tiktok.com/tag/sekatantibanjir?referer_url=www.floodbar.id%2F&refer=embed&embed_source=null%3Bnull%3Bembed_hashtag&referer_video_id=7578725013520469269
+                        - link [ref=f3e73]:
+                          - /url: https://www.tiktok.com/@floodbar.id/video/7578725013520469269?referer_url=www.floodbar.id%2F&refer=embed&embed_source=null%3Bnull%3Bembed_blank&referer_video_id=7578725013520469269
+                        - link "#lifehacksrumah" [ref=f3e74]:
+                          - /url: https://www.tiktok.com/tag/lifehacksrumah?referer_url=www.floodbar.id%2F&refer=embed&embed_source=null%3Bnull%3Bembed_hashtag&referer_video_id=7578725013520469269
+                        - link [ref=f3e76]:
+                          - /url: https://www.tiktok.com/@floodbar.id/video/7578725013520469269?referer_url=www.floodbar.id%2F&refer=embed&embed_source=null%3Bnull%3Bembed_blank&referer_video_id=7578725013520469269
+                        - link "#solusibanjir" [ref=f3e77]:
+                          - /url: https://www.tiktok.com/tag/solusibanjir?referer_url=www.floodbar.id%2F&refer=embed&embed_source=null%3Bnull%3Bembed_hashtag&referer_video_id=7578725013520469269
+                        - link [ref=f3e79]:
+                          - /url: https://www.tiktok.com/@floodbar.id/video/7578725013520469269?referer_url=www.floodbar.id%2F&refer=embed&embed_source=null%3Bnull%3Bembed_blank&referer_video_id=7578725013520469269
+                      - link [ref=f3e80]:
+                        - /url: https://www.tiktok.com/music/suara-asli-Situbondo-Slow-Bass-7574523001199266578?referer_url=www.floodbar.id%2F&refer=embed&embed_source=null%3Bnull%3Bembed_song_name
+          - heading "Ternyata ini toh fungsi sekat anti banjir 🤏 Gaperlu pusing lagi kalau ada banjir, pasang ini beres 🤩" [level=3] [ref=e376]
+        - generic [ref=e377]:
+          - iframe [ref=e379]:
+            - generic [ref=f4e1]: overload-protect triggered
+          - heading "Banjir, pasangin sekat anti banjir aja" [level=3] [ref=e381]
+        - generic [ref=e382]:
+          - iframe [ref=e384]:
+            - generic [ref=f5e1]:
+              - generic "YouTube Video Player" [ref=f5e3]
+              - generic [ref=f5e5]:
+                - generic:
+                  - generic:
+                    - button "Play video" [ref=f5e10] [cursor=pointer]
+                    - button "Hide player controls" [ref=f5e14] [cursor=pointer]
+                    - generic [ref=f5e16]:
+                      - generic [ref=f5e21]:
+                        - generic [ref=f5e22]:
+                          - link "Tutorial Cara mengukur produk Floodbar" [ref=f5e23] [cursor=pointer]:
+                            - /url: https://www.youtube.com/shorts/wOHYxURCmrw
+                          - link "Wood Working Project" [ref=f5e24] [cursor=pointer]:
+                            - /url: /channel/UCfvIwzKmHwz1BEh-6kZAHkg
+                        - generic [ref=f5e26]:
+                          - button [ref=f5e27] [cursor=pointer]
+                          - generic [ref=f5e29]:
+                            - generic: Wood Working Project
+                            - generic: 1 subscriber
+                      - button "Share" [ref=f5e33] [cursor=pointer]
+          - heading "Demo FloodBar - Perlindungan Anti Banjir" [level=3] [ref=e386]
+        - generic [ref=e387]:
+          - iframe [ref=e389]:
+            - main [ref=f6e3]:
+              - generic [ref=f6e5]:
+                - generic [ref=f6e9]:
+                  - generic:
+                    - link [ref=f6e10] [cursor=pointer]:
+                      - /url: https://www.tiktok.com?referer_url=www.floodbar.id%2F&refer=embed&embed_source=null%3Bnull%3Bembed_logo&referer_video_id=7540180364711464197
+                    - generic [ref=f6e23]:
+                      - link [ref=f6e24] [cursor=pointer]:
+                        - /url: https://www.tiktok.com/@floodbar.id?referer_url=www.floodbar.id%2F&refer=embed&embed_source=null%3Bnull%3Bembed_head&referer_video_id=7540180364711464197
+                      - link:
+                        - /url: https://www.tiktok.com/@floodbar.id?referer_url=www.floodbar.id%2F&refer=embed&embed_source=null%3Bnull%3Bembed_head&referer_video_id=7540180364711464197
+                      - link "979" [ref=f6e32] [cursor=pointer]:
+                        - /url: https://www.tiktok.com/@floodbar.id/video/7540180364711464197?referer_url=www.floodbar.id%2F&refer=embed&embed_source=null%3Bnull%3Bembed_like&referer_video_id=7540180364711464197
+                      - link "42" [ref=f6e39] [cursor=pointer]:
+                        - /url: https://www.tiktok.com/@floodbar.id/video/7540180364711464197?referer_url=www.floodbar.id%2F&refer=embed&embed_source=null%3Bnull%3Bembed_comment_button&referer_video_id=7540180364711464197
+                      - link "116" [ref=f6e46] [cursor=pointer]:
+                        - /url: https://www.tiktok.com/@floodbar.id/video/7540180364711464197?referer_url=www.floodbar.id%2F&refer=embed&embed_source=null%3Bnull%3Bembed_share&referer_video_id=7540180364711464197
+                - generic [ref=f6e54]:
+                  - link "Mira más vídeos emocionantes en TikTok Mira más vídeos emocionantes en TikTokMira más vídeos emocionantes en TikTok Ver ahora" [ref=f6e56] [cursor=pointer]:
+                    - /url: https://www.tiktok.com?referer_url=www.floodbar.id%2F&refer=embed&embed_source=null%3Bnull%3Bembed_discover_button
+                    - generic [ref=f6e58]:
+                      - text: Mira más vídeos emocionantes en TikTok
+                      - generic [ref=f6e59]: Mira más vídeos emocionantes en TikTokMira más vídeos emocionantes en TikTok
+                    - button "Ver ahora" [ref=f6e60]
+                  - generic [ref=f6e61]:
+                    - link:
+                      - /url: https://www.tiktok.com/@floodbar.id/video/7540180364711464197?referer_url=www.floodbar.id%2F&refer=embed&embed_source=null%3Bnull%3Bembed_blank&referer_video_id=7540180364711464197
+                    - generic [ref=f6e62] [cursor=pointer]:
+                      - link:
+                        - /url: https://www.tiktok.com/@floodbar.id/video/7540180364711464197?referer_url=www.floodbar.id%2F&refer=embed&embed_source=null%3Bnull%3Bembed_blank&referer_video_id=7540180364711464197
+                      - link "@floodbar.id" [ref=f6e63]:
+                        - /url: https://www.tiktok.com/@floodbar.id?referer_url=www.floodbar.id%2F&refer=embed&embed_source=null%3Bnull%3Bembed_name&referer_video_id=7540180364711464197
+                      - generic [ref=f6e66]:
+                        - link "Hujan deras panik? Coba tonton ini 👉" [ref=f6e67]:
+                          - /url: https://www.tiktok.com/@floodbar.id/video/7540180364711464197?referer_url=www.floodbar.id%2F&refer=embed&embed_source=null%3Bnull%3Bembed_blank&referer_video_id=7540180364711464197
+                        - link "#sekatantibanjir" [ref=f6e68]:
+                          - /url: https://www.tiktok.com/tag/sekatantibanjir?referer_url=www.floodbar.id%2F&refer=embed&embed_source=null%3Bnull%3Bembed_hashtag&referer_video_id=7540180364711464197
+                        - link [ref=f6e70]:
+                          - /url: https://www.tiktok.com/@floodbar.id/video/7540180364711464197?referer_url=www.floodbar.id%2F&refer=embed&embed_source=null%3Bnull%3Bembed_blank&referer_video_id=7540180364711464197
+                        - link "#sekat" [ref=f6e71]:
+                          - /url: https://www.tiktok.com/tag/sekat?referer_url=www.floodbar.id%2F&refer=embed&embed_source=null%3Bnull%3Bembed_hashtag&referer_video_id=7540180364711464197
+                        - link [ref=f6e73]:
+                          - /url: https://www.tiktok.com/@floodbar.id/video/7540180364711464197?referer_url=www.floodbar.id%2F&refer=embed&embed_source=null%3Bnull%3Bembed_blank&referer_video_id=7540180364711464197
+                        - link "#banjir" [ref=f6e74]:
+                          - /url: https://www.tiktok.com/tag/banjir?referer_url=www.floodbar.id%2F&refer=embed&embed_source=null%3Bnull%3Bembed_hashtag&referer_video_id=7540180364711464197
+                        - link [ref=f6e76]:
+                          - /url: https://www.tiktok.com/@floodbar.id/video/7540180364711464197?referer_url=www.floodbar.id%2F&refer=embed&embed_source=null%3Bnull%3Bembed_blank&referer_video_id=7540180364711464197
+                        - link "#antibanjir" [ref=f6e77]:
+                          - /url: https://www.tiktok.com/tag/antibanjir?referer_url=www.floodbar.id%2F&refer=embed&embed_source=null%3Bnull%3Bembed_hashtag&referer_video_id=7540180364711464197
+                        - link [ref=f6e79]:
+                          - /url: https://www.tiktok.com/@floodbar.id/video/7540180364711464197?referer_url=www.floodbar.id%2F&refer=embed&embed_source=null%3Bnull%3Bembed_blank&referer_video_id=7540180364711464197
+                      - link [ref=f6e80]:
+                        - /url: https://www.tiktok.com/music/suara-asli-J'he-K'ex-7516561125468146488?referer_url=www.floodbar.id%2F&refer=embed&embed_source=null%3Bnull%3Bembed_song_name
+          - 'heading "Hujan deras panik? Coba tonton ini 👉 #sekatantibanjir #sekat #banjir #antibanjir" [level=3] [ref=e391]'
+        - generic [ref=e392]:
+          - iframe [ref=e394]:
+            - main [ref=f7e3]:
+              - generic [ref=f7e5]:
+                - generic [ref=f7e9]:
+                  - generic:
+                    - link [ref=f7e10] [cursor=pointer]:
+                      - /url: https://www.tiktok.com?referer_url=www.floodbar.id%2F&refer=embed&embed_source=null%3Bnull%3Bembed_logo&referer_video_id=7548345095494323462
+                    - generic [ref=f7e23]:
+                      - link [ref=f7e24] [cursor=pointer]:
+                        - /url: https://www.tiktok.com/@floodbar.id?referer_url=www.floodbar.id%2F&refer=embed&embed_source=null%3Bnull%3Bembed_head&referer_video_id=7548345095494323462
+                      - link:
+                        - /url: https://www.tiktok.com/@floodbar.id?referer_url=www.floodbar.id%2F&refer=embed&embed_source=null%3Bnull%3Bembed_head&referer_video_id=7548345095494323462
+                      - link "459" [ref=f7e32] [cursor=pointer]:
+                        - /url: https://www.tiktok.com/@floodbar.id/video/7548345095494323462?referer_url=www.floodbar.id%2F&refer=embed&embed_source=null%3Bnull%3Bembed_like&referer_video_id=7548345095494323462
+                      - link "10" [ref=f7e39] [cursor=pointer]:
+                        - /url: https://www.tiktok.com/@floodbar.id/video/7548345095494323462?referer_url=www.floodbar.id%2F&refer=embed&embed_source=null%3Bnull%3Bembed_comment_button&referer_video_id=7548345095494323462
+                      - link "22" [ref=f7e46] [cursor=pointer]:
+                        - /url: https://www.tiktok.com/@floodbar.id/video/7548345095494323462?referer_url=www.floodbar.id%2F&refer=embed&embed_source=null%3Bnull%3Bembed_share&referer_video_id=7548345095494323462
+                - generic [ref=f7e54]:
+                  - link "Watch more exciting videos on TikTok Watch more exciting videos on TikTokWatch more exciting videos on TikTok Watch now" [ref=f7e56] [cursor=pointer]:
+                    - /url: https://www.tiktok.com?referer_url=www.floodbar.id%2F&refer=embed&embed_source=null%3Bnull%3Bembed_discover_button
+                    - generic [ref=f7e58]:
+                      - text: Watch more exciting videos on TikTok
+                      - generic [ref=f7e59]: Watch more exciting videos on TikTokWatch more exciting videos on TikTok
+                    - button "Watch now" [ref=f7e60]
+                  - generic [ref=f7e61]:
+                    - link:
+                      - /url: https://www.tiktok.com/@floodbar.id/video/7548345095494323462?referer_url=www.floodbar.id%2F&refer=embed&embed_source=null%3Bnull%3Bembed_blank&referer_video_id=7548345095494323462
+                    - generic [ref=f7e62] [cursor=pointer]:
+                      - link:
+                        - /url: https://www.tiktok.com/@floodbar.id/video/7548345095494323462?referer_url=www.floodbar.id%2F&refer=embed&embed_source=null%3Bnull%3Bembed_blank&referer_video_id=7548345095494323462
+                      - link "@floodbar.id" [ref=f7e63]:
+                        - /url: https://www.tiktok.com/@floodbar.id?referer_url=www.floodbar.id%2F&refer=embed&embed_source=null%3Bnull%3Bembed_name&referer_video_id=7548345095494323462
+                      - generic [ref=f7e66]:
+                        - link "Karena banjir mungkin nggak bisa kita hentikan, tapi kita bisa mencegah rumah kita ikut tenggelam 🫶" [ref=f7e67]:
+                          - /url: https://www.tiktok.com/@floodbar.id/video/7548345095494323462?referer_url=www.floodbar.id%2F&refer=embed&embed_source=null%3Bnull%3Bembed_blank&referer_video_id=7548345095494323462
+                        - link "#banjirbali" [ref=f7e68]:
+                          - /url: https://www.tiktok.com/tag/banjirbali?referer_url=www.floodbar.id%2F&refer=embed&embed_source=null%3Bnull%3Bembed_hashtag&referer_video_id=7548345095494323462
+                        - link [ref=f7e70]:
+                          - /url: https://www.tiktok.com/@floodbar.id/video/7548345095494323462?referer_url=www.floodbar.id%2F&refer=embed&embed_source=null%3Bnull%3Bembed_blank&referer_video_id=7548345095494323462
+                        - link "#bali" [ref=f7e71]:
+                          - /url: https://www.tiktok.com/tag/bali?referer_url=www.floodbar.id%2F&refer=embed&embed_source=null%3Bnull%3Bembed_hashtag&referer_video_id=7548345095494323462
+                        - link [ref=f7e73]:
+                          - /url: https://www.tiktok.com/@floodbar.id/video/7548345095494323462?referer_url=www.floodbar.id%2F&refer=embed&embed_source=null%3Bnull%3Bembed_blank&referer_video_id=7548345095494323462
+                        - link "#sekatantibanjir" [ref=f7e74]:
+                          - /url: https://www.tiktok.com/tag/sekatantibanjir?referer_url=www.floodbar.id%2F&refer=embed&embed_source=null%3Bnull%3Bembed_hashtag&referer_video_id=7548345095494323462
+                        - link [ref=f7e76]:
+                          - /url: https://www.tiktok.com/@floodbar.id/video/7548345095494323462?referer_url=www.floodbar.id%2F&refer=embed&embed_source=null%3Bnull%3Bembed_blank&referer_video_id=7548345095494323462
+                        - link "#solusibanjir" [ref=f7e77]:
+                          - /url: https://www.tiktok.com/tag/solusibanjir?referer_url=www.floodbar.id%2F&refer=embed&embed_source=null%3Bnull%3Bembed_hashtag&referer_video_id=7548345095494323462
+                        - link [ref=f7e79]:
+                          - /url: https://www.tiktok.com/@floodbar.id/video/7548345095494323462?referer_url=www.floodbar.id%2F&refer=embed&embed_source=null%3Bnull%3Bembed_blank&referer_video_id=7548345095494323462
+                        - link "#floodbar" [ref=f7e80]:
+                          - /url: https://www.tiktok.com/tag/floodbar?referer_url=www.floodbar.id%2F&refer=embed&embed_source=null%3Bnull%3Bembed_hashtag&referer_video_id=7548345095494323462
+                        - link [ref=f7e82]:
+                          - /url: https://www.tiktok.com/@floodbar.id/video/7548345095494323462?referer_url=www.floodbar.id%2F&refer=embed&embed_source=null%3Bnull%3Bembed_blank&referer_video_id=7548345095494323462
+                      - link [ref=f7e83]:
+                        - /url: https://www.tiktok.com/music/original-sound-Sekat-Anti-Banjir-7548349330550180664?referer_url=www.floodbar.id%2F&refer=embed&embed_source=null%3Bnull%3Bembed_song_name
+          - 'heading "Karena banjir mungkin nggak bisa kita hentikan, tapi kita bisa mencegah rumah kita ikut tenggelam 🫶 #banjirbali #bali #sekatantibanjir #solusibanjir #floodbar" [level=3] [ref=e396]'
+        - generic [ref=e397]:
+          - iframe [ref=e399]:
+            - main [ref=f8e3]:
+              - generic [ref=f8e5]:
+                - generic [ref=f8e9]:
+                  - generic:
+                    - link [ref=f8e10] [cursor=pointer]:
+                      - /url: https://www.tiktok.com?referer_url=www.floodbar.id%2F&refer=embed&embed_source=null%3Bnull%3Bembed_logo&referer_video_id=7362061292741430534
+                    - generic [ref=f8e23]:
+                      - link [ref=f8e24] [cursor=pointer]:
+                        - /url: https://www.tiktok.com/@floodbar.id?referer_url=www.floodbar.id%2F&refer=embed&embed_source=null%3Bnull%3Bembed_head&referer_video_id=7362061292741430534
+                      - link:
+                        - /url: https://www.tiktok.com/@floodbar.id?referer_url=www.floodbar.id%2F&refer=embed&embed_source=null%3Bnull%3Bembed_head&referer_video_id=7362061292741430534
+                      - link "30.1K" [ref=f8e32] [cursor=pointer]:
+                        - /url: https://www.tiktok.com/@floodbar.id/video/7362061292741430534?referer_url=www.floodbar.id%2F&refer=embed&embed_source=null%3Bnull%3Bembed_like&referer_video_id=7362061292741430534
+                      - link "301" [ref=f8e39] [cursor=pointer]:
+                        - /url: https://www.tiktok.com/@floodbar.id/video/7362061292741430534?referer_url=www.floodbar.id%2F&refer=embed&embed_source=null%3Bnull%3Bembed_comment_button&referer_video_id=7362061292741430534
+                      - link "1379" [ref=f8e46] [cursor=pointer]:
+                        - /url: https://www.tiktok.com/@floodbar.id/video/7362061292741430534?referer_url=www.floodbar.id%2F&refer=embed&embed_source=null%3Bnull%3Bembed_share&referer_video_id=7362061292741430534
+                - generic [ref=f8e54]:
+                  - link "Gledaj još uzbudljivih videozapisa na TikToku Gledaj još uzbudljivih videozapisa na TikTokuGledaj još uzbudljivih videozapisa na TikToku Watch now" [ref=f8e56] [cursor=pointer]:
+                    - /url: https://www.tiktok.com?referer_url=www.floodbar.id%2F&refer=embed&embed_source=null%3Bnull%3Bembed_discover_button
+                    - generic [ref=f8e58]:
+                      - text: Gledaj još uzbudljivih videozapisa na TikToku
+                      - generic [ref=f8e59]: Gledaj još uzbudljivih videozapisa na TikTokuGledaj još uzbudljivih videozapisa na TikToku
+                    - button "Watch now" [ref=f8e60]
+                  - generic [ref=f8e61]:
+                    - link:
+                      - /url: https://www.tiktok.com/@floodbar.id/video/7362061292741430534?referer_url=www.floodbar.id%2F&refer=embed&embed_source=null%3Bnull%3Bembed_blank&referer_video_id=7362061292741430534
+                    - generic [ref=f8e62] [cursor=pointer]:
+                      - link:
+                        - /url: https://www.tiktok.com/@floodbar.id/video/7362061292741430534?referer_url=www.floodbar.id%2F&refer=embed&embed_source=null%3Bnull%3Bembed_blank&referer_video_id=7362061292741430534
+                      - link "@floodbar.id" [ref=f8e63]:
+                        - /url: https://www.tiktok.com/@floodbar.id?referer_url=www.floodbar.id%2F&refer=embed&embed_source=null%3Bnull%3Bembed_name&referer_video_id=7362061292741430534
+                      - generic [ref=f8e66]:
+                        - link "Musim hunan segera datang, sudah punya persiapan belum??" [ref=f8e67]:
+                          - /url: https://www.tiktok.com/@floodbar.id/video/7362061292741430534?referer_url=www.floodbar.id%2F&refer=embed&embed_source=null%3Bnull%3Bembed_blank&referer_video_id=7362061292741430534
+                        - link "#timnasindonesia" [ref=f8e68]:
+                          - /url: https://www.tiktok.com/tag/timnasindonesia?referer_url=www.floodbar.id%2F&refer=embed&embed_source=null%3Bnull%3Bembed_hashtag&referer_video_id=7362061292741430534
+                        - link [ref=f8e70]:
+                          - /url: https://www.tiktok.com/@floodbar.id/video/7362061292741430534?referer_url=www.floodbar.id%2F&refer=embed&embed_source=null%3Bnull%3Bembed_blank&referer_video_id=7362061292741430534
+                        - link "#floodbar" [ref=f8e71]:
+                          - /url: https://www.tiktok.com/tag/floodbar?referer_url=www.floodbar.id%2F&refer=embed&embed_source=null%3Bnull%3Bembed_hashtag&referer_video_id=7362061292741430534
+                        - link [ref=f8e73]:
+                          - /url: https://www.tiktok.com/@floodbar.id/video/7362061292741430534?referer_url=www.floodbar.id%2F&refer=embed&embed_source=null%3Bnull%3Bembed_blank&referer_video_id=7362061292741430534
+                        - link "#sekatantibanjir" [ref=f8e74]:
+                          - /url: https://www.tiktok.com/tag/sekatantibanjir?referer_url=www.floodbar.id%2F&refer=embed&embed_source=null%3Bnull%3Bembed_hashtag&referer_video_id=7362061292741430534
+                        - link [ref=f8e76]:
+                          - /url: https://www.tiktok.com/@floodbar.id/video/7362061292741430534?referer_url=www.floodbar.id%2F&refer=embed&embed_source=null%3Bnull%3Bembed_blank&referer_video_id=7362061292741430534
+                        - link "#banjircore" [ref=f8e77]:
+                          - /url: https://www.tiktok.com/tag/banjircore?referer_url=www.floodbar.id%2F&refer=embed&embed_source=null%3Bnull%3Bembed_hashtag&referer_video_id=7362061292741430534
+                        - link [ref=f8e79]:
+                          - /url: https://www.tiktok.com/@floodbar.id/video/7362061292741430534?referer_url=www.floodbar.id%2F&refer=embed&embed_source=null%3Bnull%3Bembed_blank&referer_video_id=7362061292741430534
+                        - link "#banjirtasikmalaya" [ref=f8e80]:
+                          - /url: https://www.tiktok.com/tag/banjirtasikmalaya?referer_url=www.floodbar.id%2F&refer=embed&embed_source=null%3Bnull%3Bembed_hashtag&referer_video_id=7362061292741430534
+                        - link [ref=f8e82]:
+                          - /url: https://www.tiktok.com/@floodbar.id/video/7362061292741430534?referer_url=www.floodbar.id%2F&refer=embed&embed_source=null%3Bnull%3Bembed_blank&referer_video_id=7362061292741430534
+                        - link "#bencana" [ref=f8e83]:
+                          - /url: https://www.tiktok.com/tag/bencana?referer_url=www.floodbar.id%2F&refer=embed&embed_source=null%3Bnull%3Bembed_hashtag&referer_video_id=7362061292741430534
+                        - link [ref=f8e85]:
+                          - /url: https://www.tiktok.com/@floodbar.id/video/7362061292741430534?referer_url=www.floodbar.id%2F&refer=embed&embed_source=null%3Bnull%3Bembed_blank&referer_video_id=7362061292741430534
+                        - link "#banjirsemeru" [ref=f8e86]:
+                          - /url: https://www.tiktok.com/tag/banjirsemeru?referer_url=www.floodbar.id%2F&refer=embed&embed_source=null%3Bnull%3Bembed_hashtag&referer_video_id=7362061292741430534
+                        - link [ref=f8e88]:
+                          - /url: https://www.tiktok.com/@floodbar.id/video/7362061292741430534?referer_url=www.floodbar.id%2F&refer=embed&embed_source=null%3Bnull%3Bembed_blank&referer_video_id=7362061292741430534
+                      - link [ref=f8e89]:
+                        - /url: https://www.tiktok.com/music/suara-asli-IDOLAMU🥰-7357776838076746502?referer_url=www.floodbar.id%2F&refer=embed&embed_source=null%3Bnull%3Bembed_song_name
+          - 'heading "Musim hunan segera datang, sudah punya persiapan belum?? #timnasindonesia #floodbar #sekatantibanjir #banjircore #banjirtasikmalaya #bencana #banjirsemeru sedikit FloodBar" [level=3] [ref=e401]'
+    - generic [ref=e403]:
+      - generic [ref=e404]:
+        - heading "Artikel & Tips" [level=2] [ref=e405]
+        - paragraph [ref=e406]: Baca artikel terbaru seputar tips perlindungan banjir dan informasi berguna lainnya
+      - link [ref=e408] [cursor=pointer]:
+        - /url: /artikel/solusi-cerdas-banjir-masuk-rumah-pintu-anti-banjir-custom-floodbar-sekat-banjir-paling-efektif-dan-terjangkau
+        - 'img "Solusi Cerdas Banjir Masuk Rumah: Pintu Anti Banjir Custom FloodBar, Sekat Banjir Paling Efektif dan Terjangkau" [ref=e410]'
+        - generic [ref=e411]:
+          - 'heading "Solusi Cerdas Banjir Masuk Rumah: Pintu Anti Banjir Custom FloodBar, Sekat Banjir Paling Efektif dan Terjangkau" [level=3] [ref=e412]'
+          - paragraph [ref=e413]: "Setiap tahun, jutaan keluarga di Indonesia menghadapi momok yang sama: banjir masuk rumah. Dari Jakarta, Semarang, Surabaya, hingga Medan, musim hujan selalu membawa kekhawatiran akan kerugian materiil dan trauma emosional. Menurut data dari Badan Nasional Penanggulangan Bencana (BNPB), kejadian banjir di Indonesia terus meningkat, menyebabkan kerugian yang tak terhitung jumlahnya [1]. Jika Anda mencari solusi banjir masuk rumah yang praktis, efektif, dan tidak menguras kantong, Anda berada di tempat yang tepat."
+          - generic [ref=e414]: Baca Selengkapnya
+      - link [ref=e418] [cursor=pointer]:
+        - /url: /artikel
+        - button "Lihat Semua Artikel" [ref=e419]
+    - generic [ref=e421]:
+      - heading "Siap Pre-Order FloodBar Custom Anda?" [level=2] [ref=e422]
+      - generic [ref=e423]:
+        - paragraph [ref=e424]: Jangan tunggu banjir datang! Pre-order FloodBar sekarang dan dapatkan sekat pintu anti banjir yang dibuat khusus sesuai ukuran pintu rumah, ruko, gudang, atau kantor Anda. Konsultasi gratis untuk desain dan kebutuhan FloodBar di lokasi Anda.
+        - paragraph [ref=e425]: "Kami melayani pengiriman ke seluruh Indonesia melalui partner logistik terpercaya, mencakup kota-kota besar dan ibu kota provinsi seperti: Banda Aceh, Medan, Padang, Pekanbaru, Tanjung Pinang, Jambi, Bengkulu, Palembang, Bandar Lampung, Jakarta, Bandung, Serang, Semarang, Yogyakarta, Surabaya, Denpasar, Mataram, Kupang, Pontianak, Palangka Raya, Banjarmasin, Samarinda, Tanjung Selor, Manado, Gorontalo, Palu, Mamuju, Makassar, Kendari, Ambon, Sofifi, Jayapura, Manokwari, Sorong, Merauke, Nabire, dan Wamena."
+        - paragraph [ref=e426]: Di mana pun Anda berada di Indonesia, FloodBar siap dikirim sampai tujuan dengan aman dan profesional.
+      - link [ref=e428] [cursor=pointer]:
+        - /url: /order
+        - button "🚨 Pre-Order FloodBar Sekarang" [ref=e429]
+    - contentinfo [ref=e430]:
+      - generic [ref=e432]:
+        - generic [ref=e433]:
+          - img "FloodBar - Solusi Cerdas Hadapi Banjir - Paling Murah dan Berkualitas" [ref=e434]
+          - generic [ref=e435]: FloodBar - Solusi Cerdas Hadapi Banjir - Paling Murah dan Berkualitas
+        - paragraph [ref=e436]: FloodBar - Solusi Cerdas Hadapi Banjir - Paling Murah dan Berkualitas
+        - generic [ref=e437]:
+          - generic [ref=e438]: "+6289504656116"
+          - generic [ref=e442]: sekatbanjirfloodbar@gmail.com
+          - generic [ref=e447]: Jl. Soekarno Hatta, Ngembal Kulon, Kec. Jati, Kabupaten Kudus, Jawa Tengah 59341
+        - generic [ref=e452]:
+          - link [ref=e453] [cursor=pointer]:
+            - /url: https://www.instagram.com/flood_bar/
+          - link [ref=e457] [cursor=pointer]:
+            - /url: https://web.facebook.com/profile.php?id=61579077500324
+          - link [ref=e460] [cursor=pointer]:
+            - /url: https://www.tiktok.com/@floodbar.id?lang=id-ID
+        - paragraph [ref=e463]: © 2025 FloodBar - Solusi Cerdas Hadapi Banjir - Paling Murah dan Berkualitas - Semua hak dilindungi undang-undang.
+    - link [ref=e464] [cursor=pointer]:
+      - /url: https://wa.me/6289504656116?text=Halo,%20saya%20tertarik%20dengan%20FloodBar%20custom%20untuk%20rumah%20saya
+  - alert [ref=e467]

@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react'
 import { useSearchParams } from 'next/navigation'
 import { Calculator, ShoppingCart, User, MapPin, CreditCard, Send, Package, Truck, Shield, MessageCircle } from 'lucide-react'
+import { trackOpenAILeadCreated } from '@/lib/openaiAds'
 
 interface OrderItem {
   id: string
@@ -856,6 +857,7 @@ export default function OrderPageClient() {
       {/* WhatsApp Button */}
       <a
         href={`https://wa.me/${settings?.contact?.phone?.replace(/[^0-9]/g, '') || '6281234567890'}?text=Halo,%20saya%20butuh%20bantuan%20dengan%20order%20FloodBar%20custom`}
+        onClick={trackOpenAILeadCreated}
         target="_blank"
         rel="noopener noreferrer"
         className="fixed bottom-24 right-8 bg-green-500 text-white p-4 rounded-full shadow-lg hover:bg-green-600 transition-all duration-300 hover:shadow-xl z-50"

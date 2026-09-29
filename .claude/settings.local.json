@@ -72,7 +72,14 @@
       "WebFetch(domain:floodbar-ih5z0rsyo-jharrvis-projects.vercel.app)",
       "Bash(git log:*)",
       "WebFetch(domain:docs.fonnte.com)",
-      "Bash(timeout:*)"
+      "Bash(timeout:*)",
+      "mcp__ide__getDiagnostics",
+      "Bash(cat:*)",
+      "Bash(DATABASE_URL=\"mysql://generator_floodbar:3%28%3B8I%29ZA9bYy%25NP%3F@167.172.88.142:3306/generator_floodbar\" npx prisma migrate dev:*)",
+      "Bash(DATABASE_URL=\"mysql://generator_floodbar:3%28%3B8I%29ZA9bYy%25NP%3F@167.172.88.142:3306/generator_floodbar\" npx prisma db push:*)",
+      "Bash(ls:*)",
+      "Bash(DATABASE_URL=\"mysql://generator_floodbar:3%28%3B8I%29ZA9bYy%25NP%3F@167.172.88.142:3306/generator_floodbar\" npx prisma db execute:*)",
+      "Bash(del scriptsupdate-hero-image.js)"
     ],
     "deny": [],
     "ask": []

@@ -235,16 +235,24 @@ model Video {
 
 model Article {
   id          String   @id @default(cuid())
+  articleId   String?  @db.VarChar(20)
   title       String   @db.VarChar(255)
   slug        String   @unique @db.VarChar(255)
   content     String   @db.Text
   excerpt     String   @db.Text
+  seoTitle    String?  @db.VarChar(255)
+  metaDescription String? @db.Text
+  primaryKeyword String? @db.VarChar(255)
+  secondaryKeywords String? @db.Text
+  heroAlt     String?  @db.VarChar(255)
   imageUrl    String?  @db.VarChar(500)
   author      String   @db.VarChar(100)
   isPublished Boolean  @default(false)
+  scheduledAt DateTime?
   publishedAt DateTime?
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
   @@map("articles")
 }
+

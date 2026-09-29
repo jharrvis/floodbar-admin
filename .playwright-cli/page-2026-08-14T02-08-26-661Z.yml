@@ -1,0 +1,11 @@
+- generic [active] [ref=e1]:
+  - alert [ref=e4]
+  - generic [ref=e7]:
+    - generic [ref=e8]:
+      - heading "Login Admin Panel" [level=2] [ref=e9]
+      - paragraph [ref=e10]: Floodbar Management System
+    - generic [ref=e11]:
+      - textbox "Email address" [ref=e13]: admin@floodbar.com
+      - textbox "Password" [ref=e15]: admin123
+      - generic [ref=e17]: Email atau password salah
+      - button "Login" [ref=e16] [cursor=pointer]

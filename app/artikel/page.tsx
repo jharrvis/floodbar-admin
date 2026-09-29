@@ -2,33 +2,44 @@ import Link from 'next/link'
 import { Calendar, User, ArrowRight } from 'lucide-react'
 import { prisma } from '@/lib/prisma'
 
+export const dynamic = 'force-dynamic'
+
+function wait(ms: number) {
+  return new Promise((resolve) => setTimeout(resolve, ms))
+}
+
 async function getArticles() {
-  try {
-    const articles = await prisma.article.findMany({
-      where: { isPublished: true },
-      orderBy: { publishedAt: 'desc' },
-      select: {
-        id: true,
-        title: true,
-        slug: true,
-        excerpt: true,
-        imageUrl: true,
-        author: true,
-        publishedAt: true,
-        createdAt: true
+  for (let attempt = 1; attempt <= 3; attempt++) {
+    try {
+      return await prisma.article.findMany({
+        where: { isPublished: true },
+        orderBy: { publishedAt: 'desc' },
+        select: {
+          id: true,
+          title: true,
+          slug: true,
+          excerpt: true,
+          imageUrl: true,
+          heroAlt: true,
+          author: true,
+          publishedAt: true,
+          createdAt: true
+        }
+      })
+    } catch (error) {
+      if (attempt === 3) {
+        console.error('Error fetching articles:', error)
+        return []
       }
-    })
-    return articles
-  } catch (error) {
-    console.error('Error fetching articles:', error)
-    return []
+      await wait(300 * attempt)
+    }
   }
+  return []
 }
 
 async function getSettings() {
   try {
-    const settings = await prisma.settings.findFirst()
-    return settings
+    return await prisma.settings.findFirst()
   } catch {
     return null
   }
@@ -36,7 +47,9 @@ async function getSettings() {
 
 export const metadata = {
   title: 'Artikel - FloodBar.id',
-  description: 'Baca artikel terbaru seputar tips perlindungan banjir dan informasi FloodBar'
+  description: 'Baca artikel terbaru seputar tips perlindungan banjir dan informasi FloodBar',
+  alternates: { canonical: '/artikel' },
+  robots: { index: true, follow: true }
 }
 
 export default async function ArticlesPage() {
@@ -63,12 +76,16 @@ export default async function ArticlesPage() {
                 src={settings.logoUrl}
                 alt={settings?.siteName || 'FloodBar.id'}
                 className="w-8 h-8 object-contain rounded"
+                width={32}
+                height={32}
               />
             ) : (
               <img
                 src="/images/logo-floodbar.webp"
                 alt="FloodBar.id"
                 className="w-8 h-8 object-contain rounded"
+                width={32}
+                height={32}
               />
             )}
             <span className="font-bold text-xl">{settings?.siteName || 'FloodBar.id'}</span>
@@ -92,8 +109,8 @@ export default async function ArticlesPage() {
         {articles.length > 0 ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {articles.map((article: any) => (
-              <Link 
-                key={article.id} 
+              <Link
+                key={article.id}
                 href={`/artikel/${article.slug}`}
                 className="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow group"
               >
@@ -101,8 +118,10 @@ export default async function ArticlesPage() {
                   <div className="w-full h-48 overflow-hidden">
                     <img
                       src={article.imageUrl}
-                      alt={article.title}
+                      alt={article.heroAlt || article.title}
                       className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                      width={640}
+                      height={360}
                     />
                   </div>
                 ) : (
@@ -112,12 +131,12 @@ export default async function ArticlesPage() {
                     </span>
                   </div>
                 )}
-                
+
                 <div className="p-6">
                   <h2 className="text-xl font-bold text-gray-900 mb-3 line-clamp-2 group-hover:text-blue-600 transition-colors">
                     {article.title}
                   </h2>
-                  
+
                   <p className="text-gray-600 mb-4 line-clamp-3">
                     {article.excerpt}
                   </p>

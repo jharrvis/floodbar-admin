@@ -30,7 +30,7 @@ export async function POST() {
 NEXTAUTH_SECRET=your-secret-key-here
 
 # Database
-DATABASE_URL=mysql://generator_floodbar:3%28%3B8I%29ZA9bYy%25NP%3F@167.172.88.142:3306/generator_floodbar
+# DATABASE_URL must be set in the local environment.
 
 # Cloudinary Configuration - Synced from database
 `

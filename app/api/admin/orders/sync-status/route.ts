@@ -6,6 +6,25 @@ export const dynamic = 'force-dynamic'
 
 const prisma = new PrismaClient()
 
+async function ensureWebhookLogsTable() {
+  await prisma.$executeRawUnsafe(`
+    CREATE TABLE IF NOT EXISTS webhook_logs (
+      id VARCHAR(255) PRIMARY KEY,
+      orderId VARCHAR(255),
+      provider VARCHAR(50) NOT NULL,
+      eventType VARCHAR(100) NOT NULL,
+      status VARCHAR(50),
+      webhookData JSON,
+      processedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+      createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+
+      INDEX idx_order_id (orderId),
+      INDEX idx_provider (provider),
+      INDEX idx_processed_at (processedAt)
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
+  `)
+}
+
 export async function POST(request: NextRequest) {
   try {
     const { orderId } = await request.json()
@@ -17,7 +36,7 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    console.log('🔄 Syncing payment status for order:', orderId)
+    console.log('ðŸ”„ Syncing payment status for order:', orderId)
 
     // Get order data
     const orderResult = await prisma.$queryRawUnsafe(`
@@ -58,7 +77,7 @@ export async function POST(request: NextRequest) {
     
     for (const externalId of possibleExternalIds) {
       try {
-        console.log('🔍 Checking Xendit invoice with external_id:', externalId)
+        console.log('ðŸ” Checking Xendit invoice with external_id:', externalId)
         
         const xenditResponse = await fetch(`https://api.xendit.co/v2/invoices?external_id=${externalId}`, {
           method: 'GET',
@@ -73,18 +92,18 @@ export async function POST(request: NextRequest) {
           if (invoices && invoices.length > 0) {
             // Get the most recent invoice
             xenditInvoice = invoices[invoices.length - 1]
-            console.log('✅ Found Xendit invoice:', xenditInvoice.id, 'Status:', xenditInvoice.status)
+            console.log('âœ… Found Xendit invoice:', xenditInvoice.id, 'Status:', xenditInvoice.status)
             break
           }
         }
       } catch (error) {
-        console.log(`❌ Error checking external_id ${externalId}:`, error)
+        console.log(`âŒ Error checking external_id ${externalId}:`, error)
         continue
       }
     }
 
     if (!xenditInvoice) {
-      console.log('ℹ️ No Xendit invoice found for order:', orderId)
+      console.log('â„¹ï¸ No Xendit invoice found for order:', orderId)
       return NextResponse.json({
         success: true,
         message: 'No Xendit invoice found',
@@ -139,9 +158,10 @@ export async function POST(request: NextRequest) {
         WHERE id = ?
       `, newStatus, newPaymentStatus, orderId)
 
-      console.log(`✅ Order ${orderId} status synced: ${order.status} -> ${newStatus}, payment: ${order.paymentStatus} -> ${newPaymentStatus}`)
+      console.log(`âœ… Order ${orderId} status synced: ${order.status} -> ${newStatus}, payment: ${order.paymentStatus} -> ${newPaymentStatus}`)
 
       // Log sync event
+      await ensureWebhookLogsTable()
       await prisma.$executeRawUnsafe(`
         INSERT INTO webhook_logs (
           id, orderId, provider, eventType, status, webhookData, processedAt
@@ -183,7 +203,7 @@ export async function POST(request: NextRequest) {
     }
 
   } catch (error) {
-    console.error('❌ Error syncing order status:', error)
+    console.error('âŒ Error syncing order status:', error)
     return NextResponse.json(
       { 
         success: false, 

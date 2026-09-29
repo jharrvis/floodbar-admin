@@ -4,5 +4,6 @@
       "maxDuration": 30
     }
   },
-  "regions": ["sin1"]
+  "regions": ["sin1"],
+  "crons": [{ "path": "/api/cron/publish-articles", "schedule": "0 0 * * *" }]
 }

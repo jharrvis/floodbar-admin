@@ -1,0 +1,120 @@
+- generic [ref=e1]:
+  - alert [ref=e4]
+  - generic [ref=e18]:
+    - generic [ref=e19]:
+      - heading "Floodbar Admin" [level=1] [ref=e21]
+      - navigation [ref=e22]:
+        - link "Dashboard" [ref=e23] [cursor=pointer]:
+          - /url: /admin
+        - link "Landing Page" [ref=e28] [cursor=pointer]:
+          - /url: /admin/landing
+        - link "Media" [ref=e33] [cursor=pointer]:
+          - /url: /admin/media
+        - link "Kelola Berita" [ref=e39] [cursor=pointer]:
+          - /url: /admin/news
+        - link "Kelola Artikel" [ref=e44] [cursor=pointer]:
+          - /url: /admin/articles
+        - link "Kelola Video" [ref=e49] [cursor=pointer]:
+          - /url: /admin/videos
+        - link "Produk & Pengiriman" [ref=e54] [cursor=pointer]:
+          - /url: /admin/product
+        - link "Ongkir Indah Cargo" [ref=e60] [cursor=pointer]:
+          - /url: /admin/shipping
+        - link "User Management" [ref=e67] [cursor=pointer]:
+          - /url: /admin/users
+        - link "Kelola Pesanan 50" [ref=e74] [cursor=pointer]:
+          - /url: /admin/orders
+          - generic [ref=e78]: Kelola Pesanan
+          - generic [ref=e79]: "50"
+        - link "Pengaturan Pembayaran" [ref=e80] [cursor=pointer]:
+          - /url: /admin/payment
+        - link "Settings" [ref=e84] [cursor=pointer]:
+          - /url: /admin/settings
+        - button "Logout" [ref=e89] [cursor=pointer]
+    - generic [ref=e94]:
+      - banner [ref=e95]:
+        - generic [ref=e96]:
+          - heading "Dashboard" [level=2] [ref=e97]
+          - generic [ref=e98]: Welcome, Admin Utama
+      - main [ref=e100]:
+        - generic [ref=e275]:
+          - generic [ref=e276]:
+            - heading "Kelola Artikel" [level=1] [ref=e277]
+            - button "Tambah Artikel" [ref=e278] [cursor=pointer]
+          - generic [ref=e325]:
+            - heading "Tambah Artikel Baru" [level=2] [ref=e326]
+            - generic [ref=e327]:
+              - generic [ref=e328]:
+                - generic [ref=e329]: Judul Artikel
+                - textbox [ref=e330]: "Jangan Tunggu Air Masuk Rumah: Sekat Anti Banjir FloodBar sebagai Pertahanan Pertama Sebelum Genangan Datang"
+              - generic [ref=e331]:
+                - generic [ref=e332]: Ringkasan (Excerpt)
+                - textbox "Ringkasan singkat artikel untuk ditampilkan di halaman list..." [ref=e333]: Banjir masih menjadi ancaman nyata bagi rumah dan properti. Pelajari bagaimana sekat anti banjir custom FloodBar membantu melindungi titik masuk air sebelum genangan datang.
+              - generic [ref=e334]:
+                - generic [ref=e335]: Konten Artikel
+                - generic [ref=e337]:
+                  - generic [ref=e338]:
+                    - generic [ref=e340]:
+                      - button "Normal" [ref=e341] [cursor=pointer]
+                      - text: Heading 1 Heading 2 Heading 3 Normal
+                    - generic [ref=e345]:
+                      - button [ref=e346] [cursor=pointer]
+                      - button [ref=e350] [cursor=pointer]
+                      - button [ref=e353] [cursor=pointer]
+                      - button [ref=e357] [cursor=pointer]
+                    - generic [ref=e362]:
+                      - button [ref=e363] [cursor=pointer]
+                      - button [ref=e368] [cursor=pointer]
+                    - button [ref=e372] [cursor=pointer]
+                    - generic [ref=e374]:
+                      - button [ref=e375] [cursor=pointer]
+                      - button [ref=e380] [cursor=pointer]
+                    - generic [ref=e385]:
+                      - button [ref=e386] [cursor=pointer]
+                      - button [ref=e392] [cursor=pointer]
+                    - button [ref=e398] [cursor=pointer]
+                  - generic [ref=e404]:
+                    - generic [active] [ref=e405]:
+                      - text: Tulis konten artikel di sini...
+                      - paragraph [ref=e406]
+                    - text: "Visit URL: EditRemove"
+              - generic [ref=e408]:
+                - generic [ref=e409]: URL Gambar (Opsional)
+                - textbox "https://example.com/image.jpg" [ref=e410]: https://commons.wikimedia.org/wiki/Special:FilePath/House%20flood.jpg
+              - generic [ref=e411]:
+                - generic [ref=e412]: Penulis
+                - textbox "Nama penulis" [ref=e413]: floodbar.id
+              - generic [ref=e414]:
+                - checkbox "Publish (tampil di website)" [checked] [ref=e415]
+                - generic [ref=e416]: Publish (tampil di website)
+              - generic [ref=e417]:
+                - button "Simpan" [ref=e418] [cursor=pointer]
+                - button "Batal" [ref=e419] [cursor=pointer]
+          - table [ref=e283]:
+            - rowgroup [ref=e284]:
+              - row [ref=e285]:
+                - columnheader "Artikel" [ref=e286]
+                - columnheader "Penulis" [ref=e287]
+                - columnheader "Tanggal" [ref=e288]
+                - columnheader "Status" [ref=e289]
+                - columnheader "Aksi" [ref=e290]
+            - rowgroup [ref=e291]:
+              - row [ref=e292]:
+                - cell [ref=e293]:
+                  - generic [ref=e294]:
+                    - 'img "Solusi Cerdas Banjir Masuk Rumah: Pintu Anti Banjir Custom FloodBar, Sekat Banjir Paling Efektif dan Terjangkau" [ref=e295]'
+                    - generic [ref=e296]:
+                      - 'heading "Solusi Cerdas Banjir Masuk Rumah: Pintu Anti Banjir Custom FloodBar, Sekat Banjir Paling Efektif dan Terjangkau" [level=3] [ref=e297]'
+                      - paragraph [ref=e298]: "Setiap tahun, jutaan keluarga di Indonesia menghadapi momok yang sama: banjir masuk rumah. Dari Jakarta, Semarang, Surabaya, hingga Medan, musim hujan selalu membawa kekhawatiran akan kerugian materiil dan trauma emosional. Menurut data dari Badan Nasional Penanggulangan Bencana (BNPB), kejadian banjir di Indonesia terus meningkat, menyebabkan kerugian yang tak terhitung jumlahnya [1]. Jika Anda mencari solusi banjir masuk rumah yang praktis, efektif, dan tidak menguras kantong, Anda berada di tempat yang tepat."
+                - cell "floodbar" [ref=e299]
+                - 'cell "5 Desember 2025 Publish: 5 Desember 2025" [ref=e301]':
+                  - generic [ref=e302]: 5 Desember 2025
+                  - generic [ref=e303]: "Publish: 5 Desember 2025"
+                - cell [ref=e304]:
+                  - button "Published" [ref=e305] [cursor=pointer]
+                - cell [ref=e309]:
+                  - generic [ref=e310]:
+                    - link "Lihat artikel" [ref=e311] [cursor=pointer]:
+                      - /url: /artikel/solusi-cerdas-banjir-masuk-rumah-pintu-anti-banjir-custom-floodbar-sekat-banjir-paling-efektif-dan-terjangkau
+                    - button "Edit" [ref=e316] [cursor=pointer]
+                    - button "Hapus" [ref=e320] [cursor=pointer]

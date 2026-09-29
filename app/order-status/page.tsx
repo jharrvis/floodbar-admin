@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { Search, Package, Clock, CheckCircle, Truck, Shield, ArrowLeft, MessageCircle } from 'lucide-react'
+import { trackOpenAILeadCreated } from '@/lib/openaiAds'
 import Link from 'next/link'
 
 interface OrderStatus {
@@ -359,6 +360,7 @@ export default function OrderStatusPage() {
       {/* WhatsApp Button */}
       <a
         href={`https://wa.me/${settings?.contact?.phone?.replace(/[^0-9]/g, '') || '6281234567890'}?text=Halo,%20saya%20ingin%20bertanya%20tentang%20status%20order%20FloodBar%20saya`}
+        onClick={trackOpenAILeadCreated}
         target="_blank"
         rel="noopener noreferrer"
         className="fixed bottom-24 right-8 bg-green-500 text-white p-4 rounded-full shadow-lg hover:bg-green-600 transition-all duration-300 hover:shadow-xl z-50"

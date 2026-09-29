@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { Phone, Mail, MapPin, Star, Shield, Wrench, Droplets, CheckCircle, AlertTriangle, Home, ChevronLeft, ChevronRight, ArrowUp, Instagram, Facebook, Play, ChevronDown, MessageCircle, BookOpen, ArrowRight } from 'lucide-react'
+import { trackOpenAILeadCreated } from '@/lib/openaiAds'
 import Link from 'next/link'
 
 interface LandingPageData {
@@ -1160,6 +1161,7 @@ export default function HomePage() {
       {/* WhatsApp Button */}
       <a
         href={`https://wa.me/${data?.contact?.phone?.replace(/[^0-9]/g, '') || '6281234567890'}?text=Halo,%20saya%20tertarik%20dengan%20FloodBar%20custom%20untuk%20rumah%20saya`}
+        onClick={trackOpenAILeadCreated}
         target="_blank"
         rel="noopener noreferrer"
         className="fixed bottom-24 right-8 bg-green-500 text-white p-4 rounded-full shadow-lg hover:bg-green-600 transition-all duration-300 hover:shadow-xl z-50"

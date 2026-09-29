@@ -126,4 +126,9 @@ tmp/
 # Misc
 *.tsbuildinfo
 
+# Local article working files
+/ARTIKEL/
+tmp-drive-image-review/
+.codex/drive-image-review/
+
 .vercel

@@ -1,0 +1,75 @@
+- generic [ref=e1]:
+  - generic [ref=e2]:
+    - generic [ref=e5]:
+      - heading "Floodbar Admin" [level=1] [ref=e7]
+      - navigation [ref=e8]:
+        - link "Dashboard" [ref=e9] [cursor=pointer]:
+          - /url: /admin
+        - link "Landing Page" [ref=e14] [cursor=pointer]:
+          - /url: /admin/landing
+        - link "Media" [ref=e19] [cursor=pointer]:
+          - /url: /admin/media
+        - link "Kelola Berita" [ref=e25] [cursor=pointer]:
+          - /url: /admin/news
+        - link "Kelola Artikel" [ref=e30] [cursor=pointer]:
+          - /url: /admin/articles
+        - link "Kelola Video" [ref=e35] [cursor=pointer]:
+          - /url: /admin/videos
+        - link "Produk & Pengiriman" [ref=e40] [cursor=pointer]:
+          - /url: /admin/product
+        - link "Ongkir Indah Cargo" [ref=e46] [cursor=pointer]:
+          - /url: /admin/shipping
+        - link "User Management" [ref=e53] [cursor=pointer]:
+          - /url: /admin/users
+        - link "Kelola Pesanan 50" [ref=e60] [cursor=pointer]:
+          - /url: /admin/orders
+          - generic [ref=e64]: Kelola Pesanan
+          - generic [ref=e65]: "50"
+        - link "Pengaturan Pembayaran" [ref=e66] [cursor=pointer]:
+          - /url: /admin/payment
+        - link "Settings" [ref=e70] [cursor=pointer]:
+          - /url: /admin/settings
+        - button "Logout" [ref=e75] [cursor=pointer]
+    - generic [ref=e80]:
+      - banner [ref=e81]:
+        - generic [ref=e82]:
+          - heading "Dashboard" [level=2] [ref=e83]
+          - generic [ref=e84]: Welcome, Admin Utama
+      - main [ref=e86]:
+        - generic [ref=e90]:
+          - generic [ref=e91]:
+            - generic [ref=e92]:
+              - generic [ref=e93]:
+                - heading "Media Manager" [level=1] [ref=e94]
+                - paragraph [ref=e95]: Kelola semua gambar yang telah diupload
+              - button "Uploading..." [disabled] [ref=e122]
+            - generic [ref=e100]:
+              - generic [ref=e101]:
+                - textbox "Search images..." [ref=e106]
+                - button "Refresh" [disabled] [ref=e108]
+              - generic [ref=e114]: "Total: 0 images"
+          - paragraph [ref=e125]: Loading media...
+  - alert [ref=e4]
+  - iframe [active] [ref=e123]:
+    - dialog "Upload Widget" [ref=f1e1]:
+      - generic [ref=f1e2]:
+        - button "close" [ref=f1e4] [cursor=pointer]
+        - generic [ref=f1e49]:
+          - generic [ref=f1e50]:
+            - generic [ref=f1e51]: Upload Queue
+            - button "minimize the dialog" [ref=f1e53] [cursor=pointer]
+          - generic [ref=f1e59]:
+            - generic [ref=f1e61]:
+              - generic [ref=f1e62]:
+                - generic [ref=f1e63]: PNG
+                - generic [ref=f1e67]: 1.92 MB
+              - generic [ref=f1e77]: cloud_name is disabled
+            - generic "floodbar-sekat-anti-banjir-2026.png" [ref=f1e83]
+          - generic [ref=f1e84]:
+            - generic "About the Upload Widget" [ref=f1e85]:
+              - img "powered by Cloudinary" [ref=f1e86]
+            - generic [ref=f1e87]:
+              - generic [ref=f1e88]:
+                - button "Upload more" [ref=f1e89] [cursor=pointer]
+                - button "Done" [ref=f1e95] [cursor=pointer]
+              - button "Retry failed" [ref=f1e102] [cursor=pointer]
