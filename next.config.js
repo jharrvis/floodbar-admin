@@ -61,6 +61,8 @@ const nextConfig = {
     return [
       { source: '/lp1', destination: '/lp1/index.html' },
       { source: '/lp1/', destination: '/lp1/index.html' },
+      { source: '/lp2', destination: '/lp2/index.html' },
+      { source: '/lp2/', destination: '/lp2/index.html' },
     ]
   },
 }
