@@ -11,17 +11,22 @@
     return out;
   }
 
-  function fireLead() {
-    var detail = { page: window.location.pathname, params: getParams() };
+  function fireLead(anchor) {
+    var params = getParams();
+    var url = new URL(anchor.href, window.location.href);
+    Object.keys(params).forEach(function (key) { url.searchParams.set(key, params[key]); });
+    anchor.href = url.toString();
+    var detail = { page: window.location.pathname, params: params, link_url: anchor.href };
     window.dataLayer = window.dataLayer || [];
-    window.dataLayer.push({ event: "lead_created", page: detail.page, params: detail.params });
+    window.dataLayer.push({ event: "lead_created", page: detail.page, params: detail.params, link_url: detail.link_url });
     window.dispatchEvent(new CustomEvent("lead_created", { detail: detail }));
+    if (typeof window.oaiq === "function") window.oaiq("track", "lead_created", detail);
     if (typeof window.gtag === "function") {
-      window.gtag("event", "whatsapp_click", { page_path: detail.page });
+      window.gtag("event", "whatsapp_click", { page_path: detail.page, link_url: detail.link_url, ...detail.params });
     }
   }
 
   document.querySelectorAll('a[href*="wa.me"]').forEach(function (a) {
-    a.addEventListener("click", fireLead);
+    a.addEventListener("click", function () { fireLead(a); });
   });
 })();
