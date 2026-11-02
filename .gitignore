@@ -71,10 +71,10 @@ jspm_packages/
 .serverless
 
 # FuseBox cache
-.fusebox/
+.fusebox
 
 # DynamoDB Local files
-.dynamodb/
+.dynamodb
 
 # TernJS port file
 .tern-port
@@ -132,3 +132,4 @@ tmp-drive-image-review/
 .codex/drive-image-review/
 
 .vercel
+# Trigger Vercel deploy 2026-11-02 (no functional change)
