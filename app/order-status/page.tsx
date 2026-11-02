@@ -359,7 +359,7 @@ export default function OrderStatusPage() {
 
       {/* WhatsApp Button */}
       <a
-        href={`https://wa.me/${settings?.contact?.phone?.replace(/[^0-9]/g, '') || '6281234567890'}?text=Halo,%20saya%20ingin%20bertanya%20tentang%20status%20order%20FloodBar%20saya`}
+        href={`https://wa.me/${settings?.contact?.phone?.replace(/[^0-9]/g, '') || '6289504656116'}?text=Halo,%20saya%20ingin%20bertanya%20tentang%20status%20order%20FloodBar%20saya`}
         onClick={trackOpenAILeadCreated}
         target="_blank"
         rel="noopener noreferrer"

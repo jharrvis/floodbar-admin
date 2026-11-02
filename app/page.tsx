@@ -1160,7 +1160,7 @@ export default function HomePage() {
 
       {/* WhatsApp Button */}
       <a
-        href={`https://wa.me/${data?.contact?.phone?.replace(/[^0-9]/g, '') || '6281234567890'}?text=Halo,%20saya%20tertarik%20dengan%20FloodBar%20custom%20untuk%20rumah%20saya`}
+        href={`https://wa.me/${data?.contact?.phone?.replace(/[^0-9]/g, '') || '6289504656116'}?text=Halo,%20saya%20tertarik%20dengan%20FloodBar%20custom%20untuk%20rumah%20saya`}
         onClick={trackOpenAILeadCreated}
         target="_blank"
         rel="noopener noreferrer"
