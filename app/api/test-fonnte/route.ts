@@ -1,9 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server'
 
+import { requireAdmin } from '@/lib/require-admin'
 export const runtime = 'nodejs'
 export const dynamic = 'force-dynamic'
 
 export async function POST(request: NextRequest) {
+  const denied = await requireAdmin(request)
+  if (denied) return denied
+
   try {
     const { target, message } = await request.json()
 
@@ -63,7 +67,10 @@ export async function POST(request: NextRequest) {
 }
 
 // GET endpoint untuk info
-export async function GET() {
+export async function GET(request: NextRequest) {
+  const denied = await requireAdmin(request)
+  if (denied) return denied
+
   return NextResponse.json({
     success: true,
     message: 'Fonnte WhatsApp API Test Endpoint',

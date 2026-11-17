@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 
+import { requireAdmin } from '@/lib/require-admin'
 export const runtime = 'nodejs'
 export const dynamic = 'force-dynamic'
 
@@ -10,6 +11,9 @@ interface WhatsAppData {
 }
 
 export async function POST(request: NextRequest) {
+  const denied = await requireAdmin(request)
+  if (denied) return denied
+
   try {
     const { to, orderId, orderData }: WhatsAppData = await request.json()
 

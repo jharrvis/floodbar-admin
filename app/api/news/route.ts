@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { requireAdmin } from '@/lib/require-admin'
 import { PrismaClient } from '@prisma/client'
 
 export const runtime = 'nodejs'
@@ -10,7 +11,12 @@ export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url)
     const onlyActive = searchParams.get('active') !== 'false'
-    
+
+    if (!onlyActive) {
+      const denied = await requireAdmin(request)
+      if (denied) return denied
+    }
+
     const whereClause = onlyActive ? { isActive: true } : {}
     
     const news = await prisma.news.findMany({
@@ -34,6 +40,9 @@ export async function GET(request: NextRequest) {
 }
 
 export async function POST(request: NextRequest) {
+  const denied = await requireAdmin(request)
+  if (denied) return denied
+
   try {
     const data = await request.json()
 

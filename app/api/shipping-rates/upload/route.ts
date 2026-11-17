@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { requireAdmin } from '@/lib/require-admin'
 import { PrismaClient } from '@prisma/client'
 
 const prisma = new PrismaClient()
@@ -33,6 +34,9 @@ function parseDecimal(value: string): number | null {
 }
 
 export async function POST(request: NextRequest) {
+  const denied = await requireAdmin(request)
+  if (denied) return denied
+
   try {
     const formData = await request.formData()
     const file = formData.get('file') as File

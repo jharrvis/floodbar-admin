@@ -1,4 +1,5 @@
-import { NextResponse } from 'next/server'
+import { NextRequest, NextResponse } from 'next/server'
+import { requireAdmin } from '@/lib/require-admin'
 import { v2 as cloudinary } from 'cloudinary'
 import { configureCloudinary } from '@/lib/cloudinary-config'
 
@@ -7,6 +8,9 @@ export const dynamic = 'force-dynamic'
 
 // POST - Move image to different folder
 export async function POST(request: Request) {
+  const denied = await requireAdmin(request)
+  if (denied) return denied
+
   try {
     // Configure Cloudinary from database
     const configured = await configureCloudinary()

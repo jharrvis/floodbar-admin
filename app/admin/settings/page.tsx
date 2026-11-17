@@ -245,7 +245,22 @@ export default function SettingsPage() {
     }
 
     try {
-      await new Promise(resolve => setTimeout(resolve, 1000))
+      const response = await fetch('/api/settings/change-password', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          currentPassword: passwordData.currentPassword,
+          newPassword: passwordData.newPassword
+        })
+      })
+
+      const result = await response.json()
+
+      if (!response.ok || !result.success) {
+        alert(result.error || 'Gagal mengubah password')
+        return
+      }
+
       alert('Password berhasil diubah!')
       setPasswordData({
         currentPassword: '',

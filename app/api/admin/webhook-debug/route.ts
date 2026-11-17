@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { requireAdmin } from '@/lib/require-admin'
 import { PrismaClient } from '@prisma/client'
 
 export const runtime = 'nodejs'
@@ -6,7 +7,10 @@ export const dynamic = 'force-dynamic'
 
 const prisma = new PrismaClient()
 
-export async function GET() {
+export async function GET(request: NextRequest) {
+  const denied = await requireAdmin(request)
+  if (denied) return denied
+
   try {
     // Get recent webhook logs for debugging
     const webhookLogs = await prisma.$queryRawUnsafe(`
@@ -44,6 +48,9 @@ export async function GET() {
 
 // Test webhook endpoint
 export async function POST(request: NextRequest) {
+  const denied = await requireAdmin(request)
+  if (denied) return denied
+
   try {
     const body = await request.text()
     console.log('🧪 Test webhook received:', body)

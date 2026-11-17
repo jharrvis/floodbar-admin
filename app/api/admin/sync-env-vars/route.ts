@@ -1,4 +1,5 @@
-import { NextResponse } from 'next/server'
+import { NextRequest, NextResponse } from 'next/server'
+import { requireAdmin } from '@/lib/require-admin'
 import { getCloudinaryConfig } from '@/lib/cloudinary-config'
 import fs from 'fs'
 import path from 'path'
@@ -7,7 +8,10 @@ export const runtime = 'nodejs'
 export const dynamic = 'force-dynamic'
 
 // POST - Sync environment variables with database values
-export async function POST() {
+export async function POST(request: NextRequest) {
+  const denied = await requireAdmin(request)
+  if (denied) return denied
+
   try {
     const config = await getCloudinaryConfig()
     

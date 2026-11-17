@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { requireAdmin } from '@/lib/require-admin'
 import { PrismaClient } from '@prisma/client'
 
 export const runtime = 'nodejs'
@@ -6,7 +7,10 @@ export const dynamic = 'force-dynamic'
 
 const prisma = new PrismaClient()
 
-export async function GET() {
+export async function GET(request: NextRequest) {
+  const denied = await requireAdmin(request)
+  if (denied) return denied
+
   try {
     const settingsResult = await prisma.$queryRawUnsafe(`
       SELECT * FROM settings ORDER BY createdAt DESC LIMIT 1
@@ -48,6 +52,9 @@ export async function GET() {
 }
 
 export async function PUT(request: NextRequest) {
+  const denied = await requireAdmin(request)
+  if (denied) return denied
+
   try {
     const data = await request.json()
     const {

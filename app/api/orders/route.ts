@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { requireAdmin } from '@/lib/require-admin'
 import { PrismaClient } from '@prisma/client'
 import { sendOrderCreatedToCustomer, sendOrderCreatedToAdmin } from '@/lib/fonnte'
 import { sendOrderEmailToCustomer, sendOrderEmailToAdmin } from '@/lib/email'
@@ -266,6 +267,8 @@ export async function GET(request: NextRequest) {
       })
     } else {
       // Get all orders (for admin)
+      const denied = await requireAdmin(request)
+      if (denied) return denied
       const ordersResult = await prisma.$queryRawUnsafe(`
         SELECT * FROM orders ORDER BY createdAt DESC LIMIT 50
       `) as any[]

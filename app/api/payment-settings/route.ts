@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { requireAdmin } from '@/lib/require-admin'
 import { PrismaClient } from '@prisma/client'
 
 export const runtime = 'nodejs'
@@ -27,7 +28,10 @@ interface PaymentSettings {
   emailFrom: string
 }
 
-export async function GET() {
+export async function GET(request: NextRequest) {
+  const denied = await requireAdmin(request)
+  if (denied) return denied
+
   try {
     // Try to get all settings including Gmail fields, fallback to basic if Gmail columns don't exist
     let settingsResult
@@ -105,6 +109,9 @@ export async function GET() {
 }
 
 export async function PUT(request: NextRequest) {
+  const denied = await requireAdmin(request)
+  if (denied) return denied
+
   try {
     const data: PaymentSettings = await request.json()
 

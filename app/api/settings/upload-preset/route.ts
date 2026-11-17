@@ -1,4 +1,5 @@
-import { NextResponse } from 'next/server'
+import { NextRequest, NextResponse } from 'next/server'
+import { requireAdmin } from '@/lib/require-admin'
 import { getCloudinaryConfig } from '@/lib/cloudinary-config'
 
 export const runtime = 'nodejs'
@@ -43,6 +44,9 @@ export async function GET() {
 
 // PUT - Update upload preset (this would typically sync with settings)
 export async function PUT(request: Request) {
+  const denied = await requireAdmin(request)
+  if (denied) return denied
+
   try {
     const body = await request.json()
     const { uploadPreset, folder } = body

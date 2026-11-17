@@ -68,6 +68,19 @@ export default function OrderPageClient() {
     quantity: 1
   })
 
+  // Prefill ukuran dari kalkulator landing page (?width=..&height=..)
+  useEffect(() => {
+    const w = parseFloat(searchParams.get('width') || '')
+    const h = parseFloat(searchParams.get('height') || '')
+    if (w > 0 || h > 0) {
+      setProductForm((prev) => ({
+        ...prev,
+        ...(w > 0 ? { width: String(w) } : {}),
+        ...(h > 0 ? { height: String(h) } : {}),
+      }))
+    }
+  }, [searchParams])
+
   // Auto-calculate when dimensions change
   useEffect(() => {
     if (productForm.width && productForm.height && productForm.quantity) {

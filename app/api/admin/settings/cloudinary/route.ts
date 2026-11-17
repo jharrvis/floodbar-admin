@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { requireAdmin } from '@/lib/require-admin'
 import { PrismaClient } from '@prisma/client'
 
 export const runtime = 'nodejs'
@@ -6,7 +7,10 @@ export const dynamic = 'force-dynamic'
 
 const prisma = new PrismaClient()
 
-export async function GET() {
+export async function GET(request: NextRequest) {
+  const denied = await requireAdmin(request)
+  if (denied) return denied
+
   try {
     // Only use database settings
     const settingsRecord = await prisma.adminSettings.findFirst({
@@ -45,6 +49,9 @@ export async function GET() {
 }
 
 export async function PUT(request: NextRequest) {
+  const denied = await requireAdmin(request)
+  if (denied) return denied
+
   try {
     console.log('=== CLOUDINARY SETTINGS SAVE START ===')
     

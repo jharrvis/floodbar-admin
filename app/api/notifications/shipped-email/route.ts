@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { requireAdmin } from '@/lib/require-admin'
 import { PrismaClient } from '@prisma/client'
 import * as nodemailer from 'nodemailer'
 
@@ -8,6 +9,9 @@ export const dynamic = 'force-dynamic'
 const prisma = new PrismaClient()
 
 export async function POST(request: NextRequest) {
+  const denied = await requireAdmin(request)
+  if (denied) return denied
+
   try {
     const { orderId, customerName, customerEmail, trackingNumber, shippingService } = await request.json()
 

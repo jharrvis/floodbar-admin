@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { requireAdmin } from '@/lib/require-admin'
 import nodemailer from 'nodemailer'
 import { PrismaClient } from '@prisma/client'
 
@@ -14,6 +15,9 @@ interface EmailData {
 }
 
 export async function POST(request: NextRequest) {
+  const denied = await requireAdmin(request)
+  if (denied) return denied
+
   try {
     const { to, orderId, orderData }: EmailData = await request.json()
 

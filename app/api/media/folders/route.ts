@@ -1,4 +1,5 @@
-import { NextResponse } from 'next/server'
+import { NextRequest, NextResponse } from 'next/server'
+import { requireAdmin } from '@/lib/require-admin'
 import { v2 as cloudinary } from 'cloudinary'
 import { configureCloudinary } from '@/lib/cloudinary-config'
 
@@ -6,7 +7,10 @@ export const runtime = 'nodejs'
 export const dynamic = 'force-dynamic'
 
 // GET - Get all folders from Cloudinary
-export async function GET() {
+export async function GET(request: NextRequest) {
+  const denied = await requireAdmin(request)
+  if (denied) return denied
+
   try {
     // Configure Cloudinary from database
     const configured = await configureCloudinary()
@@ -53,6 +57,9 @@ export async function GET() {
 
 // POST - Create new folder
 export async function POST(request: Request) {
+  const denied = await requireAdmin(request)
+  if (denied) return denied
+
   try {
     // Configure Cloudinary from database
     const configured = await configureCloudinary()
@@ -105,6 +112,9 @@ export async function POST(request: Request) {
 
 // DELETE - Delete folder (and all its contents)
 export async function DELETE(request: Request) {
+  const denied = await requireAdmin(request)
+  if (denied) return denied
+
   try {
     // Configure Cloudinary from database
     const configured = await configureCloudinary()

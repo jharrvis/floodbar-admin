@@ -1,10 +1,14 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { requireAdmin } from '@/lib/require-admin'
 import bcrypt from 'bcryptjs'
 import { PrismaClient } from '@prisma/client'
 
 const prisma = new PrismaClient()
 
-export async function GET() {
+export async function GET(request: NextRequest) {
+  const denied = await requireAdmin(request)
+  if (denied) return denied
+
   try {
     const users = await prisma.user.findMany({
       select: {
@@ -35,6 +39,9 @@ export async function GET() {
 }
 
 export async function POST(request: NextRequest) {
+  const denied = await requireAdmin(request)
+  if (denied) return denied
+
   try {
     const { name, email, password, role } = await request.json()
 
@@ -97,8 +104,11 @@ export async function POST(request: NextRequest) {
 }
 
 export async function PUT(request: NextRequest) {
+  const denied = await requireAdmin(request)
+  if (denied) return denied
+
   try {
-    const { id, name, email, role, status } = await request.json()
+    const { id, name, email, role, status, password } = await request.json()
 
     // Check if user exists
     const user = await prisma.user.findUnique({
@@ -127,15 +137,28 @@ export async function PUT(request: NextRequest) {
       )
     }
 
-    // Update user
+    if (password && password.length < 6) {
+      return NextResponse.json(
+        { success: false, error: 'Password minimal 6 karakter' },
+        { status: 400 }
+      )
+    }
+
+    // Update user (password hanya diubah bila diisi)
+    const updateData: { name: string; email: string; role: string; status: string; password?: string } = {
+      name,
+      email,
+      role,
+      status
+    }
+
+    if (password) {
+      updateData.password = await bcrypt.hash(password, 10)
+    }
+
     const updatedUser = await prisma.user.update({
       where: { id },
-      data: {
-        name,
-        email,
-        role,
-        status
-      },
+      data: updateData,
       select: {
         id: true,
         name: true,
@@ -164,6 +187,9 @@ export async function PUT(request: NextRequest) {
 }
 
 export async function DELETE(request: NextRequest) {
+  const denied = await requireAdmin(request)
+  if (denied) return denied
+
   try {
     const { searchParams } = new URL(request.url)
     const id = searchParams.get('id')

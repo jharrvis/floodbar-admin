@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import { SiteHeader, SiteFooter } from '../components/SiteChrome'
 import { Calendar, User, ArrowRight } from 'lucide-react'
 import { prisma } from '@/lib/prisma'
 
@@ -8,12 +9,19 @@ function wait(ms: number) {
   return new Promise((resolve) => setTimeout(resolve, ms))
 }
 
-async function getArticles() {
+const PAGE_SIZE = 12
+
+async function getArticles(page: number) {
   for (let attempt = 1; attempt <= 3; attempt++) {
     try {
-      return await prisma.article.findMany({
+      const total = await prisma.article.count({ where: { isPublished: true } })
+      const totalPages = Math.max(1, Math.ceil(total / PAGE_SIZE))
+      const safePage = Math.min(Math.max(1, page), totalPages)
+      const articles = await prisma.article.findMany({
         where: { isPublished: true },
         orderBy: { publishedAt: 'desc' },
+        skip: (safePage - 1) * PAGE_SIZE,
+        take: PAGE_SIZE,
         select: {
           id: true,
           title: true,
@@ -26,15 +34,30 @@ async function getArticles() {
           createdAt: true
         }
       })
+      return { articles, total, totalPages, page: safePage }
     } catch (error) {
       if (attempt === 3) {
         console.error('Error fetching articles:', error)
-        return []
+        return { articles: [], total: 0, totalPages: 1, page: 1 }
       }
       await wait(300 * attempt)
     }
   }
-  return []
+  return { articles: [], total: 0, totalPages: 1, page: 1 }
+}
+
+function pageWindow(current: number, total: number): (number | '...')[] {
+  if (total <= 7) return Array.from({ length: total }, (_, i) => i + 1)
+  const cand = [1, 2, total - 1, total, current - 1, current, current + 1]
+  const sorted = cand.filter((n, i) => n >= 1 && n <= total && cand.indexOf(n) === i).sort((a, b) => a - b)
+  const out: (number | '...')[] = []
+  let prev = 0
+  for (const n of sorted) {
+    if (prev && n - prev > 1) out.push('...')
+    out.push(n)
+    prev = n
+  }
+  return out
 }
 
 async function getSettings() {
@@ -52,8 +75,9 @@ export const metadata = {
   robots: { index: true, follow: true }
 }
 
-export default async function ArticlesPage() {
-  const articles = await getArticles()
+export default async function ArticlesPage({ searchParams }: { searchParams?: { page?: string } }) {
+  const requested = parseInt(searchParams?.page || '1', 10)
+  const { articles, total, totalPages, page } = await getArticles(Number.isNaN(requested) ? 1 : requested)
   const settings = await getSettings()
 
   const formatDate = (date: string | Date | null) => {
@@ -68,33 +92,7 @@ export default async function ArticlesPage() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <nav className="bg-gray-900 text-white px-4 py-3">
-        <div className="max-w-7xl mx-auto flex items-center justify-between">
-          <Link href="/" className="flex items-center space-x-2">
-            {settings?.logoUrl ? (
-              <img
-                src={settings.logoUrl}
-                alt={settings?.siteName || 'FloodBar.id'}
-                className="w-8 h-8 object-contain rounded"
-                width={32}
-                height={32}
-              />
-            ) : (
-              <img
-                src="/images/logo-floodbar.webp"
-                alt="FloodBar.id"
-                className="w-8 h-8 object-contain rounded"
-                width={32}
-                height={32}
-              />
-            )}
-            <span className="font-bold text-xl">{settings?.siteName || 'FloodBar.id'}</span>
-          </Link>
-          <Link href="/" className="text-sm hover:text-blue-400">
-            Kembali ke Beranda
-          </Link>
-        </div>
-      </nav>
+      <SiteHeader />
 
       <main className="max-w-7xl mx-auto px-4 py-12">
         <div className="text-center mb-12">
@@ -170,15 +168,44 @@ export default async function ArticlesPage() {
             </Link>
           </div>
         )}
+
+        {totalPages > 1 && (
+          <nav className="mt-12 flex flex-col items-center gap-4" aria-label="Pagination">
+            <div className="flex items-center gap-2 flex-wrap justify-center">
+              {page > 1 && (
+                <Link href={page - 1 === 1 ? '/artikel' : `/artikel?page=${page - 1}`} className="px-4 py-2 rounded-lg border border-gray-300 bg-white text-gray-700 hover:bg-gray-100 text-sm font-medium">
+                  &laquo; Sebelumnya
+                </Link>
+              )}
+              {pageWindow(page, totalPages).map((n, i) =>
+                n === '...' ? (
+                  <span key={`e${i}`} className="px-2 text-gray-400">…</span>
+                ) : (
+                  <Link
+                    key={n}
+                    href={n === 1 ? '/artikel' : `/artikel?page=${n}`}
+                    className={n === page
+                      ? 'px-4 py-2 rounded-lg bg-blue-600 text-white text-sm font-medium'
+                      : 'px-4 py-2 rounded-lg border border-gray-300 bg-white text-gray-700 hover:bg-gray-100 text-sm font-medium'}
+                  >
+                    {n}
+                  </Link>
+                )
+              )}
+              {page < totalPages && (
+                <Link href={`/artikel?page=${page + 1}`} className="px-4 py-2 rounded-lg border border-gray-300 bg-white text-gray-700 hover:bg-gray-100 text-sm font-medium">
+                  Berikutnya &raquo;
+                </Link>
+              )}
+            </div>
+            <p className="text-sm text-gray-500">
+              Halaman {page} dari {totalPages} — menampilkan {(page - 1) * PAGE_SIZE + 1}–{Math.min(page * PAGE_SIZE, total)} dari {total} artikel
+            </p>
+          </nav>
+        )}
       </main>
 
-      <footer className="bg-gray-900 text-white py-8 px-4 mt-16">
-        <div className="max-w-7xl mx-auto text-center">
-          <p className="text-gray-400">
-            © 2025 {settings?.siteName || 'FloodBar.id'} - Semua hak dilindungi undang-undang.
-          </p>
-        </div>
-      </footer>
+      <SiteFooter />
     </div>
   )
 }

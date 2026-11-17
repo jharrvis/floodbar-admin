@@ -47,6 +47,8 @@ const quillFormats = [
 
 export default function ArticlesManagement() {
   const [articles, setArticles] = useState<Article[]>([])
+  const [currentPage, setCurrentPage] = useState(1)
+  const pageSize = 20
   const [loading, setLoading] = useState(true)
   const [showForm, setShowForm] = useState(false)
   const [editingArticle, setEditingArticle] = useState<Article | null>(null)
@@ -62,6 +64,11 @@ export default function ArticlesManagement() {
   useEffect(() => {
     fetchArticles()
   }, [])
+
+  useEffect(() => {
+    const tp = Math.ceil(articles.length / pageSize)
+    if (tp > 0 && currentPage > tp) setCurrentPage(tp)
+  }, [articles])
 
   const fetchArticles = async () => {
     try {
@@ -177,8 +184,24 @@ export default function ArticlesManagement() {
     })
   }
 
+  const totalPages = Math.max(1, Math.ceil(articles.length / pageSize))
+  const pagedArticles = articles.slice((currentPage - 1) * pageSize, currentPage * pageSize)
+  const pageNumbers: (number | '...')[] = (() => {
+    if (totalPages <= 7) return Array.from({ length: totalPages }, (_, i) => i + 1)
+    const cand = [1, 2, totalPages - 1, totalPages, currentPage - 1, currentPage, currentPage + 1]
+    const sorted = cand.filter((n, i) => n >= 1 && n <= totalPages && cand.indexOf(n) === i).sort((x, y) => x - y)
+    const out: (number | '...')[] = []
+    let prev = 0
+    for (const n of sorted) {
+      if (prev && n - prev > 1) out.push('...')
+      out.push(n)
+      prev = n
+    }
+    return out
+  })()
+
   if (loading && articles.length === 0) {
-    return (
+  return (
       <div className="flex justify-center items-center h-64">
         <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-blue-600"></div>
       </div>
@@ -334,7 +357,7 @@ export default function ArticlesManagement() {
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
-              {articles.map((article) => (
+              {pagedArticles.map((article) => (
                 <tr key={article.id} className="hover:bg-gray-50">
                   <td className="px-6 py-4">
                     <div className="flex items-start space-x-3">
@@ -420,6 +443,35 @@ export default function ArticlesManagement() {
             </tbody>
           </table>
         </div>
+
+        {articles.length > 0 && (
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-4 px-6 py-4 border-t border-gray-200">
+            <p className="text-sm text-gray-500">
+              Menampilkan {(currentPage - 1) * pageSize + 1}–{Math.min(currentPage * pageSize, articles.length)} dari {articles.length} artikel — Halaman {currentPage} dari {totalPages}
+            </p>
+            <div className="flex items-center gap-1 flex-wrap justify-center">
+              <button onClick={() => setCurrentPage(currentPage - 1)} disabled={currentPage <= 1} className="px-3 py-1.5 rounded-lg border border-gray-300 text-sm font-medium text-gray-700 hover:bg-gray-100 disabled:opacity-40 disabled:cursor-not-allowed">
+                &laquo; Prev
+              </button>
+              {pageNumbers.map((n, i) =>
+                n === '...' ? (
+                  <span key={`e${i}`} className="px-2 text-gray-400">…</span>
+                ) : (
+                  <button
+                    key={n}
+                    onClick={() => setCurrentPage(n)}
+                    className={n === currentPage ? 'px-3 py-1.5 rounded-lg bg-blue-600 text-white text-sm font-medium' : 'px-3 py-1.5 rounded-lg border border-gray-300 text-sm font-medium text-gray-700 hover:bg-gray-100'}
+                  >
+                    {n}
+                  </button>
+                )
+              )}
+              <button onClick={() => setCurrentPage(currentPage + 1)} disabled={currentPage >= totalPages} className="px-3 py-1.5 rounded-lg border border-gray-300 text-sm font-medium text-gray-700 hover:bg-gray-100 disabled:opacity-40 disabled:cursor-not-allowed">
+                Next &raquo;
+              </button>
+            </div>
+          </div>
+        )}
 
         {articles.length === 0 && (
           <div className="text-center py-12">

@@ -1,4 +1,5 @@
-import { NextResponse } from 'next/server'
+import { NextRequest, NextResponse } from 'next/server'
+import { requireAdmin } from '@/lib/require-admin'
 import { v2 as cloudinary } from 'cloudinary'
 import { configureCloudinary } from '@/lib/cloudinary-config'
 
@@ -7,6 +8,9 @@ export const dynamic = 'force-dynamic'
 
 // GET - Fetch all media from Cloudinary
 export async function GET(request: Request) {
+  const denied = await requireAdmin(request)
+  if (denied) return denied
+
   try {
     // Configure Cloudinary from database/environment
     const configured = await configureCloudinary()
@@ -63,6 +67,9 @@ export async function GET(request: Request) {
 
 // DELETE - Delete media from Cloudinary
 export async function DELETE(request: Request) {
+  const denied = await requireAdmin(request)
+  if (denied) return denied
+
   try {
     // Configure Cloudinary from database/environment
     const configured = await configureCloudinary()

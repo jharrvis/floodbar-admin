@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { requireAdmin } from '@/lib/require-admin'
 import { PrismaClient } from '@prisma/client'
 
 export const runtime = 'nodejs'
@@ -6,7 +7,10 @@ export const dynamic = 'force-dynamic'
 
 const prisma = new PrismaClient()
 
-export async function POST() {
+export async function POST(request: NextRequest) {
+  const denied = await requireAdmin(request)
+  if (denied) return denied
+
   try {
     // Add isChecked column to orders table
     await prisma.$executeRawUnsafe(`
@@ -41,7 +45,10 @@ export async function POST() {
   }
 }
 
-export async function GET() {
+export async function GET(request: NextRequest) {
+  const denied = await requireAdmin(request)
+  if (denied) return denied
+
   return NextResponse.json({
     message: 'Use POST method to add isChecked column to orders table',
     endpoint: '/api/admin/add-checked-field'

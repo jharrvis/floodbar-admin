@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { requireAdmin } from '@/lib/require-admin'
 import { PrismaClient } from '@prisma/client'
 
 export const runtime = 'nodejs'
@@ -59,6 +60,9 @@ export async function GET(request: NextRequest) {
 
 // PUT - Update page content
 export async function PUT(request: NextRequest) {
+  const denied = await requireAdmin(request)
+  if (denied) return denied
+
   try {
     const data = await request.json()
     const { page_type, title, subtitle, content_sections, contact_info } = data

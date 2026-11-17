@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { requireAdmin } from '@/lib/require-admin'
 import { PrismaClient } from '@prisma/client'
 
 export const runtime = 'nodejs'
@@ -10,6 +11,9 @@ export async function POST(
   request: NextRequest,
   { params }: { params: { orderId: string } }
 ) {
+  const denied = await requireAdmin(request)
+  if (denied) return denied
+
   try {
     const { orderId } = params
     const { isChecked } = await request.json()

@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { requireAdmin } from '@/lib/require-admin'
 import { PrismaClient } from '@prisma/client'
 
 export const runtime = 'nodejs'
@@ -19,7 +20,12 @@ export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url)
     const onlyPublished = searchParams.get('published') !== 'false'
-    
+
+    if (!onlyPublished) {
+      const denied = await requireAdmin(request)
+      if (denied) return denied
+    }
+
     const whereClause = onlyPublished ? { isPublished: true } : {}
     
     const articles = await prisma.article.findMany({
@@ -42,6 +48,9 @@ export async function GET(request: NextRequest) {
 }
 
 export async function POST(request: NextRequest) {
+  const denied = await requireAdmin(request)
+  if (denied) return denied
+
   try {
     const data = await request.json()
 

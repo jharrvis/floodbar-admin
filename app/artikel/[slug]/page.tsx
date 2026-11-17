@@ -1,5 +1,6 @@
 import { Metadata } from 'next'
 import Link from 'next/link'
+import { SiteHeader, SiteFooter } from '../../components/SiteChrome'
 import { ArrowLeft, Calendar, User } from 'lucide-react'
 import { notFound } from 'next/navigation'
 import { prisma } from '@/lib/prisma'
@@ -138,33 +139,7 @@ export default async function ArticlePage({ params }: { params: Promise<{ slug: 
   return (
     <div className="min-h-screen bg-gray-50">
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
-      <nav className="bg-gray-900 text-white px-4 py-3">
-        <div className="max-w-7xl mx-auto flex items-center justify-between">
-          <Link href="/" className="flex items-center space-x-2">
-            {settings?.logoUrl ? (
-              <img
-                src={settings.logoUrl}
-                alt={settings?.siteName || 'FloodBar.id'}
-                className="w-8 h-8 object-contain rounded"
-                width={32}
-                height={32}
-              />
-            ) : (
-              <img
-                src="/images/logo-floodbar.webp"
-                alt="FloodBar.id"
-                className="w-8 h-8 object-contain rounded"
-                width={32}
-                height={32}
-              />
-            )}
-            <span className="font-bold text-xl">{siteName}</span>
-          </Link>
-          <Link href="/artikel" className="text-sm hover:text-blue-400">
-            Semua Artikel
-          </Link>
-        </div>
-      </nav>
+      <SiteHeader />
 
       <main className="max-w-4xl mx-auto px-4 py-8">
         <nav aria-label="Breadcrumb" className="mb-5 text-sm text-gray-500">
@@ -228,13 +203,7 @@ export default async function ArticlePage({ params }: { params: Promise<{ slug: 
         </div>
       </main>
 
-      <footer className="bg-gray-900 text-white py-8 px-4 mt-16">
-        <div className="max-w-7xl mx-auto text-center">
-          <p className="text-gray-400">
-            © 2025 {siteName} - Semua hak dilindungi undang-undang.
-          </p>
-        </div>
-      </footer>
+      <SiteFooter />
     </div>
   )
 }
